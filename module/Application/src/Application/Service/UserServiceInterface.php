@@ -1,0 +1,63 @@
+<?php
+
+namespace Application\Service;
+
+use Application\Form\Entity\SingUpFormInterface;
+use Application\Model\Entity\PersonalDetailsInterface;
+
+interface UserServiceInterface {
+
+    public function getUserById($id);
+
+    public function getUserInfoById($id, $columns);
+    
+    public function userSummaryById($id);
+
+    public function getRegisteredUserById($id);
+
+    public function getRegisteredUserByActivationCode($id, $activationCode);
+
+    public function getUserEducationById($id);
+
+    public function getUserCareerById($id);
+
+    public function getUserMatrimonialById($id);
+
+    public function getMemberInfoById($id);
+    
+    public function personalDetailById($id);
+    
+    public function educationDetailById($id);
+
+    public function saveUser($object);
+
+    public function saveUserSignUp(SingUpFormInterface $userObject);
+    
+    public function saveUserPersonalDetails($personalDetailsObject);
+    
+    public function saveUserEducationDetails($educationDetailsData);
+    
+    public function saveUserProfessionDetails($professionDetailsData);
+    
+    public function saveAcitivationSmsCode($userId, $number, $code, $time);
+
+    public function saveUserInfo($infoData);
+
+    public function saveUserEducation($educationInfo);
+
+    public function saveUserCareer($careerInfo);
+    
+    public function getUserProfessionById($id, $columns);
+    
+    public function getUserEducationAndCareerDetailById($id, $columns);
+    
+    public function saveUserEducationAndCareerDetail($educationAndCareerData);
+
+    public function saveUserMatrimonial($matrimonialInfo);
+
+    public function checkAlreadyExist($fieldName, $value);
+    
+    public function ProfileBar($user_id);
+
+    public function removeUser($id);
+}
