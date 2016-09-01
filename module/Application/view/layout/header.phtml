@@ -160,10 +160,10 @@ $session = new Zend\Session\Container('user');
 
             <?php if ($this->authUser()->isLogin() === true) { ?>
                 <span><?php echo $this->translate('My Profile') ?></span>
-                <a href="<?php echo $this->basePath() ?>/account/memberbasic"><?php echo $this->translate('Profile') ?></a>	
+                <a href="<?php echo $this->url('profile', array('action'=>'personal-profile')) ?>"><?php echo $this->translate('Profile') ?></a>	
             <?php } else { ?>
                 <span><?php echo $this->translate('Become Member') ?></span>
-                <a href="<?php echo $this->basePath() ?>/user/signup"><?php echo $this->translate('Signup') ?></a>
+                <a href="<?php echo $this->url('user', array('action'=>'signup')) ?>"><?php echo $this->translate('Signup') ?></a>
             <?php } ?>
         </li>
 

@@ -15,7 +15,16 @@ class AuthFrontHelper extends AbstractHelper {
 
     public function isLogin() {
         $auth = new AuthenticationService();
-        if ($auth->getIdentity()) {
+        if ($auth->getIdentity() && in_array($auth->getIdentity()->role, array('user'))) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    public function checkLogin() {
+        $auth = new AuthenticationService();
+        if ($auth->getIdentity() && in_array($auth->getIdentity()->role, array('user'))) {
             return true;
         } else {
             return false;

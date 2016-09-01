@@ -1,4 +1,5 @@
 <?php
+
 namespace Common;
 
 use Common\Helper\MyHelper;
@@ -24,13 +25,16 @@ class Module {
 
     public function getControllerPluginConfig() {
         return array(
+            'invokables' => array(
+                'checkLogin' => 'Common\Plugin\CheckLoginPlugin',
+            ),
             'factories' => array(
                 //'getUserSession' => 'Common\Plugin\SessionPluginFactory',//not in use
                 'Common\Plugin\UserSessionPlugin' => 'Common\Plugin\Factory\UserSessionPluginFactory', //all session related data
-                'Common\Plugin\TablePlugin' => 'Common\Plugin\Factory\TablePluginFactory',// all table related data
+                'Common\Plugin\TablePlugin' => 'Common\Plugin\Factory\TablePluginFactory', // all table related data
                 'Common\Plugin\AuthFrontPlugin' => 'Common\Plugin\Factory\AuthFrontPluginFactory'
             ),
-             'aliases' => array(
+            'aliases' => array(
                 'authUser' => 'Common\Plugin\AuthFrontPlugin',
                 'getUser' => 'Common\Plugin\UserSessionPlugin',
                 'getTable' => 'Common\Plugin\TablePlugin'

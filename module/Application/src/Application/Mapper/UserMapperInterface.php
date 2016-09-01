@@ -25,7 +25,15 @@ interface UserMapperInterface {
 
     public function getMemberInfoById($id);
     
-    public function personalDetailById($id);
+    public function getUserAboutById($id);
+    
+    public function saveUserAbout($userAboutData);
+    
+    public function getUserPersonalDetailById($id);
+    
+    public function saveUserPersonalDetails($personalDetailsObject);
+    
+    public function saveUserProfessionDetails($professionDetailsData);
     
     public function educationDetailById($id);
 
@@ -33,12 +41,8 @@ interface UserMapperInterface {
     
     public function saveUserSignUp(SingUpFormInterface $userObject);
     
-    public function saveUserPersonalDetails($personalDetailsObject);
-    
     public function saveUserEducationDetails($educationDetailsData);
-    
-    public function saveUserProfessionDetails($professionDetailsData);
-    
+ 
     public function saveAcitivationSmsCode($userId, $number, $code, $time);
 
     public function saveUserInfo($infoData);
@@ -60,4 +64,8 @@ interface UserMapperInterface {
     public function ProfileBar($user_id);
 
     public function removeUser($id);
+    
+    public function getUserPostById($user_id);
+    
+    public function saveUserPost($userPostData);
 }

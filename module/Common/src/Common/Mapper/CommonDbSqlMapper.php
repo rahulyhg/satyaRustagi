@@ -56,7 +56,7 @@ class CommonDbSqlMapper implements CommonMapperInterface {
     }
 
     public function getStateList($columns = array('id', 'state_name')) {
-         $sql = new Sql($this->dbAdapter);
+        $sql = new Sql($this->dbAdapter);
         $select = $sql->select('tbl_state');
         $select->columns($columns);
         $select->order('id ASC');
@@ -75,7 +75,7 @@ class CommonDbSqlMapper implements CommonMapperInterface {
     }
 
     public function getCityList($columns = array('id', 'city_name')) {
-         $table = new TableGateway('tbl_city', $this->dbAdapter);
+        $table = new TableGateway('tbl_city', $this->dbAdapter);
         $rowset = $table->select(function (Select $select) use ($columns) {
                     $select->order('id ASC');
                     $select->columns($columns);
@@ -111,7 +111,7 @@ class CommonDbSqlMapper implements CommonMapperInterface {
     }
 
     public function getAnnualIncomeList($columns = array('id', 'annual_income')) {
-           $sql = new Sql($this->dbAdapter);
+        $sql = new Sql($this->dbAdapter);
         $select = $sql->select('tbl_annual_income');
         $select->columns($columns);
         $select->order('id ASC');
@@ -130,8 +130,8 @@ class CommonDbSqlMapper implements CommonMapperInterface {
     }
 
     public function getDesignationList($columns = array('id', 'designation')) {
-        
-           $sql = new Sql($this->dbAdapter);
+
+        $sql = new Sql($this->dbAdapter);
         $select = $sql->select('tbl_designation');
         $select->columns($columns);
         $select->order('id ASC');
@@ -150,7 +150,7 @@ class CommonDbSqlMapper implements CommonMapperInterface {
     }
 
     public function getEducationFieldList($columns = array('id', 'education_field')) {
-          $sql = new Sql($this->dbAdapter);
+        $sql = new Sql($this->dbAdapter);
         $select = $sql->select('tbl_education_field');
         $select->columns($columns);
         $select->order('id ASC');
@@ -169,7 +169,7 @@ class CommonDbSqlMapper implements CommonMapperInterface {
     }
 
     public function getEducationLevelList($columns = array('id', 'education_level')) {
-          $sql = new Sql($this->dbAdapter);
+        $sql = new Sql($this->dbAdapter);
         $select = $sql->select('tbl_education_level');
         $select->columns($columns);
         $select->order('id ASC');
@@ -243,8 +243,8 @@ class CommonDbSqlMapper implements CommonMapperInterface {
     }
 
     public function getReligionList($columns = array('id', 'religion_name')) {
-        
-         $sql = new Sql($this->dbAdapter);
+
+        $sql = new Sql($this->dbAdapter);
         $select = $sql->select('tbl_religion');
         $select->columns($columns);
         $select->order('id ASC');
@@ -260,7 +260,6 @@ class CommonDbSqlMapper implements CommonMapperInterface {
             return $list;
             //return $result->current();
         }
-        
     }
 
     public function getUserById($id) {
@@ -367,7 +366,20 @@ class CommonDbSqlMapper implements CommonMapperInterface {
     }
 
     public function getPostCategoryList() {
-        
+
+        $statement = $this->dbAdapter->query("select id, category_name from tbl_post_category");
+        $result = $statement->execute();
+
+        if ($result instanceof ResultInterface && $result->isQueryResult() && $result->getAffectedRows()) {
+
+            $rowset = $this->resultSet->initialize($result);
+
+            foreach ($rowset->toArray() as $c) {
+                $list[$c['id']] = $c['category_name'];
+            }
+
+            return $list;
+        }
     }
 
     public function getRustagiBranchList() {
@@ -375,15 +387,14 @@ class CommonDbSqlMapper implements CommonMapperInterface {
     }
 
     public function getWorkingWithCompanyList() {
-        
-          $Working_with = array("Private Company" => "Private Company",
+
+        $Working_with = array("Private Company" => "Private Company",
             "Government / Public Sector" => "Government / Public Sector",
             "Defense / Civil Services" => "Defense / Civil Services",
             "Business / Self Employed" => "Business / Self Employed",
             "Non Working" => "Non Working",
             "Others" => "Others");
         return $Working_with;
-        
     }
 
     public function profileForList() {
@@ -414,7 +425,7 @@ class CommonDbSqlMapper implements CommonMapperInterface {
     }
 
     public function disabilityList() {
-       return array("None" => "None", "Physical disability" => "Physical disability");
+        return array("None" => "None", "Physical disability" => "Physical disability");
     }
 
     public function genderList() {

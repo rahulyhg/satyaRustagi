@@ -3,7 +3,7 @@
 namespace Application\Mapper;
 
 use Application\Form\Entity\SingUpFormInterface;
-use Application\Model\Entity\PersonalDetailsInterface;
+use Application\Model\Entity\Post;
 use Application\Model\Entity\User;
 use Application\Model\Entity\UserInfo;
 use Zend\Db\Adapter\Adapter;
@@ -14,7 +14,6 @@ use Zend\Db\Sql\Insert;
 use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Update;
 use Zend\Debug\Debug;
-use Zend\Http\PhpEnvironment\RemoteAddress;
 use Zend\Stdlib\Hydrator\ClassMethods;
 
 class UserDbSqlMapper implements UserMapperInterface {
@@ -73,7 +72,7 @@ class UserDbSqlMapper implements UserMapperInterface {
         $parameters = array(
             'user_id' => $id
         );
-        $result=$statement->execute($parameters);
+        $result = $statement->execute($parameters);
 //        Debug::dump($result->current());
 //        exit;
         if ($result instanceof ResultInterface && $result->isQueryResult() && $result->getAffectedRows()) {
@@ -85,7 +84,40 @@ class UserDbSqlMapper implements UserMapperInterface {
         }
     }
 
-    public function personalDetailById($id) {
+    public function getUserAboutById($id) {
+
+        $statement = $this->dbAdapter->query("SELECT id, about_yourself_partner_family as about_me FROM tbl_user_info WHERE user_id=:user_id");
+        $parameters = array(
+            'user_id' => $id
+        );
+        $result = $statement->execute($parameters);
+
+        if ($result instanceof ResultInterface && $result->isQueryResult() && $result->getAffectedRows()) {
+
+              return $this->hydrator->hydrate($result->current(), new UserInfo());
+        }
+    }
+
+    public function saveUserAbout($userAboutData) {
+
+        $userData = $this->hydrator->extract($userAboutData);
+        $userData = array_filter((array) $userData, function ($val) {
+             return !is_null($val);
+           });
+
+        $userData['about_yourself_partner_family']=$userData['about_me'];
+        unset($userData['about_me']);
+
+        $sql = new Sql($this->dbAdapter);
+        $action = new Update('tbl_user_info');
+        $action->set($userData);
+        $action->where(array('id = ?' => $userData['id']));
+        $stmt = $sql->prepareStatementForSqlObject($action);
+        $result = $stmt->execute();
+    }
+
+    public function getUserPersonalDetailById($id) {
+        
         $sql = new Sql($this->dbAdapter);
         $select = $sql->select('tbl_user_info');
         $select->where(array('user_id = ?' => $id));
@@ -95,8 +127,8 @@ class UserDbSqlMapper implements UserMapperInterface {
 
         if ($result instanceof ResultInterface && $result->isQueryResult() && $result->getAffectedRows()) {
 
-            return $result->current();
-            //return $this->hydrator->hydrate($result->current(), new UserInfo());
+            //return $result->current();
+            return $this->hydrator->hydrate($result->current(), new UserInfo());
         }
     }
 
@@ -139,7 +171,7 @@ class UserDbSqlMapper implements UserMapperInterface {
         //var_dump($user_id);
         //exit;
         $data = $this->dbAdapter->query("select * from tbl_user_info as tui inner join tbl_family_info as tfi on 
-            tui.user_id = tfi.user_id where tui.user_id=$user_id", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE)->toArray();
+            tui.user_id = tfi.user_id where tui.user_id=$user_id", Adapter::QUERY_MODE_EXECUTE)->toArray();
 
         $totalfields = count($data[0]);
 
@@ -215,6 +247,10 @@ class UserDbSqlMapper implements UserMapperInterface {
         //Debug::dump($professionDetailsData);
         //exit;
         $userData = $this->hydrator->extract($professionDetailsData);
+        $userData = array_filter((array) $userData, function ($val) {
+             return !is_null($val);
+           });
+
         unset($userData['created_date']);
         //Debug::dump($userData);
         //exit;
@@ -459,7 +495,11 @@ class UserDbSqlMapper implements UserMapperInterface {
 
     public function saveUserPersonalDetails($personalDetailsObject) {
 
-        //Debug::dump($personalDetailsObject);
+        $userData=$this->hydrator->extract($personalDetailsObject);
+         $userData = array_filter((array) $userData, function ($val) {
+             return !is_null($val);
+           });
+        //Debug::dump($userData);
         //exit;
         //$remote = new RemoteAddress;
         //$this->ip = $remote->getIpAddress();
@@ -468,8 +508,8 @@ class UserDbSqlMapper implements UserMapperInterface {
 
 
         $action = new Update('tbl_user_info');
-        $action->set($personalDetailsObject);
-        $action->where(array('id = ?' => $personalDetailsObject['id']));
+        $action->set($userData);
+        $action->where(array('id = ?' => $userData['id']));
         $stmt = $sql->prepareStatementForSqlObject($action);
         $result = $stmt->execute();
     }
@@ -578,6 +618,38 @@ class UserDbSqlMapper implements UserMapperInterface {
             $referenceNo = $dateYear . $first . $id;
         }
         return $referenceNo;
+    }
+    
+    public function getUserPostById($user_id){
+        
+          $statement = $this->dbAdapter->query("SELECT * FROM tbl_post WHERE user_id=:user_id");
+        $parameters = array(
+            'user_id' => $user_id
+        );
+        $result = $statement->execute($parameters);
+
+        if ($result instanceof ResultInterface && $result->isQueryResult() && $result->getAffectedRows()) {
+
+              return $this->hydrator->hydrate($result->current(), new Post());
+        }
+        
+    }
+    public function saveUserPost($userPostData){
+         $postData = $this->hydrator->extract($userPostData);
+        $postData = array_filter((array) $postData, function ($val) {
+             return !is_null($val);
+           });
+
+//        $userData['about_yourself_partner_family']=$userData['about_me'];
+        //unset($userData['about_me']);
+        Debug::dump($postData);
+        exit;
+        $sql = new Sql($this->dbAdapter);
+        $action = new Update('tbl_user_info');
+        $action->set($userData);
+        $action->where(array('id = ?' => $postData['id']));
+        $stmt = $sql->prepareStatementForSqlObject($action);
+        $result = $stmt->execute();
     }
 
 }

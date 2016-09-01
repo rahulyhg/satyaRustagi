@@ -2,20 +2,19 @@
 
 namespace Application\Controller;
 
+use Application\Form\AboutForm;
 use Application\Form\EducationAndCareerForm;
 use Application\Form\EducationForm;
 use Application\Form\FamilyInfoForm;
 use Application\Form\Filter\EducationAndCareerFormFilter;
-use Application\Form\MemberbasicForm;
 use Application\Form\MetrimoniForm;
+use Application\Form\PersonolDetailForm;
 use Application\Form\PostForm;
 use Application\Form\ProfessionForm;
 use Application\Model\Entity\Career;
 use Application\Model\Entity\Family;
 use Application\Model\Entity\Matrimoni;
-use Application\Model\Entity\PersonalDetails;
 use Application\Model\Entity\Posts;
-use Application\Model\Entity\UserSummary;
 use Application\Service\AccountServiceInterface;
 use Application\Service\UserServiceInterface;
 use Common\Service\CommonServiceInterface;
@@ -57,10 +56,10 @@ class AccountController extends AppController {
         $userSession = $this->getUser()->session();
         $user_id = $userSession->offsetGet('id');
         $ref_no = $userSession->offsetGet('ref_no');
-        $MemberbasicForm = new MemberbasicForm($this->commonService);
-        $personalDetails = new PersonalDetails();
-        $info = $this->userService->personalDetailById($user_id);
-        $MemberbasicForm->bind($personalDetails->exchangeArray($info));
+        $MemberbasicForm = new PersonolDetailForm($this->commonService);
+        //$personalDetails = new PersonalDetails();
+        $info = $this->userService->getUserPersonalDetailById($user_id);
+        $MemberbasicForm->bind($info);
         $request = $this->getRequest();
         if ($request->isPost()) {
             //$page = new Memberbasic();
@@ -72,7 +71,7 @@ class AccountController extends AppController {
                 //$ddad=$personalDetailsExchange->exchangeArrayTable($hydrator->extract($MemberbasicForm->getData()));
                 //Debug::dump($request->getPost()->submit);
                 //exit;
-                $this->userService->saveUserPersonalDetails($personalDetails->exchangeArrayTable($MemberbasicForm->getData()));
+                $this->userService->saveUserPersonalDetails($info);
                 //exit;
 //                $page->exchangeArray($data);
 //                unset($page->inputFilter);
@@ -95,19 +94,12 @@ class AccountController extends AppController {
             }
         }
 
-        //$profilePercentage = $this->profileBarTemplate(50);
-        $profilePercentage = $this->userService->ProfileBar($user_id);
-        // \Zend\Debug\Debug::dump($pro_per);
-        //exit;
-        // $summary=new UserSummary();
-        //Debug::dump(UserSummary::exchangeArrayView($this->userService->userSummaryById($user_id)));
-        //exit;
-        $userSummary = new UserSummary();
+        $percentage = $this->userService->ProfileBar($user_id);
+        $pro_per = array($percentage, $this->profileBarTemplate($percentage));
+
         return new ViewModel(array("form" => $MemberbasicForm,
-            'userInfo' => $userSummary->exchangeArrayView($this->userService->userSummaryById($user_id)),
-            'profilePercentage' => $profilePercentage
-        ));
-        //return new ViewModel(array("form" => $MemberbasicForm, "gallery_data" => $data_gallery, "percent" => $pro_per));
+            'userSummary' => $this->userService->userSummaryById($user_id),
+            "percent" => $pro_per));
     }
 
     public function educationAndCareerAction() {
@@ -135,7 +127,7 @@ class AccountController extends AppController {
             }
         }
         //$data_gallery = $adapter->query("select * from tbl_user_gallery where user_id='$user_id' AND ref_no='$ref_no' ORDER BY id DESC", Adapter::QUERY_MODE_EXECUTE);
-        $percentage=$this->userService->ProfileBar($user_id);
+        $percentage = $this->userService->ProfileBar($user_id);
         $pro_per = array($percentage, $this->profileBarTemplate($percentage));
         //Debug::dump($pro_per);
 
@@ -418,29 +410,42 @@ class AccountController extends AppController {
 
 
         $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
-
+        $form = new AboutForm();
+        $info = $this->userService->getUserAboutById($user_id);
+        //Debug::dump($info);
+        //exit;
+        $form->bind($info);
         $request = $this->getRequest();
         if ($request->isPost()) {
-            $text = $request->getPost("about_Yourself");
+            $form->setData($request->getPost());
+            if ($form->isValid()) {
+
+                $this->userService->saveUserAbout($info);
+                if ($request->getPost('about_meSave') == "Save & Next") {
+                    $this->redirect()->toRoute("application/default", array(
+                        "action" => "about",
+                        "controller" => "account",
+                    ));
+                }
+            }
+            //$text = $request->getPost("about_Yourself");
             //Debug::dump(trim($text));
             //exit;
-            $adapter->query("UPDATE tbl_user_info set about_yourself_partner_family='$text' where user_id='$user_id' AND ref_no='$ref_no'", Adapter::QUERY_MODE_EXECUTE);
+            //$adapter->query("UPDATE tbl_user_info set about_yourself_partner_family='$text' where user_id='$user_id' AND ref_no='$ref_no'", Adapter::QUERY_MODE_EXECUTE);
         }
-        $data = $adapter->query("select about_yourself_partner_family as about_me from tbl_user_info where user_id='$user_id' AND ref_no='$ref_no'", Adapter::QUERY_MODE_EXECUTE);
+        //$data = $adapter->query("select about_yourself_partner_family as about_me from tbl_user_info where user_id='$user_id' AND ref_no='$ref_no'", Adapter::QUERY_MODE_EXECUTE);
         //$data_gallery = $adapter->query("select * from tbl_user_gallery where user_id='$user_id' AND ref_no='$ref_no' ORDER BY id DESC", Adapter::QUERY_MODE_EXECUTE);
         //Debug::dump($request->getPost('about_meSave'));
         // exit;
 
-        if ($request->getPost('about_meSave') == "Save & Next") {
-            $this->redirect()->toRoute("application/default", array(
-                "action" => "personal-profile",
-                "controller" => "account",
-            ));
-        }
 
-        //$pro_per = $this->ProfileBar();
 
-        return new ViewModel(array("my_info" => $data->current()));
+        $percentage = $this->userService->ProfileBar($user_id);
+        $pro_per = array($percentage, $this->profileBarTemplate($percentage));
+
+        return new ViewModel(array("form" => $form,
+            'userSummary' => $this->userService->userSummaryById($user_id),
+            "percent" => $pro_per));
     }
 
     public function mygalleryAction() {
@@ -890,45 +895,58 @@ class AccountController extends AppController {
 
     public function postAction() {
 
+        $userSession = $this->getUser()->session();
+        $user_id = $userSession->offsetGet('id');
+        $ref_no = $userSession->offsetGet('ref_no');
 
-        $postcategories = $this->getPostcategoryTable()->customFields(array('id', 'category_name'));
-        PostForm::$postcategoryList = $postcategories;
-
+        //$postcategories = $this->getPostcategoryTable()->customFields(array('id', 'category_name'));
+        //PostForm::$postcategoryList = $postcategories;
         // print_r($postcategories);die;
 
-        $postform = new PostForm();
+        $form = new PostForm($this->commonService);
+        $info=$this->userService->getUserPostById($user_id);
+        //Debug::dump($info);
+        $form->bind($info);
 
-        $postform = new PostForm();
         $request = $this->getRequest();
         if ($request->isPost()) {
-            $page = new Posts();
-            $postform->setInputFilter($page->getInputFilter());
-
-            $mergedata = array_merge(
-                    $this->getRequest()->getPost()->toArray(), $this->getRequest()->getFiles()->toArray()
-            );
-            // print_r($mergedata);die;
-
-            $postform->setData($mergedata);
+            $form->setData($request->getPost());
+        
+//            $page = new Posts();
+//            $form->setInputFilter($page->getInputFilter());
+//
+//            $mergedata = array_merge(
+//                    $this->getRequest()->getPost()->toArray(), $this->getRequest()->getFiles()->toArray()
+//            );
+//            // print_r($mergedata);die;
+//
+//            $form->setData($mergedata);
             // $data = (array) $request->getPost();
-            if ($postform->isValid()) {
-                $entity = $page->exchangeArray($postform->getData());
-                unset($page->inputFilter);
+            if ($form->isValid()) {
+                
+                    //Debug::dump($form->getData());
+           // exit;
+                //$entity = $page->exchangeArray($postform->getData());
+                //unset($page->inputFilter);
 
                 // $session = new Container('user');
                 // $user_id=$session->offsetGet('id');
                 // 		echo $user_id;
-                $this->getPostTable()->savePost($entity);
-                return $this->redirect()->toRoute('application/default', array(
-                            'action' => 'index',
-                            'controller' => 'Posts',
-                            "id" => 1
-                ));
+                $this->userService->saveUserPost($info);
+//                return $this->redirect()->toRoute('application/default', array(
+//                            'action' => 'post',
+//                            'controller' => 'account',
+//                            "id" => 1
+//                ));
             }
         }
 
+        $percentage = $this->userService->ProfileBar($user_id);
+        $pro_per = array($percentage, $this->profileBarTemplate($percentage));
 
-        return new ViewModel(array("form" => $postform, "message" => $msg));
+        return new ViewModel(array("form" => $form,
+            'userSummary' => $this->userService->userSummaryById($user_id),
+            "percent" => $pro_per));
     }
 
     /*     * ****Ajax Call***** */

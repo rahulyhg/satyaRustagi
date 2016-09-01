@@ -61,6 +61,7 @@ class Module implements ViewHelperProviderInterface {
         'Application\Controller\User',
         'Application\Controller\App',
         'Application\Controller\Account',
+        'Application\Controller\Profile',
         'Application\Controller\Membership',
         'Application\Controller\Matrimonial',
         'Application\Controller\Community',
@@ -141,7 +142,9 @@ class Module implements ViewHelperProviderInterface {
         $controller = $match->getParam('controller');
 
         if (!in_array($controller, $this->whitelist)) {
-            if (!$auth->hasIdentity()) {
+
+            if (!$auth->hasIdentity() || !in_array($auth->getIdentity()->role, array('superadmin', 'admin'))) {
+                
                 return $target->redirect()->toRoute('admin/login');
             }
         }

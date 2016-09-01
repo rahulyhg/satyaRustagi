@@ -57,6 +57,8 @@ class Module {
                 'Application\Service\MatrimonialServiceInterface' => 'Application\Service\Factory\MatrimonialServiceFactory',
                 'Application\Mapper\AccountMapperInterface' => 'Application\Mapper\Factory\AccountDbSqlMapperFactory',
                 'Application\Service\AccountServiceInterface' => 'Application\Service\Factory\AccountServiceFactory',
+                'Application\Mapper\ProfileMapperInterface' => 'Application\Mapper\Factory\ProfileDbSqlMapperFactory',
+                'Application\Service\ProfileServiceInterface' => 'Application\Service\Factory\ProfileServiceFactory',
                 'Application\Mapper\MembershipMapperInterface' => 'Application\Mapper\Factory\MembershipDbSqlMapperFactory',
                 'Application\Service\MembershipServiceInterface' => 'Application\Service\Factory\MembershipServiceFactory',
                 'Application\Mapper\CommunityMapperInterface' => 'Application\Mapper\Factory\CommunityDbSqlMapperFactory',

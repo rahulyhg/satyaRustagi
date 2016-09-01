@@ -138,7 +138,7 @@ class UserController extends AppController {
 
 
                 $userInfoObject = $this->userService->saveUserSignUp($signupform->getData());
-                Debug::dump($userInfoObject);
+                //Debug::dump($userInfoObject);
                 //exit;
                 $number = $signupform->getData()->getMobileNo();
                 $code = rand(1111, 9999);

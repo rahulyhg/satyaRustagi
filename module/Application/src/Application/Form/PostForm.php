@@ -1,18 +1,27 @@
 <?php
+
 namespace Application\Form;
 
+use Application\Model\Entity\Post;
+use Common\Service\CommonServiceInterface;
 use Zend\Form\Form;
+use Zend\Stdlib\Hydrator\ClassMethods;
 
 class PostForm extends Form {
-    public static $postcategoryList=array();       
 
+    public static $postCategoryList = array();
+    protected $commonService;
 
-    public function __construct($name = null) {
+    public function __construct(CommonServiceInterface $commonService) {
         // we want to ignore the name passed
         parent::__construct('form');
         $this->setAttribute('method', 'post');
+        $this->commonService = $commonService;
+        self::$postCategoryList=$this->commonService->getPostCategoryList();
+        $this->setHydrator(new ClassMethods(true));
+        $this->setObject(new Post());
         
-		$this->add(array(
+        $this->add(array(
             'name' => 'id',
             'attributes' => array(
                 'type' => 'hidden',
@@ -25,69 +34,69 @@ class PostForm extends Form {
                 'type' => 'hidden',
             ),
         ));
-		
+
         $this->add(array(
-        'type' => 'Zend\Form\Element\Select',
-        'name' => 'post_category',
-        'attributes' => array(
+            'type' => 'Zend\Form\Element\Select',
+            'name' => 'post_category',
+            'attributes' => array(
                 'class' => 'form-control',
-                'id'=>'post_category'
-        ),
-        'options' => array(
-        'empty_option' => 'Select',
-        'value_options' =>  self::$postcategoryList,
-        )
+                'id' => 'post_category'
+            ),
+            'options' => array(
+                'empty_option' => 'Select',
+                'value_options' => self::$postCategoryList,
+            )
         ));
 
-		$this->add(array(
+        $this->add(array(
             'name' => 'title',
             'attributes' => array(
                 'type' => 'text',
                 'class' => 'form-control',
-                'id'=>'title'
+                'id' => 'title'
             ),
             'options' => array(
                 'label' => NULL,
             ),
         ));
-		
-		$this->add(array(
+
+        $this->add(array(
             'name' => 'image',
             'attributes' => array(
                 'type' => 'file',
                 // 'class' => 'form-control',
-                'id'=>'image'
+                'id' => 'image'
             ),
             'options' => array(
                 'label' => NULL,
             ),
         ));
-		 $this->add(array(
-        'type' => 'Zend\Form\Element\Select',
-        'name' => 'language',
-        'attributes' => array(
+        $this->add(array(
+            'type' => 'Zend\Form\Element\Select',
+            'name' => 'language',
+            'attributes' => array(
                 'class' => 'form-control',
-                'id'=>'language'
-        ),
-        'options' => array(
-        'empty_option' => 'Select',
-        'label' => "Language of Article",
-        'value_options' =>  array(
-            "Hindi"=>"Hindi",
-            "English"=>"English",
+                'id' => 'language'
             ),
-        )
+            'options' => array(
+                'empty_option' => 'Select',
+                'label' => "Language of Article",
+                'value_options' => array(
+                    "1" => "Hindi",
+                    "2" => "English",
+                ),
+            )
         ));
 
-		
-		$this->add(array(
+
+        $this->add(array(
             'type' => 'Zend\Form\Element\Textarea',
             'name' => 'description',
-            'attributes' => array(                
-                'id'=>'description',
-				'class'=>'form-control',
-				'cols'=>25,
-				'rows'=>4
+            'attributes' => array(
+                'id' => 'description',
+                'class' => 'form-control',
+                'cols' => 25,
+                'rows' => 4
             ),
             'options' => array(
                 'label' => NULL,
@@ -99,10 +108,9 @@ class PostForm extends Form {
             'attributes' => array(
                 'type' => 'hidden',
                 'value' => 1,
-
             ),
         ));
-		
+
         $this->add(array(
             'name' => 'submit',
             'attributes' => array(
@@ -111,9 +119,9 @@ class PostForm extends Form {
                 'id' => 'submit',
                 'class' => 'btn btn-default'
             ),
-        ));    
-         
+        ));
     }
 
 }
+
 ?>

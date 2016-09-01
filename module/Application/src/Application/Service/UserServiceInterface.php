@@ -25,7 +25,11 @@ interface UserServiceInterface {
 
     public function getMemberInfoById($id);
     
-    public function personalDetailById($id);
+    public function getUserAboutById($id);
+    
+    public function saveUserAbout($userAboutData);
+    
+    public function getUserPersonalDetailById($id);
     
     public function educationDetailById($id);
 
@@ -60,4 +64,8 @@ interface UserServiceInterface {
     public function ProfileBar($user_id);
 
     public function removeUser($id);
+    
+    public function getUserPostById($user_id);
+    
+    public function saveUserPost($userPostData);
 }

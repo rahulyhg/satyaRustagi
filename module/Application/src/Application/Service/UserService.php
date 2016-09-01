@@ -39,8 +39,16 @@ class UserService implements UserServiceInterface {
         return $this->userMapper->userSummaryById($id);
     }
     
-    public function personalDetailById($id){
-        return $this->userMapper->personalDetailById($id);
+    public function getUserAboutById($id){
+        return $this->userMapper->getUserAboutById($id);
+    }
+    
+    public function saveUserAbout($userAboutData){
+        return $this->userMapper->saveUserAbout($userAboutData);
+    }
+    
+    public function getUserPersonalDetailById($id){
+        return $this->userMapper->getUserPersonalDetailById($id);
     }
     
     public function educationDetailById($id){
@@ -123,6 +131,14 @@ class UserService implements UserServiceInterface {
     
     public function ProfileBar($user_id){
         return $this->userMapper->ProfileBar($user_id);
+    }
+    
+    public function getUserPostById($user_id){
+        return $this->userMapper->getUserPostById($user_id);
+    }
+    
+    public function saveUserPost($userPostData){
+        return $this->userMapper->saveUserPost($userPostData);
     }
 
 }

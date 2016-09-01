@@ -153,6 +153,22 @@ return array(
                     ),
                 ),
             ),
+            'profile' => array(
+                'type' => 'Segment',
+                'options' => array(
+                    'route' => '/my-rustagi[/:action[/:id]]',
+                    'constraints' => array(
+                        'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id' => '[0-9]*',
+                    ),
+                    'defaults' => array(
+                        '__NAMESPACE__' => 'Application\Controller',
+                        'controller' => 'Profile',
+                        'action' => 'index',
+                    ),
+                ),
+            ),
             'user' => array(
                 'type' => 'Segment',
                 'options' => array(
@@ -329,6 +345,7 @@ return array(
             'Application\Controller\Posts' => 'Application\Controller\Factory\PostsControllerFactory',
             'Application\Controller\Obituary' => 'Application\Controller\Factory\ObituaryControllerFactory',
             'Application\Controller\User' => 'Application\Controller\Factory\UserControllerFactory',
+            'Application\Controller\Profile' => 'Application\Controller\Factory\ProfileControllerFactory',
             
         )
     ),

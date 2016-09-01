@@ -28,6 +28,7 @@ class UserInfo implements UserInfoInterface
     protected $city;
     protected $zipPinCode;
     protected $aboutYourselfPartnerFamily;
+    protected $aboutMe;
     protected $dob;
     protected $age;
     protected $bloodGroup;
@@ -119,7 +120,15 @@ class UserInfo implements UserInfoInterface
     function getMembershipPaid() {
         return $this->membershipPaid;
     }
+    function getAboutMe() {
+        return $this->aboutMe;
+    }
 
+    function setAboutMe($aboutMe) {
+        $this->aboutMe = $aboutMe;
+    }
+
+    
     function getProfileFor() {
         return $this->profileFor;
     }
