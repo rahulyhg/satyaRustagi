@@ -3,15 +3,27 @@
 namespace Admin\Controller;
 
 // use Zend\Mvc\Controller\AbstractActionController;
-use Zend\View\Model\ViewModel;
-use Zend\View\Model\JsonModel;
-use Admin\Model\Entity\Countries;
-use Admin\Form\CountryForm;
+
+
 use Admin\Form\CountryFilter;
+use Admin\Form\CountryForm;
+use Admin\Model\Entity\Countries;
+use Admin\Service\AdminServiceInterface;
+use Common\Service\CommonServiceInterface;
+use Zend\Db\Adapter\Adapter;
+use Zend\View\Model\JsonModel;
+use Zend\View\Model\ViewModel;
 
 class CountryController extends AppController {
 
     protected $data = array();
+     protected $commonService;
+    protected $adminService;
+
+    public function __construct(CommonServiceInterface $commonService, AdminServiceInterface $adminService) {
+        $this->commonService = $commonService;
+        $this->adminService=$adminService;
+    }
 
     public function indexAction() {
         $countries = $this->getCountryTable()->fetchAll($this->data);
@@ -181,7 +193,7 @@ class CountryController extends AppController {
         $data = $_POST['value'];
         $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
         $result = $adapter->query("select * from allcountries where (id not in (select master_country_id
-            from tbl_country) && country_name like '$data%') ", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+            from tbl_country) && country_name like '$data%') ", Adapter::QUERY_MODE_EXECUTE);
 
         // $result = $this->getAllCountryTable()->searchresults($data);
         $view = new ViewModel(array("countries" => $result, "parentname" => $_POST['field']));
@@ -195,7 +207,7 @@ class CountryController extends AppController {
 
         $data = $_POST['value'];
 
-        $result = $adapter->query("select * from tbl_country where country_name like '$data%' ", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+        $result = $adapter->query("select * from tbl_country where country_name like '$data%' ", Adapter::QUERY_MODE_EXECUTE);
 
 
         $view = new ViewModel(array("Results" => $result));
@@ -213,7 +225,7 @@ class CountryController extends AppController {
 
         $sql = "select * from tbl_country where " . $field1 . $field2 . $field3 . "";
         $sql = rtrim($sql, "&&");
-        $results = $adapter->query($sql, \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+        $results = $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
 
         $view = new ViewModel(array("results" => $results));
         $view->setTerminal(true);
@@ -256,7 +268,7 @@ class CountryController extends AppController {
     public function statuschangeallAction() {
         $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
         $sql = "update tbl_country set IsActive=" . $_POST['val'] . " where id IN (" . $_POST['ids'] . ")";
-        $results = $adapter->query($sql, \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+        $results = $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
         if ($results)
             echo "updated all";
         else

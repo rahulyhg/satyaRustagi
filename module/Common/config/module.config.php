@@ -30,11 +30,4 @@ return array(
             'common' => __DIR__ . '/../view'
         ),
     ),
-//    'service_manager' => array(
-//        'factories' => array(
-//            'Common\Mapper\PostMapperInterface' => 'Common\Mapper\Factory\ZendDbSqlMapperFactory',
-//            'Common\Service\PostServiceInterface' => 'Common\Mapper\Factory\PostServiceFactory',
-//            'Zend\Db\Adapter\Adapter' => 'Zend\Db\Adapter\AdapterServiceFactory'
-//        )
-//    )
 );

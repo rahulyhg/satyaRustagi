@@ -2,18 +2,25 @@
 
 namespace Admin\Controller;
 
+use Admin\Service\AdminServiceInterface;
+use Common\Service\CommonServiceInterface;
 use Zend\Authentication\Adapter\DbTable as AuthAdapter;
 use Zend\Authentication\AuthenticationService;
 use Zend\Authentication\Result;
-use Zend\Db\Adapter\Adapter;
-use Zend\Debug\Debug;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\Session\Container;
 use Zend\Session\SessionManager;
-use Zend\Session\Storage\SessionStorage;
 use Zend\View\Model\ViewModel;
 
 class IndexController extends AbstractActionController {
+    
+    protected $commonService;
+    protected $adminService;
+
+    public function __construct(CommonServiceInterface $commonService, AdminServiceInterface $adminService) {
+        $this->commonService = $commonService;
+        $this->adminService=$adminService;
+    }
 
     public function indexAction() {
         $auth = new AuthenticationService();

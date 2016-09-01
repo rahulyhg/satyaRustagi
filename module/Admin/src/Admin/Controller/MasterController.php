@@ -2,25 +2,35 @@
 
 namespace Admin\Controller;
 
-use Zend\View\Model\ViewModel;
+use Admin\Form\DesignationFilter;
+use Admin\Form\DesignationForm;
+use Admin\Form\EducationfieldFilter;
+use Admin\Form\EducationfieldForm;
+use Admin\Form\EducationlevelFilter;
+use Admin\Form\EducationlevelForm;
+use Admin\Form\ProfessionFilter;
+use Admin\Form\ProfessionForm;
+use Admin\Form\UsertypeFilter;
+use Admin\Form\UsertypeForm;
+use Admin\Model\Entity\Designations;
 use Admin\Model\Entity\Educationfields;
 use Admin\Model\Entity\Educationlevels;
 use Admin\Model\Entity\Professions;
-use Admin\Model\Entity\Designations;
 use Admin\Model\Entity\Usertypes;
-use Admin\Form\EducationfieldForm;
-use Admin\Form\EducationlevelForm;
-use Admin\Form\ProfessionForm;
-use Admin\Form\DesignationForm;
-use Admin\Form\UsertypeForm;
-use Admin\Form\EducationfieldFilter;
-use Admin\Form\EducationlevelFilter;
-use Admin\Form\ProfessionFilter;
-use Admin\Form\DesignationFilter;
-use Admin\Form\UsertypeFilter;
+use Admin\Service\AdminServiceInterface;
+use Common\Service\CommonServiceInterface;
+use Zend\Db\Adapter\Adapter;
+use Zend\View\Model\ViewModel;
 
 class MasterController extends AppController
 {
+     protected $commonService;
+    protected $adminService;
+
+    public function __construct(CommonServiceInterface $commonService, AdminServiceInterface $adminService) {
+        $this->commonService = $commonService;
+        $this->adminService=$adminService;
+    }
     public function masterviewAction()
     {
         // echo "fsdgsd";die;
@@ -38,7 +48,7 @@ class MasterController extends AppController
 
             $query = "select * from ".$value."";
 
-            $counts = $adapter->query($query, \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE)->count();
+            $counts = $adapter->query($query, Adapter::QUERY_MODE_EXECUTE)->count();
             // $url = $this->url("admin",array("controller"=>$key,"action"=>"index"));
             $countarray[$key] = $counts;
         }
@@ -47,7 +57,7 @@ class MasterController extends AppController
 
             $query = "select * from ".$value[1]."";
 
-            $counts = $adapter->query($query, \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE)->count();
+            $counts = $adapter->query($query, Adapter::QUERY_MODE_EXECUTE)->count();
             // $url = $this->url("admin",array("controller"=>$key,"action"=>"index"));
             $countarray1[$key] = array($value[0],$counts);
         }
@@ -648,7 +658,7 @@ class MasterController extends AppController
      
 
          $communities=$adapter->query("select * from tbl_communities where parent_id = $id", 
-         \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+         Adapter::QUERY_MODE_EXECUTE);
 
          // foreach ($communities as $comm) {
 
@@ -670,7 +680,7 @@ class MasterController extends AppController
      
 
         $adapter->query("INSERT INTO `tbl_communities`(`category_name`, `parent_id`, `status`)
-         VALUES ('".$_POST['newdir']."','".$_POST['parent_id']."',1)",\Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+         VALUES ('".$_POST['newdir']."','".$_POST['parent_id']."',1)",Adapter::QUERY_MODE_EXECUTE);
 
 
         return $this->redirect()->toRoute('admin', array(
@@ -692,7 +702,7 @@ class MasterController extends AppController
     // print_r($currid);die;
     while($i>0){
 
-        $row =  $adapter->query("select * from tbl_communities where id=".$i."",\Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE)->toArray();
+        $row =  $adapter->query("select * from tbl_communities where id=".$i."",Adapter::QUERY_MODE_EXECUTE)->toArray();
             // print_r($row[0]['parent_id']);die;
            //for testing purpose
             $links[]= '<a href="/rustagi/admin/master/addcomm/'.$row[0]['id'].'">'.$row[0]['category_name'].'</a> > ';

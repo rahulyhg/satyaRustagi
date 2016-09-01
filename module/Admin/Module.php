@@ -52,7 +52,7 @@ use Zend\Mvc\ModuleRouteListener;
 use Zend\Mvc\MvcEvent;
 use Zend\Mvc\Router\RouteMatch;
 
-class Module implements ViewHelperProviderInterface {
+class Module {
 
     protected $whitelist = array(
         'Admin\Controller\Index',
@@ -71,8 +71,6 @@ class Module implements ViewHelperProviderInterface {
         'Application\Controller\Obituary',
         'Application\Controller\Justborn',
         'Common\Controller\Common',
-
-        
     );
 
     public function getAutoloaderConfig() {
@@ -144,27 +142,18 @@ class Module implements ViewHelperProviderInterface {
         if (!in_array($controller, $this->whitelist)) {
 
             if (!$auth->hasIdentity() || !in_array($auth->getIdentity()->role, array('superadmin', 'admin'))) {
-                
+
                 return $target->redirect()->toRoute('admin/login');
             }
         }
-    }
-
-    public function getViewHelperConfig() {
-        return array(
-            'factories' => array(
-                'auth_helper' => function($sm) {
-                    $helper = new AuthHelper;
-                    return $helper;
-                }
-            )
-        );
     }
 
     public function getServiceConfig() {
 
         return array(
             'factories' => array(
+                'Admin\Mapper\AdminMapperInterface' => 'Admin\Mapper\Factory\AdminDbSqlMapperFactory',
+                'Admin\Service\AdminServiceInterface' => 'Admin\Service\Factory\AdminServiceFactory',
                 'Admin\Model\CountryTable' => function($sm) {
 
                     $tableGateway = $sm->get('CountryTableGateway');

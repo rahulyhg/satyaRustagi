@@ -2,14 +2,21 @@
 
 namespace Admin\Controller;
 
-use Zend\View\Model\ViewModel;
-use Zend\View\Model\JsonModel;
-use Admin\Model\Entity\AllPages;
 use Admin\Form\PagesForm;
-use Admin\Form\PagesFilter;
+use Admin\Service\AdminServiceInterface;
+use Common\Service\CommonServiceInterface;
+use Zend\View\Model\JsonModel;
+use Zend\View\Model\ViewModel;
 
 class PagesController extends AppController
 {
+     protected $commonService;
+    protected $adminService;
+
+    public function __construct(CommonServiceInterface $commonService, AdminServiceInterface $adminService) {
+        $this->commonService = $commonService;
+        $this->adminService=$adminService;
+    }
     
     public function indexAction()
     {   

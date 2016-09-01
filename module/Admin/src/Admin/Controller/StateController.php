@@ -2,15 +2,25 @@
 
 namespace Admin\Controller;
 
-use Zend\View\Model\ViewModel;
-use Zend\View\Model\JsonModel;
-use Admin\Model\Entity\States;
-use Admin\Form\StateForm;
 use Admin\Form\StateFilter;
+use Admin\Form\StateForm;
+use Admin\Model\Entity\States;
+use Admin\Service\AdminServiceInterface;
+use Common\Service\CommonServiceInterface;
+use Zend\Db\Adapter\Adapter;
+use Zend\View\Model\JsonModel;
+use Zend\View\Model\ViewModel;
 
 class StateController extends AppController
 {
     protected $data = array();
+     protected $commonService;
+    protected $adminService;
+
+    public function __construct(CommonServiceInterface $commonService, AdminServiceInterface $adminService) {
+        $this->commonService = $commonService;
+        $this->adminService=$adminService;
+    }
     
     public function indexAction()
     {   
@@ -200,7 +210,7 @@ class StateController extends AppController
            $adapter=$this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
            $sql = "select * from tbl_allstates where (id not in (select master_state_id
             from tbl_state) && state_name like '$value%' && master_country_id=$Cid) ";
-           $result=$adapter->query($sql, \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE); 
+           $result=$adapter->query($sql, Adapter::QUERY_MODE_EXECUTE); 
 
         $view = new ViewModel(array("results"=>$result));
         $view->setTerminal(true);
@@ -239,7 +249,7 @@ class StateController extends AppController
     {
         $adapter=$this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
         $sql = "update tbl_state set IsActive=".$_POST['val']." where id IN (".$_POST['ids'].")";
-         $results = $adapter->query($sql, \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE); 
+         $results = $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE); 
          if($results)
             echo "updated all";
         else echo "couldn't update"; 
@@ -282,7 +292,7 @@ class StateController extends AppController
         $countryname = (empty($fieldname = $_POST['fieldname']))?"":" && tbl_state.country_id=".$_POST['fieldname'];
 
         $result=$adapter->query("select * from tbl_state inner join tbl_country on tbl_state.country_id = tbl_country.id
-            where (tbl_state.state_name like '$data%' ".$countryname.")", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE); 
+            where (tbl_state.state_name like '$data%' ".$countryname.")", Adapter::QUERY_MODE_EXECUTE); 
 
 
         $view = new ViewModel(array("Results"=>$result));
@@ -305,7 +315,7 @@ class StateController extends AppController
          where ".$field1.$field2."";         
          
          $sql = rtrim($sql,"&&");
-        $results = $adapter->query($sql, \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE); 
+        $results = $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE); 
 
          $view = new ViewModel(array("results"=>$results));
         $view->setTerminal(true);

@@ -3,6 +3,7 @@
 namespace Common;
 
 use Common\Helper\MyHelper;
+use Zend\Authentication\AuthenticationService;
 
 class Module {
 
@@ -47,6 +48,7 @@ class Module {
             'factories' => array(
                 'Common\Helper\UserSessionHelper' => 'Common\Helper\Factory\UserSessionHelperFactory',
                 'Common\Helper\AuthFrontHelper' => 'Common\Helper\Factory\AuthFrontHelperFactory',
+                'Common\Helper\AuthAdminHelper' => 'Common\Helper\Factory\AuthAdminHelperFactory',
                 'myHelper' => function($sm) {
                     // either create a new instance of your model
                     //$model = new \Application\Model\CountryTable();
@@ -63,6 +65,7 @@ class Module {
             ),
             'aliases' => array(
                 'authUser' => 'Common\Helper\AuthFrontHelper',
+                'authAdmin' => 'Common\Helper\AuthAdminHelper',
                 'getUser' => 'Common\Helper\UserSessionHelper'
             ),
         );
@@ -77,7 +80,11 @@ class Module {
                 'Common\Mapper\CommonMapperInterface' => 'Common\Mapper\Factory\CommonDbSqlMapperFactory',
                 'Common\Service\PostServiceInterface' => 'Common\Service\Factory\PostServiceFactory',
                 'Common\Service\CommonServiceInterface' => 'Common\Service\Factory\CommonServiceFactory',
-                'Zend\Db\Adapter\Adapter' => 'Zend\Db\Adapter\AdapterServiceFactory'
+                'Zend\Db\Adapter\Adapter' => 'Zend\Db\Adapter\AdapterServiceFactory',
+                'Zend\Authentication\AuthenticationService' => function ($serviceManager) {
+                $authenticationServices = new AuthenticationService();
+                return $authenticationServices;
+            },
             ),
             'aliases' => array(
                 'sessionService' => 'Common\SessionServices'

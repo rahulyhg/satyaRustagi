@@ -2,16 +2,25 @@
 
 namespace Admin\Controller;
 
-use Zend\View\Model\ViewModel;
-use Admin\Model\Entity\Newses;
-use Admin\Model\Entity\Newscategories;
-use Admin\Form\NewsForm;
+use Admin\Form\NewscategoryFilter;
 use Admin\Form\NewscategoryForm;
 use Admin\Form\NewsFilter;
-use Admin\Form\NewscategoryFilter;
+use Admin\Form\NewsForm;
+use Admin\Model\Entity\Newscategories;
+use Admin\Model\Entity\Newses;
+use Admin\Service\AdminServiceInterface;
+use Common\Service\CommonServiceInterface;
+use Zend\View\Model\ViewModel;
 
 class NewsController extends AppController
 {
+     protected $commonService;
+    protected $adminService;
+
+    public function __construct(CommonServiceInterface $commonService, AdminServiceInterface $adminService) {
+        $this->commonService = $commonService;
+        $this->adminService=$adminService;
+    }
     
     public function indexnewsAction()
     {   

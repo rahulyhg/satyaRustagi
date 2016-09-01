@@ -2,22 +2,34 @@
 
 namespace Admin\Controller;
 
-use Zend\View\Model\ViewModel;
-use Zend\View\Model\JsonModel;
+use Admin\Form\EducationfieldFilter;
+use Admin\Form\EducationfieldForm;
+use Admin\Form\EducationlevelFilter;
+use Admin\Form\EducationlevelForm;
 use Admin\Model\Entity\Educationfields;
 use Admin\Model\Entity\Educationlevels;
-use Admin\Form\EducationfieldForm;
-use Admin\Form\EducationlevelForm;
-use Admin\Form\EducationfieldFilter;
-use Admin\Form\EducationlevelFilter;
+use Admin\Service\AdminServiceInterface;
+use Common\Service\CommonServiceInterface;
+use Zend\Db\Adapter\Adapter;
+use Zend\View\Model\JsonModel;
+use Zend\View\Model\ViewModel;
 
 class EducationController extends AppController
 {
     protected $data = array();
+     protected $commonService;
+    protected $adminService;
+
+    public function __construct(CommonServiceInterface $commonService, AdminServiceInterface $adminService) {
+        $this->commonService = $commonService;
+        $this->adminService=$adminService;
+    }
     
     public function indexAction()
     {   
-         $educations = $this->getEducationfieldTable()->fetchAll($this->data);
+         //$educations = $this->getEducationfieldTable()->fetchAll($this->data);
+        $educations=$this->adminService->getAmmirById(39);
+         \Zend\Debug\Debug::dump($educations);
             //echo   "<pre>";
           //print_r($religions);die;
          // print_r($cities);die;
@@ -183,7 +195,7 @@ class EducationController extends AppController
     public function statuschangeallAction() {
         $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
         $sql = "update tbl_education_field set IsActive=" . $_POST['val'] . " where id IN (" . $_POST['ids'] . ")";
-        $results = $adapter->query($sql, \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+        $results = $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
         if ($results)
             echo "updated all";
         else
@@ -211,7 +223,7 @@ class EducationController extends AppController
         
         $sql = "select * from tbl_education_field where " . $field1 . "";
        // $sql = rtrim($sql, "&&");
-        $results = $adapter->query($sql, \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+        $results = $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
 
         $view = new ViewModel(array("results" => $results));
         $view->setTerminal(true);
@@ -228,7 +240,7 @@ class EducationController extends AppController
 //        echo  "<pre>";
 //        print_r($data);die;
 
-        $result = $adapter->query("select * from tbl_education_field where education_field like '$data%' ", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+        $result = $adapter->query("select * from tbl_education_field where education_field like '$data%' ", Adapter::QUERY_MODE_EXECUTE);
 
 
         $view = new ViewModel(array("Results" => $result));
@@ -408,7 +420,7 @@ class EducationController extends AppController
     public function statuschangealleduLevelAction() {
         $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
         $sql = "update tbl_education_level set IsActive=" . $_POST['val'] . " where id IN (" . $_POST['ids'] . ")";
-        $results = $adapter->query($sql, \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+        $results = $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
         if ($results)
             echo "updated all";
         else
@@ -436,7 +448,7 @@ class EducationController extends AppController
         
         $sql = "select * from tbl_education_level where " . $field1 . "";
        // $sql = rtrim($sql, "&&");
-        $results = $adapter->query($sql, \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+        $results = $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
 
         $view = new ViewModel(array("results" => $results));
         $view->setTerminal(true);
@@ -453,7 +465,7 @@ class EducationController extends AppController
 //       echo  "<pre>";
 //       print_r($data);die;
 
-        $result = $adapter->query("select * from tbl_education_level where education_level like '$data%' ", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+        $result = $adapter->query("select * from tbl_education_level where education_level like '$data%' ", Adapter::QUERY_MODE_EXECUTE);
 
 
         $view = new ViewModel(array("Results" => $result));

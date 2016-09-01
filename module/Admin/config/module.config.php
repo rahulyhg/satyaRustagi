@@ -4,25 +4,45 @@ use Zend\Authentication\AuthenticationService;
 
 return array(
     'controllers' => array(
-        'invokables' => array(
-            'Admin\Controller\Index' => 'Admin\Controller\IndexController',
-            'Admin\Controller\Admin' => 'Admin\Controller\AdminController',
-            'Admin\Controller\Country' => 'Admin\Controller\CountryController',
-            'Admin\Controller\State' => 'Admin\Controller\StateController',
-            'Admin\Controller\City' => 'Admin\Controller\CityController',
-            'Admin\Controller\Religion' => 'Admin\Controller\ReligionController',
-            'Admin\Controller\Gothra' => 'Admin\Controller\GothraController',
-            'Admin\Controller\Starsign' => 'Admin\Controller\StarsignController',
-            'Admin\Controller\Zodiacsign' => 'Admin\Controller\ZodiacsignController',
-            'Admin\Controller\Master' => 'Admin\Controller\MasterController',
-            'Admin\Controller\News' => 'Admin\Controller\NewsController',
-            'Admin\Controller\Events' => 'Admin\Controller\EventsController',
-            'Admin\Controller\Matrimonyuser' => 'Admin\Controller\MatrimonyuserController',
-            'Admin\Controller\Pages' => 'Admin\Controller\PagesController',
-            'Admin\Controller\Homepage' => 'Admin\Controller\HomepageController',
-            'Admin\Controller\Education' => 'Admin\Controller\EducationController',
-            'Admin\Controller\Profession' => 'Admin\Controller\ProfessionController',
-            'Admin\Controller\Designation' => 'Admin\Controller\DesignationController',
+//        'invokables' => array(
+//            'Admin\Controller\Index' => 'Admin\Controller\IndexController',
+//            'Admin\Controller\Admin' => 'Admin\Controller\AdminController',
+//            'Admin\Controller\Country' => 'Admin\Controller\CountryController',
+//            'Admin\Controller\State' => 'Admin\Controller\StateController',
+//            'Admin\Controller\City' => 'Admin\Controller\CityController',
+//            'Admin\Controller\Religion' => 'Admin\Controller\ReligionController',
+//            'Admin\Controller\Gothra' => 'Admin\Controller\GothraController',
+//            'Admin\Controller\Starsign' => 'Admin\Controller\StarsignController',
+//            'Admin\Controller\Zodiacsign' => 'Admin\Controller\ZodiacsignController',
+//            'Admin\Controller\Master' => 'Admin\Controller\MasterController',
+//            'Admin\Controller\News' => 'Admin\Controller\NewsController',
+//            'Admin\Controller\Events' => 'Admin\Controller\EventsController',
+//            'Admin\Controller\Matrimonyuser' => 'Admin\Controller\MatrimonyuserController',
+//            'Admin\Controller\Pages' => 'Admin\Controller\PagesController',
+//            'Admin\Controller\Homepage' => 'Admin\Controller\HomepageController',
+//            'Admin\Controller\Education' => 'Admin\Controller\EducationController',
+//            'Admin\Controller\Profession' => 'Admin\Controller\ProfessionController',
+//            'Admin\Controller\Designation' => 'Admin\Controller\DesignationController',
+//        ),
+        'factories' => array(
+            'Admin\Controller\Index' => 'Admin\Controller\Factory\IndexControllerFactory',
+            'Admin\Controller\Admin' => 'Admin\Controller\Factory\AdminControllerFactory',
+            'Admin\Controller\Country' => 'Admin\Controller\Factory\CountryControllerFactory',
+            'Admin\Controller\State' => 'Admin\Controller\Factory\StateControllerFactory',
+            'Admin\Controller\City' => 'Admin\Controller\Factory\CityControllerFactory',
+            'Admin\Controller\Religion' => 'Admin\Controller\Factory\ReligionControllerFactory',
+            'Admin\Controller\Gothra' => 'Admin\Controller\Factory\GothraControllerFactory',
+            'Admin\Controller\Starsign' => 'Admin\Controller\Factory\StarsignControllerFactory',
+            'Admin\Controller\Zodiacsign' => 'Admin\Controller\Factory\ZodiacsignControllerFactory',
+            'Admin\Controller\Master' => 'Admin\Controller\Factory\MasterControllerFactory',
+            'Admin\Controller\News' => 'Admin\Controller\Factory\NewsControllerFactory',
+            'Admin\Controller\Events' => 'Admin\Controller\Factory\EventsControllerFactory',
+            'Admin\Controller\Matrimonyuser' => 'Admin\Controller\Factory\MatrimonyuserControllerFactory',
+            'Admin\Controller\Pages' => 'Admin\Controller\Factory\PagesControllerFactory',
+            'Admin\Controller\Homepage' => 'Admin\Controller\Factory\HomepageControllerFactory',
+            'Admin\Controller\Education' => 'Admin\Controller\Factory\EducationControllerFactory',
+            'Admin\Controller\Profession' => 'Admin\Controller\Factory\ProfessionControllerFactory',
+            'Admin\Controller\Designation' => 'Admin\Controller\Factory\DesignationControllerFactory',
         )
     ),
     'router' => array(
@@ -316,20 +336,11 @@ return array(
         'template_path_stack' => array(
             'admin' => __DIR__ . '/../view'
         ),
-       
     ),
     'admin_layout' => array(
         'use_admin_layout' => true,
         'admin_layout_template' => 'layout/adminLayout',
         'admin_login_layout_template' => 'layout/loginLayout',
-        
     ),
-    'service_manager' => array(
-        'factories' => array(
-            'Zend\Authentication\AuthenticationService' => function ($serviceManager) {
-                $authenticationServices = new AuthenticationService();
-                return $authenticationServices;
-            }
-        ),
-    ),
+   
 );

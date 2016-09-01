@@ -2,17 +2,23 @@
 
 namespace Admin\Controller;
 
-use Zend\Mvc\Controller\AbstractActionController;
-use Zend\View\Model\ViewModel;
-use Zend\View\Model\JsonModel;
-use Zend\Session\Container;
+use Admin\Service\AdminServiceInterface;
+use Common\Service\CommonServiceInterface;
 use Zend\Authentication\AuthenticationService;
-use Zend\Mail;
-use Zend\Mime;
-use Zend\Mime\Part as MimePart;
-use Zend\Mime\Message as MimeMessage;
+use Zend\Db\Adapter\Adapter;
+use Zend\Session\Container;
+use Zend\View\Model\JsonModel;
+use Zend\View\Model\ViewModel;
 
 class AdminController extends AppController {
+    
+    protected $commonService;
+    protected $adminService;
+
+    public function __construct(CommonServiceInterface $commonService, AdminServiceInterface $adminService) {
+        $this->commonService = $commonService;
+        $this->adminService=$adminService;
+    }
 
     public function indexAction() {
         
@@ -42,7 +48,7 @@ class AdminController extends AppController {
         $TopNewUsers = $adapter->query("select tui.*,tbl_user.*,tbl_family_info.*,tbl_user.is_active as userstatus
          from tbl_user_info tui LEFT JOIN tbl_user on tui.user_id = tbl_user.id 
          LEFT JOIN tbl_family_info on tui.user_id = tbl_family_info.user_id 
-         ORDER BY tui.user_id DESC limit 0, 10 ", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+         ORDER BY tui.user_id DESC limit 0, 10 ", Adapter::QUERY_MODE_EXECUTE);
 
         return new ViewModel(array("Members" => $members, "TopNewUsers" => $TopNewUsers));
     }
@@ -65,7 +71,7 @@ class AdminController extends AppController {
 
 		WHERE tbl_admin_login.username='$username'  AND tbl_admin_login.password='$login_password' ";
 
-            $user = $adapter->query($QUERY, \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+            $user = $adapter->query($QUERY, Adapter::QUERY_MODE_EXECUTE);
 
 
             if ($user->count()) {
@@ -122,7 +128,7 @@ class AdminController extends AppController {
     public function sendotpAction() {
         $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
 
-        $chkuser = $adapter->query("select * from `tbl_admin_login` where mobile_no=" . $_POST['number'] . "", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+        $chkuser = $adapter->query("select * from `tbl_admin_login` where mobile_no=" . $_POST['number'] . "", Adapter::QUERY_MODE_EXECUTE);
 
         foreach ($chkuser as $user) {
             $userid = $user->id;
@@ -136,9 +142,9 @@ class AdminController extends AppController {
             $time = date('H:i');
 
             $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
-            $adapter->query(" insert into `tbl_mobile`(`user_id`, `mobile`, `time`, `code`) VALUES ($userid,$number,'" . $time . "',$code)", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+            $adapter->query(" insert into `tbl_mobile`(`user_id`, `mobile`, `time`, `code`) VALUES ($userid,$number,'" . $time . "',$code)", Adapter::QUERY_MODE_EXECUTE);
 
-            $arrdef = $adapter->query("select * from tbl_sms_template where msg_sku='forgot_password'", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+            $arrdef = $adapter->query("select * from tbl_sms_template where msg_sku='forgot_password'", Adapter::QUERY_MODE_EXECUTE);
 
             // $link="http://".$_SERVER['HTTP_HOST']. $_SERVER['PHP_SELF']."login/index/resetpassword?id=$token"
             // $msg_query=mysqli_fetch_array($res);
@@ -180,7 +186,7 @@ class AdminController extends AppController {
     public function confirmotpAction() {
         $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
         $arrdef = $adapter->query("select * from tbl_mobile where (code=" . $_POST['otp'] . " && mobile=" . $_POST['number'] . " &&
-        time='" . $_POST['time'] . "')", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+        time='" . $_POST['time'] . "')", Adapter::QUERY_MODE_EXECUTE);
         $size = $arrdef->count();
 
         foreach ($arrdef as $user) {
@@ -218,7 +224,7 @@ class AdminController extends AppController {
 
             $pass = md5($_POST["pass"]);
 
-            $arrdef = $adapter->query("update tbl_admin_login set password='" . $pass . "' where (id='" . $_POST['userid'] . "')", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+            $arrdef = $adapter->query("update tbl_admin_login set password='" . $pass . "' where (id='" . $_POST['userid'] . "')", Adapter::QUERY_MODE_EXECUTE);
 
             $response->setContent(json_encode(array("resp" => 1, "success" => "password changed successfully please login to continue")));
         }

@@ -2,9 +2,11 @@
 
 namespace Admin\Controller;
 
-use Zend\View\Model\ViewModel;
+use Admin\Service\AdminServiceInterface;
+use Common\Service\CommonServiceInterface;
+use Zend\Db\Adapter\Adapter;
 use Zend\View\Model\JsonModel;
-use Admin\Model\Entity\Userinfos;
+use Zend\View\Model\ViewModel;
 // use Admin\Model\Entity\Newscategories;
 // use Admin\Form\NewsForm;
 // use Admin\Form\NewscategoryForm;
@@ -13,6 +15,13 @@ use Admin\Model\Entity\Userinfos;
 
 class MatrimonyuserController extends AppController
 {
+     protected $commonService;
+    protected $adminService;
+
+    public function __construct(CommonServiceInterface $commonService, AdminServiceInterface $adminService) {
+        $this->commonService = $commonService;
+        $this->adminService=$adminService;
+    }
     
     public function matrimonyuserindexAction()
     {   
@@ -41,7 +50,7 @@ class MatrimonyuserController extends AppController
         tui.gothra_gothram=tbl_gothra_gothram.id LEFT JOIN tbl_education_level on 
         tui.education_level=tbl_education_level.id LEFT JOIN tbl_designation on 
         tui.designation=tbl_designation.id
-        where tui.user_type_id='2' ORDER BY tui.id DESC", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+        where tui.user_type_id='2' ORDER BY tui.id DESC", Adapter::QUERY_MODE_EXECUTE);
 
         return new ViewModel(array(
             'userinfos' => $userinfos));
@@ -85,9 +94,9 @@ class MatrimonyuserController extends AppController
         tui.education_level=tbl_education_level.id LEFT JOIN tbl_designation on 
         tui.designation=tbl_designation.id
         LEFT JOIN tbl_rustagi_branches on tui.branch_ids=tbl_rustagi_branches.branch_id
-         ORDER BY tui.id DESC", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+         ORDER BY tui.id DESC", Adapter::QUERY_MODE_EXECUTE);
 
-        $communities = $adapter->query("select * from tbl_communities where parent_id=1", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE)->toArray();
+        $communities = $adapter->query("select * from tbl_communities where parent_id=1", Adapter::QUERY_MODE_EXECUTE)->toArray();
         // foreach ($communities as $comms) {
         //    $commtypes[$comms->id] = $comms->category_name;
         // }
@@ -137,7 +146,7 @@ class MatrimonyuserController extends AppController
         where tbl_user_roles.".$_POST['id']."='1'
          ORDER BY tui.id DESC";
 
-         $userinfos = $adapter->query($sqlsingle, \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+         $userinfos = $adapter->query($sqlsingle, Adapter::QUERY_MODE_EXECUTE);
             
 
              $usertype = $this->getUsertypeTable()->fetchAllActive();
@@ -145,7 +154,7 @@ class MatrimonyuserController extends AppController
            $usertypes[$utypes->id] = $utypes->user_type;
         }
 
-        $communities = $adapter->query("select * from tbl_communities where parent_id=1", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE)->toArray();
+        $communities = $adapter->query("select * from tbl_communities where parent_id=1", Adapter::QUERY_MODE_EXECUTE)->toArray();
 
              $view = new ViewModel(array(
             'userinfos' => $userinfos,"usertypes"=>$usertypes,"commtypes"=>$communities));
@@ -173,10 +182,10 @@ class MatrimonyuserController extends AppController
         $adapter=$this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
 
             $result1 = $adapter->query("update tbl_user_info set user_type_id=".$_POST['usertype']."
-             where user_id=".$_POST['uid']."", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+             where user_id=".$_POST['uid']."", Adapter::QUERY_MODE_EXECUTE);
 
             $result2 = $adapter->query("update tbl_user set user_type_id=".$_POST['usertype']."
-             where id=".$_POST['uid']."", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+             where id=".$_POST['uid']."", Adapter::QUERY_MODE_EXECUTE);
          
         if($result1 && $result2){
             $respArr = array('status'=>"Updated SuccessFully");
@@ -200,19 +209,19 @@ class MatrimonyuserController extends AppController
 
         if($_POST['cid']==0){
             $sql = "update tbl_user_info set comm_mem_id=".$catid.", financial_year='0000-00-00' ,comm_mem_status='0'  where user_id=".$_POST['user_id']."";
-            $adapter->query($sql, \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+            $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
 
-            $mngmnt = $adapter->query("select * from tbl_community_mngmnt where ( agent_id=".$_POST['user_id']." && status=1)", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE)->toArray();
+            $mngmnt = $adapter->query("select * from tbl_community_mngmnt where ( agent_id=".$_POST['user_id']." && status=1)", Adapter::QUERY_MODE_EXECUTE)->toArray();
 
              if(count($mngmnt)>0){
 
-              $adapter->query("update tbl_community_mngmnt set status='0'  where (agent_id=".$_POST['user_id'].")", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+              $adapter->query("update tbl_community_mngmnt set status='0'  where (agent_id=".$_POST['user_id'].")", Adapter::QUERY_MODE_EXECUTE);
               // $adapter->query("update tbl_user_info set comm_mem_id='0',financial_year='0000-00-00',comm_mem_status='0'  where (user_id=".$_POST['user_id'].")", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
 
         
             foreach ($mngmnt as $key => $value) {
 
-                $adapter->query("update tbl_user_info set comm_mem_id='0',financial_year='0000-00-00',comm_mem_id='0'  where (user_id=".$value['sub_agent_id'].")", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+                $adapter->query("update tbl_user_info set comm_mem_id='0',financial_year='0000-00-00',comm_mem_id='0'  where (user_id=".$value['sub_agent_id'].")", Adapter::QUERY_MODE_EXECUTE);
 
                 // echo $value['sub_agent_id'];
                 }
@@ -223,8 +232,8 @@ class MatrimonyuserController extends AppController
             exit();
         }
         else {
-                $communities = $adapter->query("select * from tbl_communities where id=".$_POST['cid']."", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE)->toArray();
-                $SubComm = $adapter->query("select * from tbl_communities where parent_id=".$communities[0]['id']."", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE)->toArray();
+                $communities = $adapter->query("select * from tbl_communities where id=".$_POST['cid']."", Adapter::QUERY_MODE_EXECUTE)->toArray();
+                $SubComm = $adapter->query("select * from tbl_communities where parent_id=".$communities[0]['id']."", Adapter::QUERY_MODE_EXECUTE)->toArray();
                 
                 $category = array($communities[0],$SubComm);
             }
@@ -243,11 +252,11 @@ class MatrimonyuserController extends AppController
 
         $adapter=$this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
 
-        $parent = $adapter->query("select * from tbl_communities where id=".$_POST['catid']."", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE)->toArray();
+        $parent = $adapter->query("select * from tbl_communities where id=".$_POST['catid']."", Adapter::QUERY_MODE_EXECUTE)->toArray();
 
-        $LoneParent = $adapter->query("select * from tbl_communities where id=".$parent[0]['parent_id']."", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE)->toArray();
+        $LoneParent = $adapter->query("select * from tbl_communities where id=".$parent[0]['parent_id']."", Adapter::QUERY_MODE_EXECUTE)->toArray();
 
-        $Financial = $adapter->query("select financial_year,comm_mem_id from tbl_user_info where user_id=".$_POST['user_id']."", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE)->toArray();
+        $Financial = $adapter->query("select financial_year,comm_mem_id from tbl_user_info where user_id=".$_POST['user_id']."", Adapter::QUERY_MODE_EXECUTE)->toArray();
             $today = date("Y-m-d");
 
 
@@ -263,7 +272,7 @@ class MatrimonyuserController extends AppController
             if($Financial[0]['financial_year'] == '0000-00-00'){
 
                 $result = $adapter->query("update tbl_user_info set comm_mem_id='".$_POST['catid']."', financial_year='".$today."' ,comm_mem_status=1
-                    where user_id='".$_POST['user_id']."'", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+                    where user_id='".$_POST['user_id']."'", Adapter::QUERY_MODE_EXECUTE);
                 if($result)
                     $respArr = array("status"=>2,"Content"=>"Updated SuccessFully");
 
@@ -281,12 +290,12 @@ class MatrimonyuserController extends AppController
         }       
         else {
 
-            $isHead = $adapter->query("select comm_mem_status from tbl_user_info where user_id=".$subagentid."", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE)->toArray();
+            $isHead = $adapter->query("select comm_mem_status from tbl_user_info where user_id=".$subagentid."", Adapter::QUERY_MODE_EXECUTE)->toArray();
 
 
             if($isHead[0]['comm_mem_status']==0){
 
-            $HeadCategoryName = $adapter->query("select * from tbl_communities where id=".$parent[0]['parent_id']."", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE)->toArray();
+            $HeadCategoryName = $adapter->query("select * from tbl_communities where id=".$parent[0]['parent_id']."", Adapter::QUERY_MODE_EXECUTE)->toArray();
 // for testing purpose
 //            $action = $this->getRequest()->getUri()->getScheme() . '://' . $this->getRequest()->getUri()->getHost()."/rustagi/admin/matrimonyuser/assignuser";
 //for Live Purpose
@@ -296,7 +305,7 @@ class MatrimonyuserController extends AppController
 
             $result = $adapter->query("select tui.user_id,tui.comm_mem_id,tui.financial_year,tui.full_name,tbl_user.* from tbl_user_info as tui inner join tbl_user
                 on tui.user_id=tbl_user.id
-             where (tui.comm_mem_id='".$parent[0]['parent_id']."' && tui.user_id NOT IN($subagentid))", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE)->toArray();
+             where (tui.comm_mem_id='".$parent[0]['parent_id']."' && tui.user_id NOT IN($subagentid))", Adapter::QUERY_MODE_EXECUTE)->toArray();
 
             if(count($result)){
 
@@ -358,7 +367,7 @@ class MatrimonyuserController extends AppController
                     if($days >= 365)
                     {
                          $result = $adapter->query("update tbl_user_info set comm_mem_id='".$catid."', financial_year='".$today."' 
-                    where user_id='".$uid."'", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+                    where user_id='".$uid."'", Adapter::QUERY_MODE_EXECUTE);
                         if($result)
                            return array("status"=>3,"Content"=>"Financial Year Renewed from today");
                         else return array("status"=>3,"Content"=>"Couldn't Update");
@@ -380,18 +389,18 @@ class MatrimonyuserController extends AppController
         $adapter=$this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
 
        $result = $adapter->query("select * from tbl_community_mngmnt 
-        where (agent_id=".$_POST['Agent']." && sub_agent_id=".$_POST['subagent']." && status=1)", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+        where (agent_id=".$_POST['Agent']." && sub_agent_id=".$_POST['subagent']." && status=1)", Adapter::QUERY_MODE_EXECUTE);
 
         if(count($result)==1){
             $msgid = 102;
         }
         else {
 
-            $adapter->query("update tbl_user_info set comm_mem_id='".$_POST['subagentcatid']."',financial_year='".date("Y-m-d")."',comm_mem_status='1'  where user_id=".$_POST['subagent']."", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+            $adapter->query("update tbl_user_info set comm_mem_id='".$_POST['subagentcatid']."',financial_year='".date("Y-m-d")."',comm_mem_status='1'  where user_id=".$_POST['subagent']."", Adapter::QUERY_MODE_EXECUTE);
 
 
              $result = $adapter->query("INSERT INTO `tbl_community_mngmnt`(`agent_id`, `sub_agent_id`, `status`)
-                  VALUES (".$_POST['Agent'].",".$_POST['subagent'].",1)", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+                  VALUES (".$_POST['Agent'].",".$_POST['subagent'].",1)", Adapter::QUERY_MODE_EXECUTE);
                  if($result){
                         $msgid = 100;
                     }
@@ -412,18 +421,18 @@ class MatrimonyuserController extends AppController
     {   
         $adapter=$this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
 
-        $subagent = $adapter->query("select * from tbl_community_mngmnt where (sub_agent_id=".$_POST['sub_id']." && status=1)", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE)->toArray();
+        $subagent = $adapter->query("select * from tbl_community_mngmnt where (sub_agent_id=".$_POST['sub_id']." && status=1)", Adapter::QUERY_MODE_EXECUTE)->toArray();
 
         $Agentdetails = $adapter->query("select tui.full_name,tui.comm_mem_id,tui.comm_mem_id,tui.profile_photo,tbl_communities.*,tbl_user.* from tbl_user_info as tui 
           inner join tbl_communities on tui.comm_mem_id = tbl_communities.id   
           inner join tbl_user on tui.user_id = tbl_user.id   
-        where tui.user_id=".$subagent[0]['agent_id']."", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE)->toArray();
+        where tui.user_id=".$subagent[0]['agent_id']."", Adapter::QUERY_MODE_EXECUTE)->toArray();
 
             $Agentdetails[0]['user_id'] = $subagent[0]['agent_id'];
             $Agentdetails[0]['subagentid'] = $subagent[0]['sub_agent_id'];
             $Agentdetails[0]['subagentname'] = $_POST['subname'];
 
-        $communities = $adapter->query("select * from tbl_communities where parent_id=1", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE)->toArray();
+        $communities = $adapter->query("select * from tbl_communities where parent_id=1", Adapter::QUERY_MODE_EXECUTE)->toArray();
 
 
         $view = new ViewModel(array('Agentdetails' => $Agentdetails[0],'communities' => $communities ));
@@ -440,9 +449,9 @@ class MatrimonyuserController extends AppController
         $Agentdetails = $adapter->query("select tui.full_name,tui.user_id as uid,tui.comm_mem_id,tui.comm_mem_id,tui.profile_photo,tbl_communities.*,tbl_user.* from tbl_user_info as tui 
           inner join tbl_communities on tui.comm_mem_id = tbl_communities.id   
           inner join tbl_user on tui.user_id = tbl_user.id   
-        where tui.user_id=".$_POST['sub_id']."", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE)->toArray();
+        where tui.user_id=".$_POST['sub_id']."", Adapter::QUERY_MODE_EXECUTE)->toArray();
 
-        $subagent = $adapter->query("select category_name,Head from tbl_communities where (id=".$Agentdetails[0]['parent_id']." && Head=2)", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE)->toArray();
+        $subagent = $adapter->query("select category_name,Head from tbl_communities where (id=".$Agentdetails[0]['parent_id']." && Head=2)", Adapter::QUERY_MODE_EXECUTE)->toArray();
 
 
         $view = new ViewModel(array('Agentdetails' => $Agentdetails[0],'subagent' => $subagent[0]));
@@ -462,11 +471,11 @@ class MatrimonyuserController extends AppController
 
         // $mngmnt = $adapter->query("delete from tbl_community_mngmnt where ( agent_id=".$_POST['agent_id']." && sub_agent_id=".$_POST['sub_agent_id'].")", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
         if($_POST['Head']!=2){
-            $mngmnt = $adapter->query("update tbl_community_mngmnt set status=0 where ( agent_id=".$_POST['agent_id']." && sub_agent_id=".$_POST['sub_agent_id'].")", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+            $mngmnt = $adapter->query("update tbl_community_mngmnt set status=0 where ( agent_id=".$_POST['agent_id']." && sub_agent_id=".$_POST['sub_agent_id'].")", Adapter::QUERY_MODE_EXECUTE);
         }
         else $mngmnt = true;
         
-        $userinfo = $adapter->query("update tbl_user_info set comm_mem_id='0',financial_year='0000-00-00',comm_mem_status='0'  where (user_id=".$_POST['sub_agent_id'].")", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+        $userinfo = $adapter->query("update tbl_user_info set comm_mem_id='0',financial_year='0000-00-00',comm_mem_status='0'  where (user_id=".$_POST['sub_agent_id'].")", Adapter::QUERY_MODE_EXECUTE);
 
         if($mngmnt && $userinfo){
             $resp = array("Status"=>1,"msg"=>"Unassigned SuccessFully");
@@ -482,20 +491,20 @@ class MatrimonyuserController extends AppController
     {
          $adapter=$this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
 
-        $mngmnt = $adapter->query("select * from tbl_community_mngmnt where ( agent_id=".$_POST['user_id']." && status=1)", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE)->toArray();
+        $mngmnt = $adapter->query("select * from tbl_community_mngmnt where ( agent_id=".$_POST['user_id']." && status=1)", Adapter::QUERY_MODE_EXECUTE)->toArray();
         
-        $adapter->query("update tbl_user_info set comm_mem_id='0',financial_year='0000-00-00',comm_mem_status='0'  where (user_id=".$_POST['user_id'].")", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+        $adapter->query("update tbl_user_info set comm_mem_id='0',financial_year='0000-00-00',comm_mem_status='0'  where (user_id=".$_POST['user_id'].")", Adapter::QUERY_MODE_EXECUTE);
 
 
         if(count($mngmnt)>0){
 
-              $adapter->query("update tbl_community_mngmnt set status='0'  where (agent_id=".$_POST['user_id'].")", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+              $adapter->query("update tbl_community_mngmnt set status='0'  where (agent_id=".$_POST['user_id'].")", Adapter::QUERY_MODE_EXECUTE);
               // $adapter->query("update tbl_user_info set comm_mem_id='0',financial_year='0000-00-00',comm_mem_status='0'  where (user_id=".$_POST['user_id'].")", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
 
         
             foreach ($mngmnt as $key => $value) {
 
-                $adapter->query("update tbl_user_info set comm_mem_id='0',financial_year='0000-00-00',comm_mem_status='0'  where (user_id=".$value['sub_agent_id'].")", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+                $adapter->query("update tbl_user_info set comm_mem_id='0',financial_year='0000-00-00',comm_mem_status='0'  where (user_id=".$value['sub_agent_id'].")", Adapter::QUERY_MODE_EXECUTE);
 
                 // echo $value['sub_agent_id'];
             }
@@ -531,7 +540,7 @@ class MatrimonyuserController extends AppController
 
             $userinfo = $adapter->query("select tui.user_id,tui.comm_mem_id,tui.comm_mem_status,tbl_user_roles.* from tbl_user_info as tui 
                 LEFT JOIN tbl_user_roles on tui.user_id=tbl_user_roles.user_id
-                where tui.user_id='".$_POST['user_id']."'", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE)->toArray();
+                where tui.user_id='".$_POST['user_id']."'", Adapter::QUERY_MODE_EXECUTE)->toArray();
             
             if($userinfo[0]['IsExecutive'] ==1 && $_POST['IsExecutive'] == ""){
                 if($userinfo[0]['comm_mem_id']>0 && $userinfo[0]['comm_mem_status']==1){
@@ -577,7 +586,7 @@ class MatrimonyuserController extends AppController
             }
 
 
-                $list = $adapter->query($sql,\Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE)->toArray();
+                $list = $adapter->query($sql,Adapter::QUERY_MODE_EXECUTE)->toArray();
                 $output[] = '<table  width="100%" style="border:none !important;">
                             <tbody>';
              
@@ -613,7 +622,7 @@ class MatrimonyuserController extends AppController
             // $response->getHeaders()->addHeaderLine( 'Content-Type', 'application/json' );
                 $sql = "insert into ".$_POST['table']." (".$_POST['fieldname'].",IsActive,created_date,modified_date,modified_by) values('".$_POST['value']."',1,'$date','$date',1)";
                
-               $result = $adapter->query($sql,\Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+               $result = $adapter->query($sql,Adapter::QUERY_MODE_EXECUTE);
 
                $insertid = $adapter->getDriver()->getLastGeneratedValue();
 
@@ -628,7 +637,7 @@ class MatrimonyuserController extends AppController
                 
 
 
-               $updateuser = $adapter->query($upsql,\Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+               $updateuser = $adapter->query($upsql,Adapter::QUERY_MODE_EXECUTE);
                 
                if($updateuser)
                   echo "Updated SuccessFully";

@@ -2,15 +2,25 @@
 
 namespace Admin\Controller;
 
-use Zend\View\Model\ViewModel;
-use Zend\View\Model\JsonModel;
-use Admin\Model\Entity\Religions;
-use Admin\Form\ReligionForm;
 use Admin\Form\ReligionFilter;
+use Admin\Form\ReligionForm;
+use Admin\Model\Entity\Religions;
+use Admin\Service\AdminServiceInterface;
+use Common\Service\CommonServiceInterface;
+use Zend\Db\Adapter\Adapter;
+use Zend\View\Model\JsonModel;
+use Zend\View\Model\ViewModel;
 
 class ReligionController extends AppController
 {
     protected $data = array();
+     protected $commonService;
+    protected $adminService;
+
+    public function __construct(CommonServiceInterface $commonService, AdminServiceInterface $adminService) {
+        $this->commonService = $commonService;
+        $this->adminService=$adminService;
+    }
     
     public function indexAction()
     {   
@@ -180,7 +190,7 @@ class ReligionController extends AppController
     public function statuschangeallAction() {
         $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
         $sql = "update tbl_religion set IsActive=" . $_POST['val'] . " where id IN (" . $_POST['ids'] . ")";
-        $results = $adapter->query($sql, \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+        $results = $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
         if ($results)
             echo "updated all";
         else
@@ -208,7 +218,7 @@ class ReligionController extends AppController
         
         $sql = "select * from tbl_religion where " . $field1 . "";
        // $sql = rtrim($sql, "&&");
-        $results = $adapter->query($sql, \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+        $results = $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
 
         $view = new ViewModel(array("results" => $results));
         $view->setTerminal(true);
@@ -225,7 +235,7 @@ class ReligionController extends AppController
 //        echo  "<pre>";
 //        print_r($data);die;
 
-        $result = $adapter->query("select * from tbl_religion where religion_name like '$data%' ", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+        $result = $adapter->query("select * from tbl_religion where religion_name like '$data%' ", Adapter::QUERY_MODE_EXECUTE);
 
 
         $view = new ViewModel(array("Results" => $result));

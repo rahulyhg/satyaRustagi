@@ -2,15 +2,25 @@
 
 namespace Admin\Controller;
 
-use Zend\View\Model\ViewModel;
-use Zend\View\Model\JsonModel;
-use Admin\Model\Entity\Cities;
-use Admin\Form\CityForm;
 use Admin\Form\CityFilter;
+use Admin\Form\CityForm;
+use Admin\Model\Entity\Cities;
+use Admin\Service\AdminServiceInterface;
+use Common\Service\CommonServiceInterface;
+use Zend\Db\Adapter\Adapter;
+use Zend\View\Model\JsonModel;
+use Zend\View\Model\ViewModel;
 
 class CityController extends AppController
 {
     protected $data = array();
+     protected $commonService;
+    protected $adminService;
+
+    public function __construct(CommonServiceInterface $commonService, AdminServiceInterface $adminService) {
+        $this->commonService = $commonService;
+        $this->adminService=$adminService;
+    }
     
     public function indexAction()
     {   
@@ -190,7 +200,7 @@ class CityController extends AppController
     public function statuschangeallAction() {
         $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
         $sql = "update tbl_city set IsActive=" . $_POST['val'] . " where id IN (" . $_POST['ids'] . ")";
-        $results = $adapter->query($sql, \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+        $results = $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
         if ($results)
             echo "updated all";
         else
