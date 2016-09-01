@@ -27,9 +27,9 @@ class EducationController extends AppController
     
     public function indexAction()
     {   
-         //$educations = $this->getEducationfieldTable()->fetchAll($this->data);
-        $educations=$this->adminService->getAmmirById(39);
-         \Zend\Debug\Debug::dump($educations);
+         $educations = $this->adminService->getEducationFieldList();
+         //\Zend\Debug\Debug::dump($educations);
+         //exit;
             //echo   "<pre>";
           //print_r($religions);die;
          // print_r($cities);die;
@@ -176,12 +176,20 @@ class EducationController extends AppController
     }
     
     public function changestatusAction() {
+        
+//        echo   "<pre>";
+//        print_r('hello');exit;
+        $request=$this->getRequest();
+//print_r($request->getPost());
+//exit;
+        
+       $result= $this->adminService->changeStatus('tbl_education_field', $request->getPost('id'), $request->getPost());
 
-        $data = (object) $_POST;
-        $return = $this->getEducationfieldTable()->updatestatus($data);
-        // print_r($return);
-        return new JsonModel($return);
-        exit();
+//        $data = (object) $_POST;
+//        $return = $this->getEducationfieldTable()->updatestatus($data);
+//        // print_r($return);
+        return new JsonModel($result);
+//        exit();
     }
     
     public function delmultipleAction() {

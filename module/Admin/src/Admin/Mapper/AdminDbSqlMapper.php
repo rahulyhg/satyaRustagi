@@ -2,9 +2,11 @@
 
 namespace Admin\Mapper;
 
+use Admin\Model\Entity\EducationFields;
 use Application\Model\Entity\UserInfo;
 use Zend\Db\Adapter\AdapterInterface;
 use Zend\Db\Adapter\Driver\ResultInterface;
+use Zend\Db\ResultSet\HydratingResultSet;
 use Zend\Db\ResultSet\ResultSet;
 use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Update;
@@ -44,6 +46,17 @@ class AdminDbSqlMapper implements AdminMapperInterface {
         }
     }
 
+    public function getEducationFieldList() {
+        $statement = $this->dbAdapter->query("SELECT * FROM tbl_education_field");
+        $result = $statement->execute();
+        if ($result instanceof ResultInterface && $result->isQueryResult() && $result->getAffectedRows()) {
+            $resultSet = new HydratingResultSet($this->hydrator, new EducationFields());
+
+         return $resultSet->initialize($result);
+            //return $this->hydrator->hydrate($result->current(), new EducationFields());
+        }
+    }
+
     public function saveEducation($educationObject) {
         $educationData = $this->hydrator->extract($educationObject);
         $educationData = array_filter((array) $educationData, function ($val) {
@@ -60,6 +73,50 @@ class AdminDbSqlMapper implements AdminMapperInterface {
         $action->where(array('id = ?' => $postData['id']));
         $stmt = $sql->prepareStatementForSqlObject($action);
         $result = $stmt->execute();
+    }
+
+    public function changeStatus($table, $id, $data) {
+        $statement = $this->dbAdapter->query("UPDATE $table SET is_active=:is_active WHERE id=:id");
+        //Debug::dump($id);
+        //exit;
+        $parameters = array(
+            'id' => $id,
+            'is_active' => $data['is_active']
+        );
+        $result = $statement->execute($parameters);
+
+        if ($result) {
+            $respArr = array('status' => "Updated SuccessFully");
+        } else {
+            $respArr = array('status' => "Couldn't update");
+        }
+
+        return $respArr;
+    }
+
+    public function changeStatusAll($table, $ids, $data) {
+        $statement = $this->dbAdapter->query("UPDATE $table set is_active=:is_active where id IN (:ids)");
+        $parameters = array(
+            'ids' => $ids,
+            'is_active' => $data['is_active']
+        );
+        $result = $statement->execute($parameters);
+    }
+
+    public function delete($table, $id) {
+        $statement = $this->dbAdapter->query("DELETE $table where id=:id");
+        $parameters = array(
+            'id' => $id,
+        );
+        $result = $statement->execute($parameters);
+    }
+
+    public function deleteMultiple($table, $ids) {
+        $statement = $this->dbAdapter->query("DELETE $table where id IN(:ids)");
+        $parameters = array(
+            'ids' => $ids,
+        );
+        $result = $statement->execute($parameters);
     }
 
 }

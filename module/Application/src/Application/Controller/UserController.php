@@ -39,9 +39,12 @@ class UserController extends AppController {
     }
 
     public function loginAction() {
+      
 
         if ($this->getRequest()->isPost()) {
             $request = $this->getRequest();
+              //Debug::dump($request = $this->getRequest());
+        //exit;
             //$login_email = $request->getPost('login_email');
             //$login_password = md5($request->getPost('login_password'));
 

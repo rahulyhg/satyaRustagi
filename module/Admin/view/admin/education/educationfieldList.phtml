@@ -14,28 +14,29 @@
                     </thead>
                     <tbody>
                       <?php 
+                      
 					  $i=1;
                       foreach ($educations as $education) {
-                      
+                      //\Zend\Debug\Debug::dump($education);
                       ?>
                       <tr>
                         <td><input type="checkbox" value="<?=$education->id?>" class="checkme" name="checkme[]"> </td> 
                        <td><?= $i ?></td>  
-                        <td><?= $education->education_field?></td>                       
-                        <td class="hidden-480"><?=$education->modified_date?></td>
-                        <td class="hidden-480"><?=$education->created_date?></td>
+                        <td><?= $education->educationField?></td>                       
+                        <td class="hidden-480"><?=$education->modifiedDate?></td>
+                        <td class="hidden-480"><?=$education->createdDate?></td>
                         
                         <td class="hidden-480">
-						<!--<?php echo ($education->IsActive==1)? 'Active': '<span class="label label-sm label-warning">In-Active</span>'; ?>-->
-                        <?php $status = ($education->IsActive==1)? 'Active': 'In-Active';
-                        $statuscolor = ($education->IsActive==1)? 'activestatus': 'de-activestatus';
+						<!--<?php echo ($education->isActive==1)? 'Active': '<span class="label label-sm label-warning">In-Active</span>'; ?>-->
+                        <?php $status = ($education->isActive==1)? 'Active': 'In-Active';
+                        $statuscolor = ($education->isActive==1)? 'activestatus': 'de-activestatus';
                          ?>
-                          <div name="ChangeStatus" id="changestatus<?=$i;?>" onclick="changestatusquick(<?=$education->id?>,<?= ($education->IsActive==0)?0:1; ?>,'<?php echo $this->
+                          <div name="ChangeStatus" id="changestatus<?=$i;?>" onclick="changestatusquick(<?=$education->id?>,<?= ($education->isActive==0)?0:1; ?>,'<?php echo $this->
                                                                 url('admin/education', array('action'=>
                                                                     'changestatus')); ?>',changstatusresult);" class="<?=$statuscolor?>">
                         </div>
                         </td>
-                        <td class="hidden-480"><?php echo ($education->modified_by==1)? 'Admin': 'NotByAdmin'; ?></td>
+                        <td class="hidden-480"><?php echo ($education->modifiedBy==1)? 'Admin': 'NotByAdmin'; ?></td>
                         <td><div class="hidden-sm hidden-xs action-buttons"> 
                         <!--<a class="blue" href="<?php echo $this->url('admin',array('controller'=>'education','action'=>'view','id'=>$education->id)); ?>">
                          <i class="ace-icon fa fa-search-plus bigger-130"></i> </a> -->

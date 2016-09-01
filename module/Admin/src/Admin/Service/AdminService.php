@@ -20,7 +20,27 @@ class AdminService implements AdminServiceInterface {
     public function getAmmirById($id) {
         return $this->adminMapper->getAmmirById($id);
     }
-
     
+     public function getEducationFieldList() {
+        return $this->adminMapper->getEducationFieldList();
+    }
+    
+    public function changeStatus($table, $ids,  $data){
+        return $this->adminMapper->changeStatus($table, $ids,  $data);
+    }
+    
+    public function changeStatusAll($table, $ids, $data){
+        return $this->adminMapper->changeStatusAll($table, $ids,  $data);
+    }
+    
+    public function delete($table, $id){
+        return $this->adminMapper->delete($table, $ids);
+    }
+    
+    public function deleteMultiple($table, $ids){
+        return $this->adminMapper->deleteMultiple($table, $ids);
+    }
+
+   
 
 }
