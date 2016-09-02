@@ -14,13 +14,13 @@ use Application\Form\ProfessionForm;
 use Application\Model\Entity\Career;
 use Application\Model\Entity\Family;
 use Application\Model\Entity\Matrimoni;
-use Application\Model\Entity\Posts;
 use Application\Service\ProfileServiceInterface;
 use Application\Service\UserServiceInterface;
 use Common\Service\CommonServiceInterface;
 use Zend\Db\Adapter\Adapter;
 use Zend\Db\Metadata\Metadata;
 use Zend\Debug\Debug;
+use Zend\Mvc\MvcEvent;
 use Zend\Session\Container;
 use Zend\View\Model\JsonModel;
 use Zend\View\Model\ViewModel;
@@ -34,10 +34,47 @@ class ProfileController extends AppController {
     protected $userService;
     protected $commonService;
 
+    /**
+     * Attache les évènements
+     * @see \Zend\Mvc\Controller\AbstractController::attachDefaultListeners()
+     */
+    protected function attachDefaultListeners()
+    {
+        parent::attachDefaultListeners();
+         
+        $events = $this->getEventManager();
+        $events->attach('dispatch', array($this, 'preDispatch'), 100);
+        $events->attach('dispatch', array($this, 'postDispatch'), -100);
+    }
+     
+    /**
+     * Avant l'action
+     * @param MvcEvent $e
+     */
+    public function preDispatch (MvcEvent $e)
+    {
+        $this->checkUserLogin();
+              
+//         $actioList=array('personal-profile', 'education-and-career');
+//         if(in_array($this->params('action'), $actioList)){
+//           $this->checkUserLogin();
+//         }
+    }
+     
+    /**
+     * Après l'action
+     * @param MvcEvent $e
+     */
+    public function postDispatch (MvcEvent $e)
+    {
+         
+    }
+
     public function __construct(ProfileServiceInterface $accountService, CommonServiceInterface $commonService, UserServiceInterface $userService) {
         $this->accountService = $accountService;
         $this->userService = $userService;
         $this->commonService = $commonService;
+       
     }
 
     public function indexAction() {
@@ -47,11 +84,12 @@ class ProfileController extends AppController {
     public function profileAction() {
         
     }
-    
+
     public function personalProfileAction() {
-        
-        Debug::dump($this->checkLogin());
-     
+
+        //Debug::dump($this->checkLogin());
+        //$this->checkLogin();
+        //exit;
         $userSession = $this->getUser()->session();
         $user_id = $userSession->offsetGet('id');
         $ref_no = $userSession->offsetGet('ref_no');
@@ -95,11 +133,10 @@ class ProfileController extends AppController {
 
         $percentage = $this->userService->ProfileBar($user_id);
         $pro_per = array($percentage, $this->profileBarTemplate($percentage));
-
+        //Debug::dump($this->userService->userSummaryById($user_id));
         return new ViewModel(array("form" => $MemberbasicForm,
             'userSummary' => $this->userService->userSummaryById($user_id),
             "percent" => $pro_per));
-        
     }
 
     public function LogoutAction() {
@@ -307,112 +344,18 @@ class ProfileController extends AppController {
     }
 
     public function familyDetailAction() {
+  $userSession = $this->getUser()->session();
+        $user_id = $userSession->offsetGet('id');
+        $ref_no = $userSession->offsetGet('ref_no');
+     
+  $percentage = $this->userService->ProfileBar($user_id);
+        $pro_per = array($percentage, $this->profileBarTemplate($percentage));
+        //Debug::dump($pro_per);
 
-        //\Zend\Debug\Debug::dump($this->postService->findAllPosts());
-
-        $button = $_POST['submit'];
-
-        $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
-        $session = $this->getUser()->session();
-        $user_id = $session->offsetGet('id');
-        $ref_no = $session->offsetGet('ref_no');
-
-        $userInfo = $this->getTable()->getUserInfoById($user_id, "marital_status");
-        Debug::dump($userInfo);
-
-
-        FamilyInfoForm::$Employment_status = $this->LiveStatus();
-        FamilyInfoForm::$Family_Values = $this->FamilyValuesStatus();
-        FamilyInfoForm::$Name_Title = $this->GetNameTitle();
-        $familyInfo = $this->getFamilyInfoTable()->getFamilyInfo($session->offsetGet('id'));
-        // print_r($udata->mother_photo);die;
-        $FamilyInfoForm = new FamilyInfoForm();
-        //$FamilyInfoForm->get('user_id')->setValue($session->offsetGet('id'));
-        $FamilyInfoForm->bind($familyInfo);
-        $request = $this->getRequest();
-        if ($request->isPost()) {
-            $page = new Family();
-            $FamilyInfoForm->setInputFilter($page->getInputFilter());
-            $FamilyInfoForm->setData($request->getPost());
-            $data = (array) $request->getPost();
-            // if($FamilyInfoForm->isValid()) {
-            $mar_status = (empty($_POST['marital_status'])) ? "" : $_POST['marital_status'];
-            $marstatus = $adapter->query("update tbl_user_info set marital_status='" . $mar_status . "' where user_id='" . $user_id . "'", Adapter::QUERY_MODE_EXECUTE);
-            $M_status = ($marstatus == false) ? "" : $mar_status;
-
-            $page->exchangeArray($data);
-            unset($page->inputFilter);
-            //\Zend\Debug\Debug::dump($page);
-            //exit;
-            $page->user_id = $session->offsetGet('id');
-            $page->spouse_dob = date('Y-m-d', strtotime($page->spouse_dob));
-            $page->spouse_died_on = date('Y-m-d', strtotime($page->spouse_died_on));
-            $page->father_dob = date('Y-m-d', strtotime($page->father_dob));
-            $page->father_dod = date('Y-m-d', strtotime($page->father_dod));
-            $page->mother_dob = date('Y-m-d', strtotime($page->mother_dob));
-            $page->mother_dod = date('Y-m-d', strtotime($page->mother_dod));
-            $page->grand_father_dob = date('Y-m-d', strtotime($page->grand_father_dob));
-            $page->grand_father_dod = date('Y-m-d', strtotime($page->grand_father_dod));
-            $page->grand_mother_dob = date('Y-m-d', strtotime($page->grand_mother_dob));
-            $page->grand_mother_dod = date('Y-m-d', strtotime($page->grand_mother_dod));
-            $page->g_grand_father_dob = date('Y-m-d', strtotime($page->g_grand_father_dob));
-            $page->g_grand_father_dod = date('Y-m-d', strtotime($page->g_grand_father_dod));
-            $page->g_grand_mother_dob = date('Y-m-d', strtotime($page->g_grand_mother_dob));
-            $page->g_grand_mother_dod = date('Y-m-d', strtotime($page->g_grand_mother_dod));
-            $page->spouse_fatherDOB = date('Y-m-d', strtotime($page->spouse_fatherDOB));
-            $page->spouse_fatherDiedOn = date('Y-m-d', strtotime($page->spouse_fatherDiedOn));
-            $page->spouse_motherDOB = date('Y-m-d', strtotime($page->spouse_motherDOB));
-            $page->spouse_motherDiedOn = date('Y-m-d', strtotime($page->spouse_motherDiedOn));
-
-            $page->brother_dob = date('Y-m-d', strtotime($page->brother_dob));
-            $page->sister_dob = date('Y-m-d', strtotime($page->sister_dob));
-            $page->S_sister_dob = date('Y-m-d', strtotime($page->S_sister_dob));
-            $page->kids_dob = date('Y-m-d', strtotime($page->kids_dob));
-
-
-            $page->name_title_kids = (empty($page->name_title_kids)) ? null : serialize($page->name_title_kids);
-            $page->kids_name = (empty($page->kids_name)) ? null : serialize($page->kids_name);
-            $page->kids_status = (empty($page->kids_status)) ? null : serialize($page->kids_status);
-            $page->kids_dob = (empty($page->kids_dob)) ? null : serialize($_POST['kids_dob']);
-
-
-            $page->name_title_brother = (empty($page->name_title_brother)) ? null : serialize($page->name_title_brother);
-            $page->brother_name = (empty($page->brother_name)) ? null : serialize($page->brother_name);
-            $page->brother_status = (empty($page->brother_status)) ? null : serialize($page->brother_status);
-            $page->brother_dob = (empty($page->brother_dob)) ? null : serialize($_POST['brother_dob']);
-
-            $page->name_title_sister = (empty($page->name_title_sister)) ? null : serialize($page->name_title_sister);
-            $page->sister_name = (empty($page->sister_name)) ? null : serialize($page->sister_name);
-            $page->sister_status = (empty($page->sister_status)) ? null : serialize($page->sister_status);
-            $page->sister_dob = (empty($page->sister_dob)) ? null : serialize($_POST['sister_dob']);
-
-            $page->name_title_S_sister = (empty($page->name_title_S_sister)) ? null : serialize($page->name_title_S_sister);
-            $page->S_sister_name = (empty($page->S_sister_name)) ? null : serialize($page->S_sister_name);
-            $page->S_sister_status = (empty($page->S_sister_status)) ? null : serialize($page->S_sister_status);
-            $page->S_sister_dob = (empty($page->S_sister_dob)) ? null : serialize($_POST['S_sister_dob']);
-
-            $id = $this->getFamilyInfoTable()->savefamilyInfoOld($page);
-
-            if ($button == "Save") {
-                return $this->redirect()->toRoute('application/default', array(
-                            'action' => 'editfamily',
-                            'controller' => 'account'
-                ));
-            }
-            if ($button == "Save & Next") {
-                $this->redirect()->toRoute("application/default", array(
-                    "action" => "post",
-                    "controller" => "account",
-                ));
-            }
-            // }          			
-        }
-        $data_gallery = $adapter->query("select * from tbl_user_gallery where user_id='$user_id' AND ref_no='$ref_no' ORDER BY id DESC", Adapter::QUERY_MODE_EXECUTE);
-
-        $pro_per = $this->ProfileBar();
-
-
-        return new ViewModel(array("form" => $FamilyInfoForm, "gallery_data" => $data_gallery, "family_data" => $familyInfo, 'userInfo' => $userInfo, "percent" => $pro_per));
+        return new ViewModel(array(
+            'userSummary' => $this->userService->userSummaryById($user_id),
+            "percent" => $pro_per));
+        
     }
 
     public function matrimoniAction() {
@@ -506,7 +449,9 @@ class ProfileController extends AppController {
     }
 
     public function mygalleryAction() {
-        // $F_fields = array("mother_photo",)
+         $userSession = $this->getUser()->session();
+        $user_id = $userSession->offsetGet('id');
+        $ref_no = $userSession->offsetGet('ref_no');
 
 
 
@@ -549,9 +494,18 @@ class ProfileController extends AppController {
         shuffle($Pphotos);
         $data_gallery = $adapter->query("select * from tbl_user_gallery where user_id='$user_id' AND ref_no='$ref_no' ORDER BY id DESC", Adapter::QUERY_MODE_EXECUTE);
 
-        $pro_per = $this->ProfileBar();
+        $percentage = $this->userService->ProfileBar($user_id);
+        $pro_per = array($percentage, $this->profileBarTemplate($percentage));
 
-        return new ViewModel(array("Pphotos" => $Pphotos, "F_photos" => $Fphotos, "gallery_data" => $data_gallery, "percent" => $pro_per));
+//        return new ViewModel(array("form" => $form,
+//            'userSummary' => $this->userService->userSummaryById($user_id),
+//            "percent" => $pro_per));
+
+        return new ViewModel(array("Pphotos" => $Pphotos, 
+            "F_photos" => $Fphotos, 
+            "gallery_data" => $data_gallery,  
+            'userSummary' => $this->userService->userSummaryById($user_id),
+            "percent" => $pro_per));
     }
 
     public function showallimagesAction() {

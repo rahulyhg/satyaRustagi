@@ -12,12 +12,12 @@
 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 <ul class="nav navbar-nav">
 <li><a href="<?php echo $this->url('home') ?>"><?php echo $this->translate('Home') ?></a></li>
-<li><a href="<?php echo $this->basePath()?>/pages/staticpages/1"><?php echo $this->translate('ABOUT US') ?></a>
+<li><a href="<?php echo $this->url('about')?>"><?php echo $this->translate('ABOUT US') ?></a>
 <ul class="dropdown-menu" style="background-color:#eda344 !important;">
-<li><a href="<?php echo $this->basePath()?>/pages/history"><?php echo $this->translate('History') ?></a></li>
-<li><a href="<?php echo $this->basePath()?>/community"><?php echo $this->translate('Team Member') ?></a></li>
-<li><a href="<?php echo $this->basePath()?>/pages/vision"><?php echo $this->translate('Our Vision') ?></a></li>
-<li><a href="<?php echo $this->basePath()?>/pages/communities"><?php echo $this->translate('Other Rustagi Institutions') ?></a></li>	
+<li><a href="<?php echo $this->url('history')?>"><?php echo $this->translate('History') ?></a></li>
+<li><a href="<?php echo $this->url('community')?>"><?php echo $this->translate('Team Member') ?></a></li>
+<li><a href="<?php echo $this->url('vision')?>"><?php echo $this->translate('Our Vision') ?></a></li>
+<li><a href="<?php echo $this->url('communities')?>"><?php echo $this->translate('Other Rustagi Institutions') ?></a></li>	
 <!--<li><a href="<?php //echo $this->basePath()?>/pages/branches"><?php //echo $this->translate('All India Branches') ?></a></li>-->
 </ul>
 
@@ -45,7 +45,7 @@
 <li><a href="#"><?php echo $this->translate('ATTRACTIONS') ?></a>
 
 <ul class="dropdown-menu" style="margin-top:-2px !important; background-color:#eda344 !important;">
-<li><a href="<?php echo $this->basePath()?>/news"><?php echo $this->translate('NEWS') ?></a></li>
+<li><a href="<?php echo $this->url('news')?>"><?php echo $this->translate('NEWS') ?></a></li>
 
 <li class="dropdown-submenu"><a href="<?php echo $this->basePath()?>/events" tabindex="-1"><?php echo $this->translate('EVENTS') ?></a>
 <ul class="dropdown-menu" style="background-color:#eda344 !important;">
@@ -55,9 +55,9 @@
 </li>
 </ul>
 
-<li><a href="<?php echo $this->basePath()?>/community"><?php echo $this->translate('COMMUNITY') ?></a></li>
-<li><a href="<?php echo $this->basePath()?>/pages/gallery"><?php echo $this->translate('PHOTO GALLERY') ?></a></li>
+<li><a href="<?php echo $this->url('community')?>"><?php echo $this->translate('COMMUNITY') ?></a></li>
+<li><a href="<?php echo $this->url('gallery')?>"><?php echo $this->translate('PHOTO GALLERY') ?></a></li>
 <!--<li><a href="#"><?php echo $this->translate('TESTIMONIALS') ?></a></li>-->
-<li><a href="<?php echo $this->basePath()?>/pages/contact"><?php echo $this->translate('CONTACT US') ?></a></li>
+<li><a href="<?php echo $this->url('contact')?>"><?php echo $this->translate('CONTACT US') ?></a></li>
 </ul>
 </div>

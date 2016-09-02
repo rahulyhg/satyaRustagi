@@ -49,19 +49,19 @@ if($this->gallery_data){
 <div class="col-sm-6 col-xs-8">
 <div class="row">
 <div class="col-xs-5"><?php echo $this->translate('Name') ?></div>
-<div class="col-xs-7"><?php echo $this->userSummary->getFullName() ?></div>
+<div class="col-xs-7"><?php echo $this->userSummary->userInfo->getFullName() ?></div>
 
 <div class="col-xs-5"><?php echo $this->translate('Father’s. Name') ?></div>
-<div class="col-xs-7"><?php //echo $this->userSummary->getFatherName() ?></div>
+<div class="col-xs-7"><?php echo 'Pending'//echo $this->userSummary->getFatherName() ?></div>
 
 <div class="col-xs-5"><?php echo $this->translate('Address') ?></div>
-<div class="col-xs-7"><?php echo $this->userSummary->getAddress() ?></div>
+<div class="col-xs-7"><?php echo $this->userSummary->userInfo->getAddress() ?></div>
 
 <div class="col-xs-5"><?php echo $this->translate('Contact Number') ?></div>
-<div class="col-xs-7"><?php //echo $this->userSummary->getMobileNo() ?></div>
+<div class="col-xs-7"><?php echo $this->userSummary->user->getMobileNo() ?></div>
 
 <div class="col-xs-5"><?php echo $this->translate('Profession') ?></div>
-<div class="col-xs-7"><?php echo $session->offsetGet('profession') ?></div>
+<div class="col-xs-7"><?php echo $this->userSummary->userInfo->getProfession() ?></div>
 
 <div class="col-xs-5"><?php echo $this->translate('Email ID') ?></div>
 <div class="col-xs-7"><?php echo $session->offsetGet('email') ?></div>

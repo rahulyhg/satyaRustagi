@@ -15,7 +15,7 @@ class AuthFrontPlugin extends AbstractPlugin {
 
     public function isLogin() {
         $auth = new AuthenticationService();
-        if ($auth->getIdentity() && in_array($auth->getIdentity()->role, array('user'))) {
+        if ($auth->hasIdentity() && in_array($auth->getIdentity()->role, array('user'))) {
             return true;
         } else {
             return false;
@@ -24,8 +24,7 @@ class AuthFrontPlugin extends AbstractPlugin {
     
     public function checkLogin() {
         $auth = new AuthenticationService();
-        D
-        if ($auth->getIdentity() && in_array($auth->getIdentity()->role, array('user'))) {
+        if ($auth->hasIdentity() && in_array($auth->getIdentity()->role, array('user'))) {
             return true;
         } else {
             return false;

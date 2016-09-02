@@ -68,7 +68,10 @@ class UserDbSqlMapper implements UserMapperInterface {
 //
 //        $stmt = $sql->prepareStatementForSqlObject($select);
 //        $result = $stmt->execute();
-        $statement = $this->dbAdapter->query("SELECT * FROM tbl_user_info WHERE user_id=:user_id");
+        $statement = $this->dbAdapter->query("SELECT tui.*, tu.email, tu.mobile_no, tp.profession FROM tbl_user_info as tui
+               LEFT JOIN tbl_user as tu ON tui.user_id=tu.id
+               LEFT JOIN tbl_profession as tp ON tui.profession=tp.id
+               WHERE tui.user_id=:user_id");
         $parameters = array(
             'user_id' => $id
         );
@@ -79,8 +82,10 @@ class UserDbSqlMapper implements UserMapperInterface {
 
             //Debug::dump($result->current());
             //exit;
-
-            return $this->hydrator->hydrate($result->current(), new UserInfo());
+            $userInfo=$this->hydrator->hydrate($result->current(), new UserInfo());
+            $user=$this->hydrator->hydrate($result->current(), new User());
+            //$c = (object)array_merge((array)$userInfo, (array)$user);
+            return (object) array('userInfo'=>$userInfo,'user'=>$user);
         }
     }
 

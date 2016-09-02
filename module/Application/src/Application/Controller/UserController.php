@@ -38,10 +38,11 @@ class UserController extends AppController {
         //return new ViewModel();
     }
 
-    public function loginAction() {
-      
+    public function loginUserAction() {
+       
+     if ($this->getRequest()->isPost()) {
 
-        if ($this->getRequest()->isPost()) {
+        
             $request = $this->getRequest();
               //Debug::dump($request = $this->getRequest());
         //exit;
@@ -107,7 +108,7 @@ class UserController extends AppController {
             }
 
 
-            if ($auth->getIdentity()) {
+            if ($auth->hasIdentity() && in_array($auth->getIdentity()->role, array('user'))) {
 
                 //\Zend\Debug\Debug::dump($userSession->offsetGet('id'));
                 // exit;
@@ -116,6 +117,83 @@ class UserController extends AppController {
             }
         }
     }
+    
+    public function loginAction() {
+        //Debug::dump($this->checkLogin());
+    if ($this->getRequest()->isPost()) {
+
+        
+            $request = $this->getRequest();
+              //Debug::dump($request = $this->getRequest());
+        //exit;
+            //$login_email = $request->getPost('login_email');
+            //$login_password = md5($request->getPost('login_password'));
+
+            $username = $request->getPost('login_email');
+            $password = $request->getPost('login_password');
+            $dbAdapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
+            $authAdapter = new AuthAdapter($dbAdapter);
+            $authAdapter->setTableName('tbl_user');
+            $authAdapter->setIdentityColumn('email');
+            $authAdapter->setIdentityColumn('mobile_no');
+            $authAdapter->setCredentialColumn('password');
+            $authAdapter->setCredentialTreatment('md5(?)');
+            $authAdapter->setIdentity($username)->setCredential($password);
+            $auth = new AuthenticationService();
+            $result = $auth->authenticate($authAdapter);
+            //Debug::dump($result->getCode());
+            //exit;
+            switch ($result->getCode()) {
+                case Result::FAILURE_IDENTITY_NOT_FOUND:
+                    // do stuff for nonexistent identity
+
+                    break;
+
+                case Result::FAILURE_CREDENTIAL_INVALID:
+                    // do stuff for invalid credential
+                    break;
+
+                case Result::SUCCESS:
+
+                    $storage = $auth->getStorage();
+                    $storage->write($authAdapter->getResultRowObject(
+                                    null, 'password'
+                    ));
+
+                    //\Zend\Debug\Debug::dump($storage->read());
+                    //exit;
+                    $userSession = $this->getUser()->session();
+                    $userSession->user = $storage->read();
+                    foreach ($storage->read() as $u => $v) {
+                        $userSession->offsetSet($u, $v);
+                    }
+                    Debug::dump($storage->read());
+                    //exit;
+                    $time = 1209600; // 14 days 1209600/3600 = 336 hours => 336/24 = 14 days
+                    //if ($data['rememberme']) $storage->getSession()->getManager()->rememberMe($time); // no way to get the session
+
+                    if ($request->getPost('rememberme')) {
+                        $sessionManager = new SessionManager();
+                        $sessionManager->rememberMe($time);
+                    }
+                    break;
+
+                default:
+                    // do stuff for other failure
+                    break;
+            }
+            $messages = '';
+            foreach ($result->getMessages() as $message) {
+                $messages .= "$message\n";
+            }
+
+            if ($auth->hasIdentity() && in_array($auth->getIdentity()->role, array('user'))) {
+
+               return $this->redirect()->toRoute('profile', array('action' => 'personal-profile'));
+            }
+        }
+    }
+
 
     public function LogoutAction() {
 

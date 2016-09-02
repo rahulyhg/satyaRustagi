@@ -27,7 +27,7 @@ class Module {
     public function getControllerPluginConfig() {
         return array(
             'invokables' => array(
-                'checkLogin' => 'Common\Plugin\CheckLoginPlugin',
+                'checkUserLogin' => 'Common\Plugin\CheckUserLoginPlugin',
             ),
             'factories' => array(
                 //'getUserSession' => 'Common\Plugin\SessionPluginFactory',//not in use

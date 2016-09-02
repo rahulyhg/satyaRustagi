@@ -114,7 +114,7 @@ $session = new Zend\Session\Container('user');
 
 
                     <div id="frontform">
-                        <form id="loginForm" name="loginForm" action="<?php echo $this->url('user', array('action' => 'login')) ?>" method="POST">
+                        <form id="loginForm" name="loginForm" action="<?php echo $this->url('user', array('action' => 'loginUser')) ?>" method="POST">
 
                             <div class="form-group">
                                 <label for="email"><?php echo $this->translate('Email OR Mobile') ?></label>
