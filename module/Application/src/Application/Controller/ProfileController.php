@@ -12,14 +12,12 @@ use Application\Form\PersonolDetailForm;
 use Application\Form\PostForm;
 use Application\Form\ProfessionForm;
 use Application\Model\Entity\Career;
-use Application\Model\Entity\Family;
 use Application\Model\Entity\Matrimoni;
 use Application\Service\ProfileServiceInterface;
 use Application\Service\UserServiceInterface;
 use Common\Service\CommonServiceInterface;
 use Zend\Db\Adapter\Adapter;
 use Zend\Db\Metadata\Metadata;
-use Zend\Debug\Debug;
 use Zend\Mvc\MvcEvent;
 use Zend\Session\Container;
 use Zend\View\Model\JsonModel;
@@ -38,43 +36,39 @@ class ProfileController extends AppController {
      * Attache les évènements
      * @see \Zend\Mvc\Controller\AbstractController::attachDefaultListeners()
      */
-    protected function attachDefaultListeners()
-    {
+    protected function attachDefaultListeners() {
         parent::attachDefaultListeners();
-         
+
         $events = $this->getEventManager();
         $events->attach('dispatch', array($this, 'preDispatch'), 100);
         $events->attach('dispatch', array($this, 'postDispatch'), -100);
     }
-     
+
     /**
      * Avant l'action
      * @param MvcEvent $e
      */
-    public function preDispatch (MvcEvent $e)
-    {
+    public function preDispatch(MvcEvent $e) {
         $this->checkUserLogin();
-              
+
 //         $actioList=array('personal-profile', 'education-and-career');
 //         if(in_array($this->params('action'), $actioList)){
 //           $this->checkUserLogin();
 //         }
     }
-     
+
     /**
      * Après l'action
      * @param MvcEvent $e
      */
-    public function postDispatch (MvcEvent $e)
-    {
-         
+    public function postDispatch(MvcEvent $e) {
+        
     }
 
     public function __construct(ProfileServiceInterface $accountService, CommonServiceInterface $commonService, UserServiceInterface $userService) {
         $this->accountService = $accountService;
         $this->userService = $userService;
         $this->commonService = $commonService;
-       
     }
 
     public function indexAction() {
@@ -344,18 +338,30 @@ class ProfileController extends AppController {
     }
 
     public function familyDetailAction() {
-  $userSession = $this->getUser()->session();
+        $userSession = $this->getUser()->session();
         $user_id = $userSession->offsetGet('id');
         $ref_no = $userSession->offsetGet('ref_no');
-     
-  $percentage = $this->userService->ProfileBar($user_id);
+        FamilyInfoForm::$Employment_status = $this->LiveStatus();
+        FamilyInfoForm::$Family_Values = $this->FamilyValuesStatus();
+        FamilyInfoForm::$Name_Title = $this->GetNameTitle();
+        //$familyInfo = $this->getFamilyInfoTable()->getFamilyInfo($session->offsetGet('id'));
+        // print_r($udata->mother_photo);die;
+        $FamilyInfoForm = new FamilyInfoForm();
+        //$FamilyInfoForm->get('user_id')->setValue($session->offsetGet('id'));
+        //$FamilyInfoForm->bind($familyInfo);
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+          
+        }
+
+
+        $percentage = $this->userService->ProfileBar($user_id);
         $pro_per = array($percentage, $this->profileBarTemplate($percentage));
         //Debug::dump($pro_per);
 
-        return new ViewModel(array(
+        return new ViewModel(array("form" => $FamilyInfoForm,
             'userSummary' => $this->userService->userSummaryById($user_id),
             "percent" => $pro_per));
-        
     }
 
     public function matrimoniAction() {
@@ -449,7 +455,7 @@ class ProfileController extends AppController {
     }
 
     public function mygalleryAction() {
-         $userSession = $this->getUser()->session();
+        $userSession = $this->getUser()->session();
         $user_id = $userSession->offsetGet('id');
         $ref_no = $userSession->offsetGet('ref_no');
 
@@ -501,9 +507,9 @@ class ProfileController extends AppController {
 //            'userSummary' => $this->userService->userSummaryById($user_id),
 //            "percent" => $pro_per));
 
-        return new ViewModel(array("Pphotos" => $Pphotos, 
-            "F_photos" => $Fphotos, 
-            "gallery_data" => $data_gallery,  
+        return new ViewModel(array("Pphotos" => $Pphotos,
+            "F_photos" => $Fphotos,
+            "gallery_data" => $data_gallery,
             'userSummary' => $this->userService->userSummaryById($user_id),
             "percent" => $pro_per));
     }

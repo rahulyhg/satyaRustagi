@@ -398,7 +398,7 @@ function changestatusquick(id, val, action, callback) {
     }
 
     // // alert(val+5);
-    var queryString = "id=" + id + "&IsActive=" + val;
+    var queryString = "id=" + id + "&is_active=" + val;
     // // alert(queryString);
 
     ajax_search(queryString, action, callback);
