@@ -1,5 +1,4 @@
 <?php
-
 namespace Admin\Model\Entity;
 
 class EducationFields {

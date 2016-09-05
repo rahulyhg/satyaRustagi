@@ -8,7 +8,11 @@ interface AdminServiceInterface {
 
     public function getAmmirById($id);
     
-    public function getEducationFieldList();
+    public function saveEducationField($educationfieldEntity);
+    
+    public function getEducationFieldList($status);
+    
+    public function getEducationFieldRadioList($status);
 
     public function changeStatus($table, $ids,  $data);
 
@@ -17,4 +21,6 @@ interface AdminServiceInterface {
     public function delete($table, $id);
 
     public function deleteMultiple($table, $ids);
+    
+    public function viewById($table, $id);
 }

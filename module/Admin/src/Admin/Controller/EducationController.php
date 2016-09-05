@@ -6,7 +6,7 @@ use Admin\Form\EducationfieldFilter;
 use Admin\Form\EducationfieldForm;
 use Admin\Form\EducationlevelFilter;
 use Admin\Form\EducationlevelForm;
-use Admin\Model\Entity\Educationfields;
+use Admin\Model\Entity\EducationFields;
 use Admin\Model\Entity\Educationlevels;
 use Admin\Service\AdminServiceInterface;
 use Common\Service\CommonServiceInterface;
@@ -16,7 +16,7 @@ use Zend\View\Model\ViewModel;
 
 class EducationController extends AppController
 {
-    protected $data = array();
+    protected  $data='';// = array();
      protected $commonService;
     protected $adminService;
 
@@ -27,7 +27,7 @@ class EducationController extends AppController
     
     public function indexAction()
     {   
-         $educations = $this->adminService->getEducationFieldList();
+         $educations = $this->adminService->getEducationFieldList($this->data);
          //\Zend\Debug\Debug::dump($educations);
          //exit;
             //echo   "<pre>";
@@ -50,18 +50,22 @@ class EducationController extends AppController
 
         $request = $this->getRequest();
         if($request->isPost()){
-
-            $educationfieldEntity = new Educationfields();
-
-               $form->setInputFilter(new EducationfieldFilter());
+            
+            //$educationfieldEntity = new EducationFields();
+//                echo  "<pre>";
+//            print_r($educationfieldEntity);exit;
+               //$form->setInputFilter(new EducationfieldFilter());
                $form->setData($request->getPost());
 
 
                if($form->isValid()){
-
-                $educationfieldEntity->exchangeArray($form->getData());
+//                   print_r($form->getData());
+//                   exit;
+                //$educationfieldEntity->exchangeArray($form->getData());
                 // print_r($religionEntity);die;
-                $res = $this->getEducationfieldTable()->SaveEducationfield($educationfieldEntity);
+//                $res = $this->getEducationfieldTable()->SaveEducationfield($educationfieldEntity);
+                $res= $this->adminService->saveEducationField($form->getData());
+                
 
 //                     return $this->redirect()->toRoute('admin', array(
 //                            'action' => 'index',
@@ -141,10 +145,12 @@ class EducationController extends AppController
     }
 
     public function deleteAction()
-    {
+    {       
          
             $id = $this->params()->fromRoute('id');
-            $education = $this->getEducationfieldTable()->deleteEducationField($id);
+            //print_r($id);exit;
+            //$education = $this->getEducationfieldTable()->deleteEducationField($id);
+            $result= $this->adminService->delete('tbl_education_field', $id);
 //            return $this->redirect()->toRoute('admin', array(
 //                            'action' => 'index',
 //                            'controller' => 'religion'
@@ -164,15 +170,30 @@ class EducationController extends AppController
     public function viewByIdAction(){
         
         $id = $this->params()->fromRoute('id');
-
+//        echo   "<pre>";
+//        print_r($id);exit;
         //$Info = $this->getCountryTable()->getCountry($id);
-        $info = $this->getEducationfieldTable()->getEducationfield($id);
-
-        // echo"<pre>"; print_r($Info);die;
+        //$info = $this->getEducationfieldTable()->getEducationfield($id);
+          $info = $this->adminService->viewById('tbl_education_field', $id);
+          //\Zend\Debug\Debug::dump($info);
+         //echo"<pre>"; print_r($info);die;
         $view=new ViewModel(array('info'=>$info));
         $view->setTerminal(true);
         return $view;
         
+    }
+    
+    
+    
+    public function delmultipleAction() {
+        $ids = $_POST['chkdata'];
+//       echo   "<pre>";
+//        print_r($ids);exit;
+        //$result = $this->getEducationfieldTable()->delmultiple($ids);
+        $result= $this->adminService->deleteMultiple('tbl_education_field', $ids);
+
+        echo $result;
+        exit();
     }
     
     public function changestatusAction() {
@@ -192,30 +213,33 @@ class EducationController extends AppController
 //        exit();
     }
     
-    public function delmultipleAction() {
-        $ids = $_POST['chkdata'];
-        $result = $this->getEducationfieldTable()->delmultiple($ids);
-
-        echo $result;
-        exit();
-    }
-    
-    public function statuschangeallAction() {
-        $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
-        $sql = "update tbl_education_field set IsActive=" . $_POST['val'] . " where id IN (" . $_POST['ids'] . ")";
-        $results = $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
-        if ($results)
-            echo "updated all";
-        else
-            echo "couldn't update";
-        exit();
+    public function changeStatusAllAction() {
+//        $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
+//        $sql = "update tbl_education_field set IsActive=" . $_POST['val'] . " where id IN (" . $_POST['ids'] . ")";
+//        $results = $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
+//        if ($results)
+//            echo "updated all";
+//        else
+//            echo "couldn't update";
+//        exit();
+        //$request=$this->getRequest();
+        
+        $result= $this->adminService->changeStatusAll('tbl_education_field', $_POST['ids'], $_POST['val']);
+        
+        return new JsonModel($result);
+        
     }
     
     public function ajaxradiosearchAction() {
-        $status = $_POST['IsActive'];
-        $this->data = array("IsActive=$status");
-
-        $educations = $this->getEducationfieldTable()->fetchAll($this->data);
+        $status = $_POST['is_active'];
+//        echo  "<pre>";
+//        print_r($status);exit;
+        //$this->data = array("IsActive=$status");
+        $this->data = $status;
+//        Debug::dump($this->data);
+//        exit;
+        //$educations = $this->getEducationfieldTable()->fetchAll($this->data);
+        $educations = $this->adminService->getEducationFieldRadioList($_POST['is_active']);
         // return new ViewModel(array('countries' => $countries));
 
         $view = new ViewModel(array('educations' => $educations));

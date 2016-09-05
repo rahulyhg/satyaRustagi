@@ -21,8 +21,16 @@ class AdminService implements AdminServiceInterface {
         return $this->adminMapper->getAmmirById($id);
     }
     
-     public function getEducationFieldList() {
-        return $this->adminMapper->getEducationFieldList();
+    public function saveEducationField($educationfieldEntity) {
+        return $this->adminMapper->saveEducationField($educationfieldEntity);
+    }
+    
+     public function getEducationFieldList($status) {
+        return $this->adminMapper->getEducationFieldList($status);
+    }
+    
+     public function getEducationFieldRadioList($status) {
+        return $this->adminMapper->getEducationFieldRadioList($status);
     }
     
     public function changeStatus($table, $ids,  $data){
@@ -34,11 +42,15 @@ class AdminService implements AdminServiceInterface {
     }
     
     public function delete($table, $id){
-        return $this->adminMapper->delete($table, $ids);
+        return $this->adminMapper->delete($table, $id);
     }
     
     public function deleteMultiple($table, $ids){
         return $this->adminMapper->deleteMultiple($table, $ids);
+    }
+    
+    public function viewById($table, $id){
+        return $this->adminMapper->viewById($table, $id);
     }
 
    

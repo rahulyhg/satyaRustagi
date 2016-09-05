@@ -375,7 +375,7 @@ var radioSearchResult = function (data, textStatus, xhr)
 
 var RadioSearch = function (val, table, action, callback) {
 
-    var queryString = "IsActive=" + val + "&tbl=" + table;
+    var queryString = "is_active=" + val + "&tbl=" + table;
 // alert(val+table+action+callback);
 
 

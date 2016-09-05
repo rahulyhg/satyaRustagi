@@ -1,0 +1,26 @@
+//sql query
+
+01-09-2016
+
+ALTER TABLE `tbl_education_field` CHANGE `IsActive` `is_active` INT( 11 ) NOT NULL DEFAULT '1';
+
+ALTER TABLE `tbl_education_level` CHANGE `IsActive` `is_active` INT( 11 ) NOT NULL DEFAULT '1';
+
+ALTER TABLE `tbl_country` CHANGE `IsActive` `is_active` TINYINT( 4 ) NOT NULL DEFAULT '1';
+
+ALTER TABLE `tbl_state` CHANGE `IsActive` `is_active` INT( 11 ) NOT NULL DEFAULT '0';
+
+ALTER TABLE `tbl_city` CHANGE `IsActive` `is_active` TINYINT( 4 ) NOT NULL DEFAULT '1';
+
+ALTER TABLE `tbl_profession` CHANGE `IsActive` `is_active` INT( 11 ) NOT NULL DEFAULT '1';
+
+ALTER TABLE `tbl_designation` CHANGE `IsActive` `is_active` INT( 11 ) NOT NULL DEFAULT '1';
+
+ALTER TABLE `tbl_religion` CHANGE `IsActive` `is_active` INT( 11 ) NOT NULL DEFAULT '1';
+
+ALTER TABLE `tbl_zodiac_sign_raasi` CHANGE `IsActive` `is_active` INT( 11 ) NOT NULL DEFAULT '1';
+
+ALTER TABLE `tbl_star_sign` CHANGE `IsActive` `is_active` INT( 11 ) NOT NULL DEFAULT '1';
+
+ALTER TABLE `tbl_gothra_gothram` CHANGE `IsActive` `is_active` INT( 11 ) NOT NULL DEFAULT '1';
+
