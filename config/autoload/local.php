@@ -22,9 +22,9 @@ return array(
 
 //live
 
-return array(
-    'db' => array(
-        'username' => 'root',
-        'password' => 'root',
-    ),
-);
+//return array(
+//    'db' => array(
+//        'username' => 'root',
+//        'password' => 'root',
+//    ),
+//);

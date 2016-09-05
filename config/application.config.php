@@ -5,17 +5,7 @@ return array(
     'modules' => array(
         'Application',
         'Admin',
-        'Common',
-        //'ZendDeveloperTools',
-        //'BjyProfiler',
-        //'SanSessionToolbar',
-        //'ZfSnapEventDebugger',
-        //'Blog',
-        //'Registration',
-        //'Codegenerator'
-        //'OcraServiceManager'
-        
-        
+        'Common', 
      ),
         
     // These are various options for the listeners attached to the ModuleManager
