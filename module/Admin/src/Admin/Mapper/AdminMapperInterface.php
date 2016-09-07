@@ -12,6 +12,8 @@ interface AdminMapperInterface {
    
    public function getEducationFieldList($status);
    
+   public function getEducationField($id);
+   
    public function getEducationFieldRadioList($status);
    
    public function changeStatus($table, $ids, $data);
@@ -23,4 +25,6 @@ interface AdminMapperInterface {
    public function deleteMultiple($table, $ids);
    
    public function viewById($table, $id);
+   
+   public function performSearchEducationField($field);
 }

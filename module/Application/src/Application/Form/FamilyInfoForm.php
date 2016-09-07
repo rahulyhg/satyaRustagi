@@ -246,10 +246,10 @@ class FamilyInfoForm extends Form {
         ));
         $this->add(array(
             'type' => 'Zend\Form\Element\Select',
-            'name' => 'name_title_g_father',
+            'name' => 'name_title_grand_father',
             'attributes' => array(
                 'class' => 'form-control tileF',
-                'id' => 'name_title_g_father'
+                'id' => 'name_title_gFather'
             ),
             'options' => array(
                 //'empty_option' => '',
@@ -313,7 +313,7 @@ class FamilyInfoForm extends Form {
         ));
         $this->add(array(
             'type' => 'Zend\Form\Element\Select',
-            'name' => 'name_title_g_mother',
+            'name' => 'name_title_grand_mother',
             'attributes' => array(
                 'class' => 'form-control tileF',
                 'id' => 'name_title_g_mother'
@@ -381,7 +381,7 @@ class FamilyInfoForm extends Form {
         ));
         $this->add(array(
             'type' => 'Zend\Form\Element\Select',
-            'name' => 'name_title_g_gfather',
+            'name' => 'name_title_grand_gfather',
             'attributes' => array(
                 'class' => 'form-control tileF',
                 'id' => 'name_title_g_gfather'
@@ -449,7 +449,7 @@ class FamilyInfoForm extends Form {
         ));
         $this->add(array(
             'type' => 'Zend\Form\Element\Select',
-            'name' => 'name_title_g_gmother',
+            'name' => 'name_title_grand_gmother',
             'attributes' => array(
                 'class' => 'form-control tileF',
                 'id' => 'name_title_g_gmother'
@@ -518,7 +518,7 @@ class FamilyInfoForm extends Form {
 //*********spouse family elements
         $this->add(array(
             'type' => 'Zend\Form\Element\Select',
-            'name' => 'spouse_fName_title',
+            'name' => 'spouse_first_name_title',
             'attributes' => array(
                 'class' => 'form-control tileF',
                 'id' => 'spouse_fName_title'
@@ -529,7 +529,7 @@ class FamilyInfoForm extends Form {
             )
         ));
         $this->add(array(
-            'name' => 'spouse_fatherName',
+            'name' => 'spouse_father_name',
             'attributes' => array(
                 'type' => 'text',
                 'class' => 'form-control',
@@ -541,7 +541,7 @@ class FamilyInfoForm extends Form {
         ));
         $this->add(array(
             'type' => 'Zend\Form\Element\Select',
-            'name' => 'spouse_fatherStatus',
+            'name' => 'spouse_father_status',
             'attributes' => array(
                 'class' => 'form-control status_live',
                 'id' => 'spouse_fatherStatus'
@@ -552,7 +552,7 @@ class FamilyInfoForm extends Form {
             )
         ));
         $this->add(array(
-            'name' => 'spouse_fatherDOB',
+            'name' => 'spouse_father_dob',
             'attributes' => array(
                 'type' => 'text',
                 'class' => 'form-control inputDate',
@@ -565,14 +565,14 @@ class FamilyInfoForm extends Form {
         ));
         $this->add(array(
             'type' => 'Zend\Form\Element\File',
-            'name' => 'spouse_fatherPhoto',
+            'name' => 'spouse_father_photo',
             'attributes' => array(
                 'class' => 'form-control',
                 'id' => 'spouse_fatherPhoto'
             ),
         ));
         $this->add(array(
-            'name' => 'spouse_fatherDiedOn',
+            'name' => 'spouse_father_died_on',
             'attributes' => array(
                 'type' => 'text',
                 'class' => 'form-control inputDate dod',
@@ -585,7 +585,7 @@ class FamilyInfoForm extends Form {
         ));
         $this->add(array(
             'type' => 'Zend\Form\Element\Select',
-            'name' => 'spouse_mName_title',
+            'name' => 'spouse_mother_name_title',
             'attributes' => array(
                 'class' => 'form-control tileF',
                 'id' => 'spouse_mName_title'
@@ -596,7 +596,7 @@ class FamilyInfoForm extends Form {
             )
         ));
         $this->add(array(
-            'name' => 'spouse_motherName',
+            'name' => 'spouse_mother_name',
             'attributes' => array(
                 'type' => 'text',
                 'class' => 'form-control',
@@ -608,7 +608,7 @@ class FamilyInfoForm extends Form {
         ));
         $this->add(array(
             'type' => 'Zend\Form\Element\Select',
-            'name' => 'spouse_motherStatus',
+            'name' => 'spouse_mother_status',
             'attributes' => array(
                 'class' => 'form-control status_live',
                 'id' => 'spouse_motherStatus'
@@ -619,7 +619,7 @@ class FamilyInfoForm extends Form {
             )
         ));
         $this->add(array(
-            'name' => 'spouse_motherDOB',
+            'name' => 'spouse_mother_dob',
             'attributes' => array(
                 'type' => 'text',
                 'class' => 'form-control inputDate',
@@ -632,14 +632,14 @@ class FamilyInfoForm extends Form {
         ));
         $this->add(array(
             'type' => 'Zend\Form\Element\File',
-            'name' => 'spouse_motherPhoto',
+            'name' => 'spouse_mother_photo',
             'attributes' => array(
                 'class' => 'form-control',
                 'id' => 'spouse_motherPhoto'
             ),
         ));
         $this->add(array(
-            'name' => 'spouse_motherDiedOn',
+            'name' => 'spouse_mother_died_on',
             'attributes' => array(
                 'type' => 'text',
                 'class' => 'form-control inputDate dod',

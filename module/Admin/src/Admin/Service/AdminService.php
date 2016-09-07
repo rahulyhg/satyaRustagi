@@ -29,6 +29,10 @@ class AdminService implements AdminServiceInterface {
         return $this->adminMapper->getEducationFieldList($status);
     }
     
+    public function getEducationField($id) {
+        return $this->adminMapper->getEducationField($id);
+    }     
+    
      public function getEducationFieldRadioList($status) {
         return $this->adminMapper->getEducationFieldRadioList($status);
     }
@@ -51,6 +55,11 @@ class AdminService implements AdminServiceInterface {
     
     public function viewById($table, $id){
         return $this->adminMapper->viewById($table, $id);
+    }
+    
+    
+    public function performSearchEducationField($field){
+        return $this->adminMapper->performSearchEducationField($field);
     }
 
    

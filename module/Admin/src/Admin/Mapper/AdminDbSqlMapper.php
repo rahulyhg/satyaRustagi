@@ -45,6 +45,17 @@ class AdminDbSqlMapper implements AdminMapperInterface {
             return $this->hydrator->hydrate($result->current(), new UserInfo());
         }
     }
+    
+    public function getEducationField($id) {
+        $statement = $this->dbAdapter->query("SELECT * FROM tbl_education_field WHERE id=:id");
+        $parameters = array(
+            'id' => $id
+        );
+        $result = $statement->execute($parameters);
+        if ($result instanceof ResultInterface && $result->isQueryResult() && $result->getAffectedRows()) {
+            return $this->hydrator->hydrate($result->current(), new EducationFields());
+        }
+    }
 
     public function getEducationFieldList($status) {
 //            Debug::dump($status);
@@ -53,25 +64,24 @@ class AdminDbSqlMapper implements AdminMapperInterface {
         $statement = $this->dbAdapter->query("SELECT * FROM tbl_education_field");
         $result = $statement->execute();
         //}
-        
-       // if(isset($status)){
+        // if(isset($status)){
 //        Debug::dump($status);
 //        exit;
 //        $statement = $this->dbAdapter->query("SELECT * FROM tbl_education_field  WHERE is_active=:is_active");
 //        $parameters = array(
 //            'is_active' => $status,
 //        );
-       //$result = $statement->execute($parameters);
-       //$result = $statement->execute();
+        //$result = $statement->execute($parameters);
+        //$result = $statement->execute();
         //}
         if ($result instanceof ResultInterface && $result->isQueryResult() && $result->getAffectedRows()) {
             $resultSet = new HydratingResultSet($this->hydrator, new EducationFields());
 
-         return $resultSet->initialize($result);
+            return $resultSet->initialize($result);
             //return $this->hydrator->hydrate($result->current(), new EducationFields());
         }
     }
-    
+
     //added by amir
     public function getEducationFieldRadioList($status) {
 //            Debug::dump($status);
@@ -80,7 +90,6 @@ class AdminDbSqlMapper implements AdminMapperInterface {
 //        $statement = $this->dbAdapter->query("SELECT * FROM tbl_education_field");
 //        $result = $statement->execute();
 //        }
-        
 //        if(isset($status)){
 //        Debug::dump($status);
 //        exit;
@@ -88,42 +97,102 @@ class AdminDbSqlMapper implements AdminMapperInterface {
         $parameters = array(
             'is_active' => $status,
         );
-       $result = $statement->execute($parameters);
-       //$result = $statement->execute();
+        $result = $statement->execute($parameters);
+        //$result = $statement->execute();
 //        }
         if ($result instanceof ResultInterface && $result->isQueryResult() && $result->getAffectedRows()) {
             $resultSet = new HydratingResultSet($this->hydrator, new EducationFields());
 
-         return $resultSet->initialize($result);
+            return $resultSet->initialize($result);
             //return $this->hydrator->hydrate($result->current(), new EducationFields());
         }
     }
-    
-    
 
-    public function saveEducationField($educationfieldEntity) {
-        
-        echo  "<pre>";
-    print_r($educationfieldEntity['education_field']);exit;
-    $created_date = (empty($educationfieldEntity->created_date))? date('Y-m-d h:i:s'):$educationfieldEntity->created_date;
-                $educationfieldEntity->modified_date = (empty($educationfieldEntity->modified_date))? date('Y-m-d h:i:s'):$educationfieldEntity->modified_date;
-        
-         $statement = $this->dbAdapter->query("UPDATE $table SET is_active=:is_active WHERE id=:id");
-        //Debug::dump($id);
+    public function saveEducationField($educationFieldsObject) {
+//                print_r($educationFieldsObject);
+//                exit;
+        $educatioData = $this->hydrator->extract($educationFieldsObject);
+        //print_r($educatioData);
         //exit;
-        $parameters = array(
-            'id' => $id,
-            'is_active' => $data['is_active']
-        );
-        $result = $statement->execute($parameters);
+        unset($educatioData['id']); // Neither Insert nor Update needs the ID in the array
 
-        if ($result) {
-            $respArr = array('status' => "success");
+        if ($educationFieldsObject->getId()) {
+//            echo  "<pre>";
+//            echo  "hello";exit;
+            $statement = $this->dbAdapter->query("UPDATE tbl_education_field 
+                SET education_field=:education_field,
+                    is_active=:is_active
+                    WHERE id=:id");
+            //Debug::dump($id);
+            //exit;
+            $parameters = array(
+                'id' => $educationFieldsObject->getId(),
+                'education_field' => $educationFieldsObject->getEducationField(),
+                'is_active' => $educationFieldsObject->getIsActive(),
+            );
+            $result = $statement->execute($parameters);
+            
+            if ($result)
+                    return "success";
+                else
+                    return "couldn't update";
         } else {
-            $respArr = array('status' => "couldn't update");
+             $statement = $this->dbAdapter->query("INSERT INTO tbl_education_field 
+                 (education_field, is_active, created_date)
+                 values(:education_field, :is_active, now())");
+                 
+           
+            $parameters = array(
+                'education_field' => $educationFieldsObject->getEducationField(),
+                'is_active' => $educationFieldsObject->getIsActive(),
+            );
+            //print_r($parameters);
+            //exit;
+            $result = $statement->execute($parameters);
+            
+            //if ($result) 
+           if ($result)
+                return "success";
+            else
+                return "couldn't update";
+
+        //return $respArr;
         }
 
-        return $respArr;
+        if ($result instanceof ResultInterface) {
+            if ($newId = $result->getGeneratedValue()) {
+                // When a value has been generated, set it on the object
+                $educationFieldsObject->setId($newId);
+            }
+
+            //print_r($educationFieldsObject);
+            //exit;
+            
+        }
+        
+        
+
+//        echo  "<pre>";
+//    print_r($educationfieldEntity);exit;
+//    $created_date = (empty($educationfieldEntity->created_date))? date('Y-m-d h:i:s'):$educationfieldEntity->created_date;
+//                $educationfieldEntity->modified_date = (empty($educationfieldEntity->modified_date))? date('Y-m-d h:i:s'):$educationfieldEntity->modified_date;
+//        
+//         $statement = $this->dbAdapter->query("UPDATE $table SET is_active=:is_active WHERE id=:id");
+//        //Debug::dump($id);
+//        //exit;
+//        $parameters = array(
+//            'id' => $id,
+//            'is_active' => $data['is_active']
+//        );
+//        $result = $statement->execute($parameters);
+//
+//        if ($result) {
+//            $respArr = array('status' => "success");
+//        } else {
+//            $respArr = array('status' => "couldn't update");
+//        }
+//
+//        return $respArr;
 //        $educationData = $this->hydrator->extract($educationObject);
 //        $educationData = array_filter((array) $educationData, function ($val) {
 //            return !is_null($val);
@@ -161,9 +230,9 @@ class AdminDbSqlMapper implements AdminMapperInterface {
     }
 
     public function changeStatusAll($table, $ids, $data) {
-       //print_r(explode(",",$ids));
-      //exit;
-        $ids=$this->dbAdapter->getPlatform()->quoteValueList(explode(",",$ids));
+        //print_r(explode(",",$ids));
+        //exit;
+        $ids = $this->dbAdapter->getPlatform()->quoteValueList(explode(",", $ids));
         //$placeholder=  str_repeat('?, ', count(explode(",",$ids))-1).'?';
         //echo $placeholder;
         //exit;
@@ -177,8 +246,8 @@ class AdminDbSqlMapper implements AdminMapperInterface {
         //Debug::dump($statement);
         //exit;
         $result = $statement->execute($parameters);
-        
-         if ($result) {
+
+        if ($result) {
             $respArr = array('status' => "Updated SuccessFully");
         } else {
             $respArr = array('status' => "Couldn't update");
@@ -196,7 +265,7 @@ class AdminDbSqlMapper implements AdminMapperInterface {
             'id' => $id
         );
         $result = $statement->execute($parameters);
-        
+
 //        if ($result) {
 //            $respArr = array('status' => "Deleted SuccessFully");
 //        } else {
@@ -209,31 +278,31 @@ class AdminDbSqlMapper implements AdminMapperInterface {
     public function deleteMultiple($table, $ids) {
 //        echo   "<pre>";
 //        print_r($ids);exit;
-        $ids=$this->dbAdapter->getPlatform()->quoteValueList(explode(",",$ids));
+        $ids = $this->dbAdapter->getPlatform()->quoteValueList(explode(",", $ids));
         $statement = $this->dbAdapter->query("DELETE FROM $table where id IN($ids)");
-        
+
 //        $parameters = array(
 //            'ids' => $ids,
 //        );
         $result = $statement->execute();
     }
-    
+
     public function viewById($table, $id) {
- 
+
         //echo $id;exit;
         $statement = $this->dbAdapter->query("SELECT * FROM $table WHERE id=:id");
         //$adapter->query('SELECT * FROM `artist` WHERE `id` = ?', array(5));
-        
+
         $parameters = array(
             'id' => $id,
         );
         //print_r($statement);
         ///exit;
         $result = $statement->execute($parameters);
-         if ($result instanceof ResultInterface && $result->isQueryResult() && $result->getAffectedRows()) {
+        if ($result instanceof ResultInterface && $result->isQueryResult() && $result->getAffectedRows()) {
             return $this->hydrator->hydrate($result->current(), new EducationFields());
         }
-       //print_r($result->current());exit;
+        //print_r($result->current());exit;
 //        if ($result) {
 //            $respArr = array('status' => "Deleted SuccessFully");
 //        } else {
@@ -241,6 +310,25 @@ class AdminDbSqlMapper implements AdminMapperInterface {
 //        }
 //
         //return $result;
+    }
+    
+    
+    public function performSearchEducationField($field) {
+        $field1 = empty($field) ? "" : "education_field like '" . $field . "%'";
+        //echo $id;exit;
+        $statement = $this->dbAdapter->query("SELECT * FROM tbl_education_field WHERE " . $field1 . "");
+        
+
+        $parameters = array(
+            'id' => $id,
+        );
+        //print_r($statement);
+        ///exit;
+        $result = $statement->execute($parameters);
+        if ($result instanceof ResultInterface && $result->isQueryResult() && $result->getAffectedRows()) {
+            return $this->hydrator->hydrate($result->current(), new EducationFields());
+        }
+       
     }
 
 }

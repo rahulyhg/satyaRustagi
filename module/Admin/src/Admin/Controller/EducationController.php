@@ -59,8 +59,8 @@ class EducationController extends AppController
 
 
                if($form->isValid()){
-//                   print_r($form->getData());
-//                   exit;
+                  // print_r($form->getData());
+                   //exit;
                 //$educationfieldEntity->exchangeArray($form->getData());
                 // print_r($religionEntity);die;
 //                $res = $this->getEducationfieldTable()->SaveEducationfield($educationfieldEntity);
@@ -86,12 +86,15 @@ class EducationController extends AppController
     }
 
     public function editAction()
-    {
+    {          
+//        echo  "<pre>";
+//           echo  "hello";exit;
         $form = new EducationfieldForm();
         if($this->params()->fromRoute('id')>0){
             $id = $this->params()->fromRoute('id');
-            // echo   $id;die;
-            $education = $this->getEducationfieldTable()->getEducationfield($id);
+//             echo   $id;die;
+//            $education = $this->getEducationfieldTable()->getEducationfield($id);
+            $education= $this->adminService->getEducationField($id);
             // print_r($religion);die;
             $form->bind($education);
             $form->get('submit')->setAttribute('value', 'Edit');
@@ -102,17 +105,18 @@ class EducationController extends AppController
         if (!isset($_POST['chkedit'])) {
         if($request->isPost()){
 
-            $educationfieldEntity = new Educationfields();
-
-               $form->setInputFilter(new EducationfieldFilter());
+//            $educationfieldEntity = new Educationfields();
+//
+//               $form->setInputFilter(new EducationfieldFilter());
                $form->setData($request->getPost());
 
 
                if($form->isValid()){
 
-                $educationfieldEntity = $form->getData();
+                //$educationfieldEntity = $form->getData();
                 // print_r($cityEntity);die;
-                $res = $this->getEducationfieldTable()->SaveEducationfield($educationfieldEntity);
+                //$res = $this->getEducationfieldTable()->SaveEducationfield($educationfieldEntity);
+                $res= $this->adminService->saveEducationField($form->getData());
 
 //                     return $this->redirect()->toRoute('admin', array(
 //                            'action' => 'index',
@@ -249,13 +253,14 @@ class EducationController extends AppController
     }
     
     public function performsearchAction() {
-        $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
+        //$adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
 
-        $field1 = empty($_POST['education_field']) ? "" : "education_field like '" . $_POST['education_field'] . "%'";
+        //$field1 = empty($_POST['education_field']) ? "" : "education_field like '" . $_POST['education_field'] . "%'";
         
         $sql = "select * from tbl_education_field where " . $field1 . "";
        // $sql = rtrim($sql, "&&");
-        $results = $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
+        //$results = $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
+        $results = $this->adminService->performSearchEducationField($_POST['education_field']);
 
         $view = new ViewModel(array("results" => $results));
         $view->setTerminal(true);

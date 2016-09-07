@@ -1,14 +1,18 @@
 <?php
 namespace Admin\Form;
 
+use Admin\Model\Entity\EducationFields;
 use Zend\Form\Form;
+use Zend\Stdlib\Hydrator\ClassMethods;
 
 class EducationfieldForm extends Form {
 
     public function __construct($name = null) {
         // we want to ignore the name passed
-        parent::__construct('tbl_education_field');
+        parent::__construct('EducationFields');
         $this->setAttribute('method', 'post');
+        $this->setHydrator(new ClassMethods());
+        $this->setObject(new EducationFields());
             
         $this->add(array(
             'name' => 'id',
