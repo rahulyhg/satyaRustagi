@@ -351,7 +351,7 @@ class ProfileController extends AppController {
         //$FamilyInfoForm->bind($familyInfo);
         $request = $this->getRequest();
         if ($request->isPost()) {
-          
+            \Zend\Debug\Debug::dump($request)
         }
 
 
