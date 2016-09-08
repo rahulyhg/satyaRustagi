@@ -27,4 +27,6 @@ interface AdminServiceInterface {
     public function viewById($table, $id);
     
     public function performSearchEducationField($field);
+    
+    public function educationFieldSearch($data);
 }

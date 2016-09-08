@@ -257,11 +257,11 @@ class EducationController extends AppController
 
         //$field1 = empty($_POST['education_field']) ? "" : "education_field like '" . $_POST['education_field'] . "%'";
         
-        $sql = "select * from tbl_education_field where " . $field1 . "";
+        //$sql = "select * from tbl_education_field where " . $field1 . "";
        // $sql = rtrim($sql, "&&");
         //$results = $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
         $results = $this->adminService->performSearchEducationField($_POST['education_field']);
-
+//        \Zend\Debug\Debug::dump($results);exit;
         $view = new ViewModel(array("results" => $results));
         $view->setTerminal(true);
         return $view;
@@ -271,13 +271,14 @@ class EducationController extends AppController
     }
     
     public function educationfieldsearchAction() {
-        $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
+//        $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
 
         $data = $_POST['value'];
 //        echo  "<pre>";
 //        print_r($data);die;
 
-        $result = $adapter->query("select * from tbl_education_field where education_field like '$data%' ", Adapter::QUERY_MODE_EXECUTE);
+//        $result = $adapter->query("select * from tbl_education_field where education_field like '$data%' ", Adapter::QUERY_MODE_EXECUTE);
+        $result = $this->adminService->educationFieldSearch($data);
 
 
         $view = new ViewModel(array("Results" => $result));

@@ -314,19 +314,55 @@ class AdminDbSqlMapper implements AdminMapperInterface {
     
     
     public function performSearchEducationField($field) {
+//        echo   "<pre>";
+//        echo  $field;exit;
         $field1 = empty($field) ? "" : "education_field like '" . $field . "%'";
         //echo $id;exit;
         $statement = $this->dbAdapter->query("SELECT * FROM tbl_education_field WHERE " . $field1 . "");
         
 
-        $parameters = array(
-            'id' => $id,
-        );
+//        $parameters = array(
+//            'id' => $id,
+//        );
         //print_r($statement);
         ///exit;
-        $result = $statement->execute($parameters);
-        if ($result instanceof ResultInterface && $result->isQueryResult() && $result->getAffectedRows()) {
-            return $this->hydrator->hydrate($result->current(), new EducationFields());
+        $result = $statement->execute();
+//        if ($result instanceof ResultInterface && $result->isQueryResult() && $result->getAffectedRows()) {
+//            return $this->hydrator->hydrate($result->current(), new EducationFields());
+//        }
+        
+         if ($result instanceof ResultInterface && $result->isQueryResult() && $result->getAffectedRows()) {
+            $resultSet = new HydratingResultSet($this->hydrator, new EducationFields());
+
+            return $resultSet->initialize($result);
+            //return $this->hydrator->hydrate($result->current(), new EducationFields());
+        }
+       
+    }
+    
+    public function educationFieldSearch($data) {
+//        echo   "<pre>";
+//        echo  $data;exit;
+//        $field1 = empty($field) ? "" : "education_field like '" . $field . "%'";
+        //echo $id;exit;
+        $statement = $this->dbAdapter->query("SELECT * FROM tbl_education_field WHERE education_field like '" . $data . "%'");
+//        \Zend\Debug\Debug::dump($statement);exit;
+
+//        $parameters = array(
+//            'id' => $id,
+//        );
+        //print_r($statement);
+        ///exit;
+        $result = $statement->execute();
+//        if ($result instanceof ResultInterface && $result->isQueryResult() && $result->getAffectedRows()) {
+//            return $this->hydrator->hydrate($result->current(), new EducationFields());
+//        }
+        
+         if ($result instanceof ResultInterface && $result->isQueryResult() && $result->getAffectedRows()) {
+            $resultSet = new HydratingResultSet($this->hydrator, new EducationFields());
+
+            return $resultSet->initialize($result);
+            //return $this->hydrator->hydrate($result->current(), new EducationFields());
         }
        
     }

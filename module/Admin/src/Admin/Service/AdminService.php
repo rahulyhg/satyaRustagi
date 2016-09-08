@@ -61,7 +61,12 @@ class AdminService implements AdminServiceInterface {
     public function performSearchEducationField($field){
         return $this->adminMapper->performSearchEducationField($field);
     }
-
+    
+    
+    
+    public function educationFieldSearch($data){
+        return $this->adminMapper->educationFieldSearch($data);
+    }
    
 
 }
