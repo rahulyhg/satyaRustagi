@@ -68,4 +68,6 @@ interface UserMapperInterface {
     public function getUserPostById($user_id);
     
     public function saveUserPost($userPostData);
+    
+    public function getFamilyInfoById($user_id);
 }

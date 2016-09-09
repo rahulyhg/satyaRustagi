@@ -347,11 +347,19 @@ class ProfileController extends AppController {
         //$familyInfo = $this->getFamilyInfoTable()->getFamilyInfo($session->offsetGet('id'));
         // print_r($udata->mother_photo);die;
         $FamilyInfoForm = new FamilyInfoForm();
+        $familyInfo = $this->userService->getFamilyInfoById($user_id);
+        //\Zend\Debug\Debug::dump($this->userService->getFamilyInfoById($user_id));
+        //exit;
         //$FamilyInfoForm->get('user_id')->setValue($session->offsetGet('id'));
-        //$FamilyInfoForm->bind($familyInfo);
+//        foreach ($familyInfo->brotherData as $results) {
+//            \Zend\Debug\Debug::dump($results);
+//        }
+        //\Zend\Debug\Debug::dump($familyInfo->brotherData);
+        //exit;
+        $FamilyInfoForm->bind($familyInfo->family);
         $request = $this->getRequest();
         if ($request->isPost()) {
-            \Zend\Debug\Debug::dump($request)
+            \Zend\Debug\Debug::dump($request);
         }
 
 
@@ -359,7 +367,7 @@ class ProfileController extends AppController {
         $pro_per = array($percentage, $this->profileBarTemplate($percentage));
         //Debug::dump($pro_per);
 
-        return new ViewModel(array("form" => $FamilyInfoForm,
+        return new ViewModel(array("form" => $FamilyInfoForm, 'familyInfo' => $familyInfo->family,
             'userSummary' => $this->userService->userSummaryById($user_id),
             "percent" => $pro_per));
     }

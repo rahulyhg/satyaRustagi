@@ -9,6 +9,7 @@ use Application\Model\Entity\UserInfo;
 use Zend\Db\Adapter\Adapter;
 use Zend\Db\Adapter\AdapterInterface;
 use Zend\Db\Adapter\Driver\ResultInterface;
+use Zend\Db\ResultSet\HydratingResultSet;
 use Zend\Db\ResultSet\ResultSet;
 use Zend\Db\Sql\Insert;
 use Zend\Db\Sql\Sql;
@@ -82,10 +83,10 @@ class UserDbSqlMapper implements UserMapperInterface {
 
             //Debug::dump($result->current());
             //exit;
-            $userInfo=$this->hydrator->hydrate($result->current(), new UserInfo());
-            $user=$this->hydrator->hydrate($result->current(), new User());
+            $userInfo = $this->hydrator->hydrate($result->current(), new UserInfo());
+            $user = $this->hydrator->hydrate($result->current(), new User());
             //$c = (object)array_merge((array)$userInfo, (array)$user);
-            return (object) array('userInfo'=>$userInfo,'user'=>$user);
+            return (object) array('userInfo' => $userInfo, 'user' => $user);
         }
     }
 
@@ -99,7 +100,7 @@ class UserDbSqlMapper implements UserMapperInterface {
 
         if ($result instanceof ResultInterface && $result->isQueryResult() && $result->getAffectedRows()) {
 
-              return $this->hydrator->hydrate($result->current(), new UserInfo());
+            return $this->hydrator->hydrate($result->current(), new UserInfo());
         }
     }
 
@@ -107,10 +108,10 @@ class UserDbSqlMapper implements UserMapperInterface {
 
         $userData = $this->hydrator->extract($userAboutData);
         $userData = array_filter((array) $userData, function ($val) {
-             return !is_null($val);
-           });
+            return !is_null($val);
+        });
 
-        $userData['about_yourself_partner_family']=$userData['about_me'];
+        $userData['about_yourself_partner_family'] = $userData['about_me'];
         unset($userData['about_me']);
 
         $sql = new Sql($this->dbAdapter);
@@ -122,7 +123,7 @@ class UserDbSqlMapper implements UserMapperInterface {
     }
 
     public function getUserPersonalDetailById($id) {
-        
+
         $sql = new Sql($this->dbAdapter);
         $select = $sql->select('tbl_user_info');
         $select->where(array('user_id = ?' => $id));
@@ -253,8 +254,8 @@ class UserDbSqlMapper implements UserMapperInterface {
         //exit;
         $userData = $this->hydrator->extract($professionDetailsData);
         $userData = array_filter((array) $userData, function ($val) {
-             return !is_null($val);
-           });
+            return !is_null($val);
+        });
 
         unset($userData['created_date']);
         //Debug::dump($userData);
@@ -500,10 +501,10 @@ class UserDbSqlMapper implements UserMapperInterface {
 
     public function saveUserPersonalDetails($personalDetailsObject) {
 
-        $userData=$this->hydrator->extract($personalDetailsObject);
-         $userData = array_filter((array) $userData, function ($val) {
-             return !is_null($val);
-           });
+        $userData = $this->hydrator->extract($personalDetailsObject);
+        $userData = array_filter((array) $userData, function ($val) {
+            return !is_null($val);
+        });
         //Debug::dump($userData);
         //exit;
         //$remote = new RemoteAddress;
@@ -624,10 +625,10 @@ class UserDbSqlMapper implements UserMapperInterface {
         }
         return $referenceNo;
     }
-    
-    public function getUserPostById($user_id){
-        
-          $statement = $this->dbAdapter->query("SELECT * FROM tbl_post WHERE user_id=:user_id");
+
+    public function getUserPostById($user_id) {
+
+        $statement = $this->dbAdapter->query("SELECT * FROM tbl_post WHERE user_id=:user_id");
         $parameters = array(
             'user_id' => $user_id
         );
@@ -635,15 +636,15 @@ class UserDbSqlMapper implements UserMapperInterface {
 
         if ($result instanceof ResultInterface && $result->isQueryResult() && $result->getAffectedRows()) {
 
-              return $this->hydrator->hydrate($result->current(), new Post());
+            return $this->hydrator->hydrate($result->current(), new Post());
         }
-        
     }
-    public function saveUserPost($userPostData){
-         $postData = $this->hydrator->extract($userPostData);
+
+    public function saveUserPost($userPostData) {
+        $postData = $this->hydrator->extract($userPostData);
         $postData = array_filter((array) $postData, function ($val) {
-             return !is_null($val);
-           });
+            return !is_null($val);
+        });
 
 //        $userData['about_yourself_partner_family']=$userData['about_me'];
         //unset($userData['about_me']);
@@ -655,6 +656,181 @@ class UserDbSqlMapper implements UserMapperInterface {
         $action->where(array('id = ?' => $postData['id']));
         $stmt = $sql->prepareStatementForSqlObject($action);
         $result = $stmt->execute();
+    }
+
+    public function getFamilyInfoById($user_id) {
+        $family = new \Application\Model\Entity\Family();
+        $statement = $this->dbAdapter->query("SELECT tui.name_title_user, tui.full_name, 
+            tui.dob, tui.live_status,
+            tui.profile_photo, tui.gender, tui.family_values_status, tui.user_id as user_id,
+            tfr.user_id as user_id_rel, tfr.father_id, tfr.mother_id, tfr.wife_id, tfr.husband_id  FROM tbl_user_info as tui LEFT JOIN tbl_family_relation as tfr 
+                ON tui.user_id=tfr.user_id WHERE tui.user_id=:user_id");
+        $parameters = array(
+            'user_id' => $user_id
+        );
+        $result = $statement->execute($parameters);
+        $userInfo = $result->current();
+        $family->setFamilyValues($userInfo['family_values_status']);
+
+
+        $parameters = array(
+            'user_id' => $userInfo['father_id']
+        );
+        $result = $statement->execute($parameters);
+        $fatherInfo = $result->current();
+        $family->setFatherId($fatherInfo['user_id']);
+        $family->setNameTitleFather($fatherInfo['name_title_user']);
+        $family->setFatherName($fatherInfo['full_name']);
+        $family->setFatherDob($fatherInfo['dob']);
+        $family->setFatherStatus($fatherInfo['live_status']);
+        $family->setFatherPhoto($fatherInfo['profile_photo']);
+
+
+
+        $parameters = array(
+            'user_id' => $userInfo['mother_id']
+        );
+        $result = $statement->execute($parameters);
+        $motherInfo = $result->current();
+        $family->setMotherId($motherInfo['user_id']);
+        $family->setNameTitleMother($motherInfo['name_title_user']);
+        $family->setMotherName($motherInfo['full_name']);
+        $family->setMotherDob($motherInfo['dob']);
+        $family->setMotherStatus($motherInfo['live_status']);
+        $family->setMotherPhoto($motherInfo['profile_photo']);
+
+
+
+        if ($userInfo['gender'] === "Male") {
+            $parameters = array(
+                'user_id' => $userInfo['wife_id']
+            );
+            $result = $statement->execute($parameters);
+            $wifeInfo = $result->current();
+            $family->setSpouseId($wifeInfo['user_id']);
+            $family->setNameTitleSpouse($wifeInfo['name_title_user']);
+            $family->setSpouseName($wifeInfo['full_name']);
+            $family->setSpouseDob($wifeInfo['dob']);
+            $family->setSisterStatus($wifeInfo['live_status']);
+            $family->setSpousePhoto($wifeInfo['profile_photo']);
+            
+        }
+
+        if ($userInfo['gender'] === "Female") {
+            $parameters = array(
+                'user_id' => $userInfo['husband_id']
+            );
+            $result = $statement->execute($parameters);
+            $husbandInfo = $result->current();
+            $family->setSpouseId($husbandInfo['user_id']);
+            $family->setNameTitleSpouse($husbandInfo['name_title_user']);
+            $family->setSpouseName($husbandInfo['full_name']);
+            $family->setSpouseDob($husbandInfo['dob']);
+            $family->setSisterStatus($husbandInfo['live_status']);
+            $family->setSpousePhoto($husbandInfo['profile_photo']);
+        }
+
+
+        $parameters = array(
+            'user_id' => $fatherInfo['father_id']
+        );
+        $result = $statement->execute($parameters);
+        $grandFatherInfo = $result->current();
+        $family->setGrandFatherId($grandFatherInfo['user_id']);
+        $family->setNameTitleGrandFather($grandFatherInfo['name_title_user']);
+        $family->setGrandFatherName($grandFatherInfo['full_name']);
+        $family->setGrandFatherDob($grandFatherInfo['dob']);
+        $family->setGrandFatherStatus($grandFatherInfo['live_status']);
+        $family->setGrandFatherPhoto($grandFatherInfo['profile_photo']);
+
+
+
+        $parameters = array(
+            'user_id' => $fatherInfo['wife_id']
+        );
+        $result = $statement->execute($parameters);
+        $grandMotherInfo = $result->current();
+        $family->setGrandMotherId($grandMotherInfo['user_id']);
+        $family->setNameTitleGrandMother($grandMotherInfo['name_title_user']);
+        $family->setGrandMotherName($grandMotherInfo['full_name']);
+        $family->setGrandMotherDob($grandMotherInfo['dob']);
+        $family->setGrandMotherStatus($grandMotherInfo['live_status']);
+        $family->setGrandMotherPhoto($grandMotherInfo['profile_photo']);
+
+        $parameters = array(
+            'user_id' => $fatherInfo['mother_id']
+        );
+        $result = $statement->execute($parameters);
+        $grandGrandMotherInfo = $result->current();
+        $family->setGrandGrandMotherId($grandGrandMotherInfo['user_id']);
+        $family->setNameTitleGrandGrandMother($grandGrandMotherInfo['name_title_user']);
+        $family->setGrandGrandMotherName($grandGrandMotherInfo['full_name']);
+        $family->setGrandGrandMotherDob($grandGrandMotherInfo['dob']);
+        $family->setGrandGrandMotherStatus($grandGrandMotherInfo['live_status']);
+        $family->setGrandGrandMotherPhoto($grandGrandMotherInfo['profile_photo']);
+        
+        $parameters = array(
+            'user_id' => $grandFatherInfo['father_id']
+        );
+        $result = $statement->execute($parameters);
+        $grandGrandFatherInfo = $result->current();
+        $family->setGrandGrandFatherId($grandGrandFatherInfo['user_id']);
+        $family->setNameTitleGrandGrandFather($grandGrandFatherInfo['name_title_user']);
+        $family->setGrandGrandFatherName($grandGrandFatherInfo['full_name']);
+        $family->setGrandGrandFatherDob($grandGrandFatherInfo['dob']);
+        $family->setGrandGrandFatherStatus($grandGrandFatherInfo['live_status']);
+        $family->setGrandGrandFatherPhoto($grandGrandFatherInfo['profile_photo']);
+        
+        // brother
+        
+        $sql = new Sql($this->dbAdapter);
+        $select = $sql->select(array('tui'=>'tbl_user_info'));
+        $select->join(array('tfr' => 'tbl_family_relation'), 'tui.user_id=tfr.user_id', array('user_id_rel'=>'user_id', 'father_id'), $select::JOIN_LEFT);
+        $select->columns(array('name_title_user', 'brother_name'=>'full_name', 
+           'dob', 'live_status',
+            'profile_photo', 'gender', 'family_values_status', 'user_id'=>'user_id',
+          ));
+        $select->where(array('tfr.father_id = ?' => $userInfo['father_id']));
+        $stmt = $sql->prepareStatementForSqlObject($select);
+        $result = $stmt->execute();
+        
+        //$resultSet = new HydratingResultSet($this->hydrator, $family);
+       
+        $brotherData=$this->resultSet->initialize($result);
+        $family->setNumbor($brotherData->count());
+        
+        //$family->setBrotherName($resultSet->full_name']);
+        
+//         $statement = $this->dbAdapter->query("SELECT tui.name_title_user, tui.full_name, 
+//            tui.dob, tui.live_status,
+//            tui.profile_photo, tui.gender, tui.family_values_status, tui.user_id as user_id,
+//            tfr.user_id as user_id_rel, tfr.father_id, tfr.mother_id, tfr.wife_id, tfr.husband_id  FROM tbl_user_info as tui LEFT JOIN tbl_family_relation as tfr 
+//                ON tui.user_id=tfr.user_id WHERE tui.user_id=:user_id");
+        //$statement = $this->dbAdapter->query("SELECT tfr.*  FROM  tbl_family_relation as tfr 
+            //WHERE tfr.father_id='".$userInfo['father_id']."' GROUP BY tfr.father_id");
+//        $parameters = array(
+//            'father_id' => $userInfo['father_id']
+//        );
+        //$result = $statement->execute($parameters);
+        //$brotherInfo = $result->current();
+        //foreach ($resultSet as $results){
+        //Debug::dump($results);
+        //}
+        return (object) array('userInfo' => $userInfo, 'family' => $family, 'brotherData'=>$brotherData);
+        //return $family;
+
+        //Debug::dump($fatherInfo);
+        //exit;
+//        if ($result instanceof ResultInterface && $result->isQueryResult() && $result->getAffectedRows()) {
+//
+//            $userInfo = $this->hydrator->hydrate($result->current(), new UserInfo());
+//            $family = $this->hydrator->hydrate($result->current(), new \Application\Model\Entity\Family());
+//            //$c = (object)array_merge((array)$userInfo, (array)$user);
+//            return (object) array('userInfo' => $userInfo, 'family' => $family);
+//
+//            //return $this->hydrator->hydrate($result->current(), new \Application\Model\Entity\Family());
+//            //return $result->current();
+//        }
     }
 
 }
