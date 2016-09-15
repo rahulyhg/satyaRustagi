@@ -877,48 +877,35 @@ class UserDbSqlMapper implements UserMapperInterface {
         $resultSet = $this->resultSet->initialize($result);
         //Debug::dump($resultSet);
         $sisterData=$resultSet->toArray();
+        
+         // Kids
+
+        $sql = new Sql($this->dbAdapter);
+        $select = $sql->select(array('tui' => 'tbl_user_info'));
+        $select->join(array('tfr' => 'tbl_family_relation'), 'tui.user_id=tfr.user_id', array('user_id_rel' => 'user_id', 'father_id'), $select::JOIN_LEFT);
+        $select->columns(array('name_title_user', 'kids_name' => 'full_name',
+            'dob', 'live_status',
+            'profile_photo', 'gender', 'family_values_status', 'user_id' => 'user_id',
+        ));
+        $select->where(array('tfr.father_id = ?' => $user_id));
+        
+        $stmt = $sql->prepareStatementForSqlObject($select);
+        $result = $stmt->execute();
+
+        //$resultSet = new HydratingResultSet($this->hydrator, $family);
+
+        $resultSet = $this->resultSet->initialize($result);
+        //Debug::dump($resultSet);
+        $kidsData=$resultSet->toArray();
+        //Debug::dump($kidsData);
         //$family->setNumbor($brotherData->count() > 0 ? $brotherData->count() : '');
-        // Sister
-//        $sql = new Sql($this->dbAdapter);
-//        $select = $sql->select(array('tui'=>'tbl_user_info'));
-//        $select->join(array('tfr' => 'tbl_family_relation'), 'tui.user_id=tfr.user_id', array('user_id_rel'=>'user_id', 'father_id'), $select::JOIN_LEFT);
-//        $select->columns(array('name_title_user', 'brother_name'=>'full_name', 
-//           'dob', 'live_status',
-//            'profile_photo', 'gender', 'family_values_status', 'user_id'=>'user_id',
-//          ));
-//        $select->where(array('tfr.father_id = ?' => $userInfo['father_id']));
-//        $select->where(array('tui.user_id != ?' => $user_id), \Zend\Db\Sql\Predicate\Predicate::OP_AND);
-//        $stmt = $sql->prepareStatementForSqlObject($select);
-//        $result = $stmt->execute();
-//        
-//        //$resultSet = new HydratingResultSet($this->hydrator, $family);
-//       
-//        $brotherData=$this->resultSet->initialize($result);
-//        $family->setNumbor($brotherData->count());
-        //$family->setBrotherName($resultSet->full_name']);
-//         $statement = $this->dbAdapter->query("SELECT tui.name_title_user, tui.full_name, 
-//            tui.dob, tui.live_status,
-//            tui.profile_photo, tui.gender, tui.family_values_status, tui.user_id as user_id,
-//            tfr.user_id as user_id_rel, tfr.father_id, tfr.mother_id, tfr.wife_id, tfr.husband_id  FROM tbl_user_info as tui LEFT JOIN tbl_family_relation as tfr 
-//                ON tui.user_id=tfr.user_id WHERE tui.user_id=:user_id");
-        //$statement = $this->dbAdapter->query("SELECT tfr.*  FROM  tbl_family_relation as tfr 
-        //WHERE tfr.father_id='".$userInfo['father_id']."' GROUP BY tfr.father_id");
-//        $parameters = array(
-//            'father_id' => $userInfo['father_id']
-//        );
-        //$result = $statement->execute($parameters);
-        //$brotherInfo = $result->current();
-        //foreach ($resultSet as $results){
-        //Debug::dump($results);
-        //}
-        //Debug::dump($family);
-        //exit;
-        //$familyInfo['family_id']=  ;
+   
 
         return (object) array('userInfo' => $userInfo,
                     'familyInfoObject' => $family,
                     'brotherData' => $brotherData,
                     'sisterData' => $sisterData,
+                    'kidsData' => $kidsData,
                     'familyInfoArray' => $familyInfo);
         //return $family;
         //Debug::dump($fatherInfo);
@@ -1117,6 +1104,56 @@ class UserDbSqlMapper implements UserMapperInterface {
                     //Debug::dump($profileId);
                     //exit;
                     $this->saveRelation($profileId, $myFatherId, 's');
+                }
+            }
+        } else {
+
+            //$bNum = count($familyData['brother_name']);
+            //Debug::dump($bNum);
+            //exit;
+
+   
+        }
+        
+         if ($familyData['numkid'] > '0') {
+
+            for ($i = 0; $i < $familyData['numkid']; $i++) {
+                //Debug::dump($familyData['brother_name'][$i]);
+                //exit;
+
+                if (!empty($familyData['kids_id'][$i])) {
+                    //Debug::dump($familyData);
+                    //exit;
+                    $sNum = count($familyData['kids_id']);
+
+
+                    $kidsData['user_id'] = $familyData['kids_id'][$i];
+                    $kidsData['name_title_user'] = $familyData['name_title_kids'][$i];
+                    $kidsData['full_name'] = $familyData['kids_name'][$i];
+                    $kidsData['live_status'] = $familyData['kids_status'][$i];
+                    $kidsData['dob'] = date('Y-m-d', strtotime($familyData['kids_dob'][$i]));
+                    $kidsData['dod'] = date('Y-m-d', strtotime($familyData['kids_dod'][$i]));
+                    //$userData['time'] = $familyData;
+
+                    $action = new Update('tbl_user_info');
+                    $action->set($kidsData);
+                    $action->where(array('user_id = ?' => $kidsData['user_id']));
+                    $stmt = $sql->prepareStatementForSqlObject($action);
+                    //Debug::dump($stmt);
+                    //exit;
+                    $result = $stmt->execute();
+                } elseif (!empty($familyData['kids_name'][$i])) {
+//                    Debug::dump($familyData);
+//                    exit;
+                    $allParent = $this->getFirstParent($user_id);
+                    $myFatherId = $allParent[0];
+                    //Debug::dump($familyData);
+                    //exit;
+                    $profileId = $this->createFamilyProfile($familyData['kids_name'][$i], $familyData['name_title_kids'][$i], $familyData['kids_status'][$i], '', '', 'Male');
+                    //Debug::dump($myFatherId);
+                    //Debug::dump($profileId);
+                    //exit;
+                    $this->saveRelation($profileId, $user_id, 'f');
                 }
             }
         } else {

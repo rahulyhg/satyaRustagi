@@ -1,4 +1,5 @@
 <?php
+//\Zend\Debug\Debug::dump($this->userSummary->userInfo->getProfilePhoto());
 if($this->gallery_data){
 	$images = array();
 	foreach ($gallery_data as $result)
@@ -36,8 +37,8 @@ if($this->gallery_data){
 
 <?php $session=new Zend\Session\Container('user');?>
 <div class="col-sm-3 profile-img col-xs-4">
-<?php if($session->offsetGet('profile_photo') !=''){ ?>
-	<img   id="profile_photo" src="<?php echo $this->basePath().$session->offsetGet('profile_photo'); ?>" width="146" height="146"/>
+<?php if(!empty($this->userSummary->userInfo->getProfilePhoto())){ ?>
+	<img   id="profile_photo" src="<?php echo $this->basePath('uploads/').$this->userSummary->userInfo->getProfilePhoto(); ?>" width="146" height="146"/>
 <?php }else{?>
 	<img src="<?php echo $this->basePath('img/default_user.png') ?>" width="146" height="146"/>
 <?php } ?>

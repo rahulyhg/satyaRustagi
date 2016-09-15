@@ -1,5 +1,5 @@
 <?php
-\Zend\Debug\Debug::dump($this->sisDataJson);
+  // \Zend\Debug\Debug::dump(count($this->kidsData));
 
 ?>
 
@@ -163,11 +163,10 @@
 			<label for="City" class="col-sm-2 form-control-label edupading"><?php echo $this->translate('No of Kids') ?></label>
 			<div class="col-sm-3">
 			 <select name="numkid" class="form-control" id="noofkids">
-				<option>0</option>
-				<option>1</option>
-				<option>2</option>
-				<option>3</option>
-				<option>4</option>        
+		<?php for($kids=0; $kids<5; $kids++){ ?>
+            <option value="<?php echo $kids; ?>" <?php echo $kids===count($this->kidsData)?"selected='selected'":"";?>><?php echo $kids;?></option>
+       
+            <?php } ?>      
 			</select>        
 			</div>
 			<label for="State" class="col-sm-2 form-control-label edupading"><?php echo $this->translate('') ?></label>
@@ -1056,10 +1055,25 @@ $(document).ready(function() {
         $("#kidDiv").html('');
         if(selVal > 0) {
             for(var i = 1; i<= selVal; i++) {				
-              $("#kidDiv").append('<div class="form-group row"><label for="grand_fatherName" class="col-sm-2 form-control-label edupading "><?php echo $this->translate('Kid Name');?></label><div class="col-sm-3 coltilte" ><select class="form-control" name="name_title_kids[]" style="padding:0;"><option>Mr.</option><option>Mrs</option><option>Miss</option><option>Dr.</option></select></div><div class="col-sm-3 colname"><input type="text" name="kids_name[]" class="form-control" /></div><label for="Phone No." class="col-sm-2 form-control-label edupading"><?php echo $this->translate('Kid Status') ?></label><div class="col-sm-3"><select class="form-control" name="kids_status[]"><option>Select</option><option>Alive</option><option>Passed Away</option></select></div></div><div class="form-group row"><label for="Alt. Mobile No." class="col-sm-2 form-control-label edupading"><?php echo $this->translate('Date of Birth');?></label><div class="col-sm-3"> <input type="text" name="kids_dob[]" class="form-control datepicker1" /></div><div id="mother_AliveInfoArea"><label for="Phone No." class="col-sm-2 form-control-label edupading"><?php  echo $this->translate('Kid Photo') ?></label><div class="col-sm-3"><label>  <a href="#" data-toggle="modal" data-target="#avatar-modal1" onclick="showcropbox(&quot;kids_photo&quot;,&quot;tbl_family_info&quot;)"><img src="<?php echo $this->basePath() ?>/gallery/thumb/gallery.jpg" height="30" width="30" />Upload Photo</a></label></div></div></div>');
+              $("#kidDiv").append('<div class="form-group row"><label for="grand_fatherName" class="col-sm-2 form-control-label edupading "><?php echo $this->translate('Kid Name');?></label><div class="col-sm-3 coltilte" ><select class="form-control" name="name_title_kids[]" style="padding:0;"><option>Mr.</option><option>Mrs</option><option>Miss</option><option>Dr.</option></select></div><div class="col-sm-3 colname"><input type="text" name="kids_name[]" class="form-control" /><input type="hidden" name="kids_id[]" class="form-control" /></div><label for="Phone No." class="col-sm-2 form-control-label edupading"><?php echo $this->translate('Kid Status') ?></label><div class="col-sm-3"><select class="form-control" name="kids_status[]"><option>Select</option><option>Alive</option><option>Passed Away</option></select></div></div><div class="form-group row"><label for="Alt. Mobile No." class="col-sm-2 form-control-label edupading"><?php echo $this->translate('Date of Birth');?></label><div class="col-sm-3"> <input type="text" name="kids_dob[]" class="form-control datepicker1" /></div><div id="mother_AliveInfoArea"><label for="Phone No." class="col-sm-2 form-control-label edupading"><?php  echo $this->translate('Kid Photo') ?></label><div class="col-sm-3"><label>  <a href="#" data-toggle="modal" data-target="#avatar-modal1" onclick="showcropbox(&quot;kids_photo&quot;,&quot;tbl_family_info&quot;)"><img src="<?php echo $this->basePath() ?>/gallery/thumb/gallery.jpg" height="30" width="30" />Upload Photo</a></label></div></div></div>');
             }
         }
         $( ".datepicker1" ).datepicker({  changeYear: true,dateFormat: "mm/dd/yy" });
+            var kidsData=JSON.parse('<?php echo $this->kidsDataJson?>');
+        var kidsName=document.getElementsByName("kids_name[]");
+        var kidsId=document.getElementsByName("kids_id[]");
+        var nameTitleKids=document.getElementsByName("name_title_kids[]");
+        var kidsStatus=document.getElementsByName("kids_status[]");
+        var kidsDob=document.getElementsByName("kids_dob[]");
+        for(var i =0;i<kidsData.length;i++){
+            console.log(kidsData[i]);
+            kidsName[i].value=kidsData[i].sister_name;
+            kidsId[i].value=kidsData[i].user_id;
+            nameTitleKids[i].value=kidsData[i].name_title_user;
+            kidsStatus[i].value=kidsData[i].live_status;
+            kidsDob[i].value=kidsData[i].dob;
+      
+        }
         
     });	
 	
@@ -1209,6 +1223,7 @@ $(document).ready(function() {
  var event = new Event('change');
 document.getElementById('noofbro').dispatchEvent(event);
 document.getElementById('noofsis').dispatchEvent(event);
+document.getElementById('noofkids').dispatchEvent(event);
 
     //var noofbro=$('#noofbro').val();
     //var noofsis=$('#noofsis').val();

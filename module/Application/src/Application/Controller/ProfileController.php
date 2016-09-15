@@ -403,6 +403,7 @@ class ProfileController extends AppController {
         
         $broDataJson=  \Zend\Json\Json::encode($familyInfo->brotherData);
         $sisDataJson=  \Zend\Json\Json::encode($familyInfo->sisterData);
+        $kidsDataJson=  \Zend\Json\Json::encode($familyInfo->kidsData);
         
 
         return new ViewModel(array("form" => $FamilyInfoForm,
@@ -410,8 +411,10 @@ class ProfileController extends AppController {
             'familyInfoObject' => $familyInfo->familyInfoObject, 
             'brotherData'=>$familyInfo->brotherData,
             'sisterData'=>$familyInfo->sisterData,
+            'kidsData'=>$familyInfo->kidsData,
             'broDataJson'=>$broDataJson,
             'sisDataJson'=>$sisDataJson,
+            'kidsDataJson'=>$kidsDataJson,
             'familyInfoArray'=>$familyInfo->familyInfoArray,
             'userSummary' => $this->userService->userSummaryById($user_id),
             "percent" => $pro_per));
