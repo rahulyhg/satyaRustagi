@@ -1077,6 +1077,57 @@ class UserDbSqlMapper implements UserMapperInterface {
 
    
         }
+        
+        if ($familyData['numsis'] > '0') {
+
+            for ($i = 0; $i < $familyData['numsis']; $i++) {
+                //Debug::dump($familyData['brother_name'][$i]);
+                //exit;
+
+                if (!empty($familyData['sister_id'][$i])) {
+                    //Debug::dump($familyData);
+                    //exit;
+                    $sNum = count($familyData['sister_id']);
+
+
+                    $sisterData['user_id'] = $familyData['brother_id'][$i];
+                    $sisterData['name_title_user'] = $familyData['name_title_sister'][$i];
+                    $sisterData['full_name'] = $familyData['sister_name'][$i];
+                    $sisterData['live_status'] = $familyData['sister_status'][$i];
+                    $sisterData['dob'] = date('Y-m-d', strtotime($familyData['sister_dob'][$i]));
+                    $sisterData['dod'] = date('Y-m-d', strtotime($familyData['sister_dod'][$i]));
+                    //$userData['time'] = $familyData;
+
+                    $action = new Update('tbl_user_info');
+                    $action->set($sisterData);
+                    $action->where(array('user_id = ?' => $sisterData['user_id']));
+                    $stmt = $sql->prepareStatementForSqlObject($action);
+                    //Debug::dump($stmt);
+                    //exit;
+                    $result = $stmt->execute();
+                } elseif (!empty($familyData['sister_name'][$i])) {
+//                    Debug::dump($familyData);
+//                    exit;
+                    $allParent = $this->getFirstParent($user_id);
+                    $myFatherId = $allParent[0];
+                    //Debug::dump($familyData);
+                    //exit;
+                    $profileId = $this->createFamilyProfile($familyData['sister_name'][$i], $familyData['name_title_sister'][$i], $familyData['sister_status'][$i], '', '', 'Female');
+                    //Debug::dump($myFatherId);
+                    //Debug::dump($profileId);
+                    //exit;
+                    $this->saveRelation($profileId, $myFatherId, 's');
+                }
+            }
+        } else {
+
+            //$bNum = count($familyData['brother_name']);
+            //Debug::dump($bNum);
+            //exit;
+
+   
+        }
+
 
 
 
@@ -1373,6 +1424,23 @@ class UserDbSqlMapper implements UserMapperInterface {
 
             $parentData['user_id'] = $user_id;
             $parentData['gender'] = 'Male';
+            $action = new Insert('tbl_family_relation');
+            $action->values($parentData);
+            $stmt = $sql->prepareStatementForSqlObject($action);
+            $result = $stmt->execute();
+
+            if ($result instanceof ResultInterface) {
+                $action = new Update('tbl_family_relation');
+                $action->set(array('father_id' => $relation_id));
+                $action->where(array('user_id = ?' => $user_id));
+                $stmt = $sql->prepareStatementForSqlObject($action);
+                $result = $stmt->execute();
+            }
+        }
+        if ($relation == 's') {
+
+            $parentData['user_id'] = $user_id;
+            $parentData['gender'] = 'Female';
             $action = new Insert('tbl_family_relation');
             $action->values($parentData);
             $stmt = $sql->prepareStatementForSqlObject($action);
