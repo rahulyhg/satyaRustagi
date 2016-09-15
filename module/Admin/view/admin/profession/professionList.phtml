@@ -22,20 +22,20 @@
                         <td><input type="checkbox" value="<?=$profession->id?>" class="checkme" name="checkme[]"> </td> 
                        <td><?= $i ?></td>  
                         <td><?= $profession->profession?></td>                       
-                        <td class="hidden-480"><?=$profession->modified_date?></td>
-                        <td class="hidden-480"><?=$profession->created_date?></td>
+                        <td class="hidden-480"><?=$profession->modifiedDate?></td>
+                        <td class="hidden-480"><?=$profession->createdDate?></td>
                         
                         <td class="hidden-480">
-						<!--<?php echo ($profession->IsActive==1)? 'Active': '<span class="label label-sm label-warning">In-Active</span>'; ?>-->
-                        <?php $status = ($profession->IsActive==1)? 'Active': 'In-Active';
-                        $statuscolor = ($profession->IsActive==1)? 'activestatus': 'de-activestatus';
+						<!--<?php echo ($profession->isActive==1)? 'Active': '<span class="label label-sm label-warning">In-Active</span>'; ?>-->
+                        <?php $status = ($profession->isActive==1)? 'Active': 'In-Active';
+                        $statuscolor = ($profession->isActive==1)? 'activestatus': 'de-activestatus';
                          ?>
-                          <div name="ChangeStatus" id="changestatus<?=$i;?>" onclick="changestatusquick(<?=$profession->id?>,<?= ($profession->IsActive==0)?0:1; ?>,'<?php echo $this->
+                          <div name="ChangeStatus" id="changestatus<?=$i;?>" onclick="changestatusquick(<?=$profession->id?>,<?= ($profession->isActive==0)?0:1; ?>,'<?php echo $this->
                                                                 url('admin/profession', array('action'=>
                                                                     'changestatus')); ?>',changstatusresult);" class="<?=$statuscolor?>">
                         </div>
                         </td>
-                        <td class="hidden-480"><?php echo ($profession->modified_by==1)? 'Admin': 'NotByAdmin'; ?></td>
+                        <td class="hidden-480"><?php echo ($profession->modifiedBy==1)? 'Admin': 'NotByAdmin'; ?></td>
                         <td><div class="hidden-sm hidden-xs action-buttons"> 
                         <!--<a class="blue" href="<?php echo $this->url('admin',array('controller'=>'profession','action'=>'view','id'=>$profession->id)); ?>">
                          <i class="ace-icon fa fa-search-plus bigger-130"></i> </a> -->

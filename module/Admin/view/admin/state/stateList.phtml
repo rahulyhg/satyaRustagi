@@ -19,25 +19,27 @@
                       <?php 
                       $i=1;
                       foreach ($states as $state) {
+//                          echo  "<pre>";
+//                          print_r($state);exit;
                       
                       ?>
                       <tr>
                             <td><input type="checkbox" value="<?=$state->id?>" class="checkme" name="checkme[]"> </td>  
                         <td> <?=$i?></td>
-                        <td><?= $state->state_name?></td>                       
-                        <td class="hidden-480"><?= $state->country_name?></td>
-                        <td class="hidden-480"><?= $state->modified_date?></td>
-                        <td class="hidden-480"><?= $state->created_date?></td>
+                        <td><?= $state->stateName?></td>                       
+                        <td class="hidden-480"><?= $state->countryName?></td>
+                        <td class="hidden-480"><?= $state->modifiedDate?></td>
+                        <td class="hidden-480"><?= $state->createdDate?></td>
                         
                         <td class="hidden-480" align="center">
 
     <?php
-    $status = ($state->IsActive == 1) ? 'Active' : 'In-Active';
-    $statuscolor = ($state->IsActive == 1) ? 'activestatus' : 'de-activestatus';
+    $status = ($state->isActive == 1) ? 'Active' : 'In-Active';
+    $statuscolor = ($state->isActive == 1) ? 'activestatus' : 'de-activestatus';
     ?>
                                             <div name="ChangeStatus" id="changestatus<?= $i; ?>" onclick=
                                                 "changestatusquick(<?= $state->id ?>,<?= ($state->
-                                                        IsActive == 0) ? 0 : 1; ?>, '<?php echo $this->
+                                                        isActive == 0) ? 0 : 1; ?>, '<?php echo $this->
                                                                 url('admin/state', array('action'=>
                                                                     'changestatus')); ?>', 
                                                                         changstatusresult);" class="<?= 
@@ -45,7 +47,7 @@
                                             </div>
 
                                         </td>
-                        <td class="hidden-480"><?php echo ($state->modified_by==1)? 'Admin': 'NotByAdmin'; ?></td>
+                        <td class="hidden-480"><?php echo ($state->modifiedBy==1)? 'Admin': 'NotByAdmin'; ?></td>
                         <td aria-expanded="false" class="accordion1">
                         <div class="hidden-sm hidden-xs action-buttons">                        
                          <a class="blue" style="cursor:pointer;" data-toggle="modal" data-target="#myModal" tar="indview<?=$i?>

@@ -55,8 +55,8 @@
                                         <div class="form-group clearfix margintopbottom20">
                                             <label id="flight_nos" class="col-sm-2 control-label labelalign ">Country Name</label>
                                             <div class="col-sm-2 ">
-                                                <input id="search_countryName" class=" form-control inputchange" placeholder="India" type="text" 
-                                                       onkeyup="countrysearchactions($(this).val(), '<?php echo $this->url('admin/country', array('action'=>'countrysearch'))?>', countrysearchresp, 'country_name')" name="country_name">
+                                                <input id="search_countryName" class=" form-control inputchange" placeholder="Country Name" type="text" 
+                                                       onkeyup="countrysearchactions($(this).val(), '<?php echo $this->url('admin/country', array('action'=>'countrysearch'))?>', countrysearchresp, 'countryName')" name="country_name">
                                                 <div class="col-sm-3" id="countrysearchresults" style="position: absolute;overflow-y:scroll;background:#FFF;width:93%;height:auto;z-index: 9999;display:none;">
                                                 </div>                                    
                                             </div>
@@ -211,11 +211,11 @@ echo $this->formRow($form->get('submit'));
                                                         
                                 
            <label id="flight_nos" class="col-sm-2 control-label labelalign ">
-<?= $this->translate($form->get('IsActive')->getLabel()) ?>
+<?= $this->translate($form->get('is_active')->getLabel()) ?>
           </label>
                                  <div class="col-sm-3">
 <?php
-echo $this->formElement($form->get('IsActive'));
+echo $this->formElement($form->get('is_active'));
 ?> 
                                     <span class="showerror"></span>                                   
                                                                        
@@ -272,7 +272,7 @@ echo $this->form()->closeTag();
                         <div class="delete">
                             <button class="btn btn-red defaultbtnsearch searchBooking" onclick=
                                 "statuschangeall('<?php echo $this->url('admin/country', array('action'=>
-                                    'statuschangeall'))?>', statuschangeallresp, 0)">De-Activate Selected
+                                    'changeStatusAll'))?>', statuschangeallresp, 0)">De-Activate Selected
                             </button>                                    
                         </div>
                     </div>
@@ -281,7 +281,7 @@ echo $this->form()->closeTag();
                         <div class="delete">
                             <button class="btn btn-red defaultbtnsearch searchBooking" onclick=
                                 "statuschangeall('<?php echo $this->url('admin/country', array
-                                    ('action'=>'statuschangeall'))?>', statuschangeallresp, 1)">
+                                    ('action'=>'changeStatusAll'))?>', statuschangeallresp, 1)">
                                 Activate Selected</button>                                    
                         </div>
                     </div>
@@ -289,7 +289,7 @@ echo $this->form()->closeTag();
                         <div class="delete">
                             <button class="btn btn-red defaultbtnsearch searchBooking" onclick=
                                 "delselected('<?php echo $this->url('admin/country', array('action'=>
-                                    'statuschangeall'))?>', delmultipleresp)">Delete Selected</button>                                              
+                                    'delmultiple'))?>', delmultipleresp)">Delete Selected</button>                                              
                         </div>
                     </div>
 

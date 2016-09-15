@@ -63,8 +63,8 @@
                                         <div class="form-group clearfix margintopbottom20">
                                             <label id="flight_nos" class="col-sm-2 control-label labelalign ">Gothra Name</label>
                                             <div class="col-sm-2 ">
-                                                <input id="search_gothraName" class=" form-control inputchange" placeholder="Atri" type="text" 
-                                                       onkeyup="gothrasearchactions($(this).val(), '<?php echo $this->url('admin/gothra', array('action'=>'gothrasearch'))?>', gothrasearchresp, 'gothra_name')" name="gothra_name">
+                                                <input id="search_gothraName" class=" form-control inputchange" placeholder="Gothra Name" type="text" 
+                                                       onkeyup="gothrasearchactions($(this).val(), '<?php echo $this->url('admin/gothra', array('action'=>'gothrasearch'))?>', gothrasearchresp, 'gothraName')" name="gothra_name">
                                                 <div class="col-sm-3" id="gothrasearchresults" style="position: absolute;overflow-y:scroll;background:#FFF;width:93%;height:auto;z-index: 9999;display:none;">
                                                 </div>                                    
                                             </div>                                           
@@ -154,11 +154,11 @@
                                                      ?>                                    
                                                   </div>
                                                    <label id="flight_nos" class="col-sm-1 control-label labelalign ">
-                            <?= $this->translate($form->get('IsActive')->getLabel()) ?>
+                            <?= $this->translate($form->get('is_active')->getLabel()) ?>
                            </label>
                                                   <div class="col-sm-3">
                                                      <?php 
-                                                     echo $this->formElement($form->get('IsActive'));
+                                                     echo $this->formElement($form->get('is_active'));
                                                      ?>                                    
                                                   </div>
                                                   
@@ -225,14 +225,14 @@ echo $this->form()->closeTag();
                     <div class="col-lg-2  pull-right">
                         <div class="delete">
                       <button class="btn btn-red defaultbtnsearch searchBooking" onclick="statuschangeall('<?php echo $this->url('admin/gothra', array
-                                    ('action'=>'statuschangeall'))?>',statuschangeallresp,0)">De-Activate Selected</button>                                    
+                                    ('action'=>'changeStatusAll'))?>',statuschangeallresp,0)">De-Activate Selected</button>                                    
                       </div>
                     </div>
                     
                     <div class="col-lg-2 pull-right">
                     <div class="delete">
                       <button class="btn btn-red defaultbtnsearch searchBooking" onclick="statuschangeall('<?php echo $this->url('admin/gothra', array
-                                    ('action'=>'statuschangeall'))?>',statuschangeallresp,1)">Activate Selected</button>                                    
+                                    ('action'=>'changeStatusAll'))?>',statuschangeallresp,1)">Activate Selected</button>                                    
                     </div>
                   </div>
                     

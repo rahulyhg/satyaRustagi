@@ -185,11 +185,11 @@ echo $this->form()->closeTag();
                                                   </div>
                                                   
                                                    <label id="flight_nos" class="col-sm-1 control-label labelalign ">
-                            <?= $this->translate($form->get('IsActive')->getLabel()) ?>
+                            <?= $this->translate($form->get('is_active')->getLabel()) ?>
                            </label>
                                                   <div class="col-sm-2">
                                                      <?php 
-                                                     echo $this->formElement($form->get('IsActive'));
+                                                     echo $this->formElement($form->get('is_active'));
                                                      ?> 
                                                      <span class="showerror"></span>                                      
                                                   </div>
@@ -260,7 +260,7 @@ $this->url('admin/state', array('action'=>'ajaxradiosearch'))?>',radioSearchResu
                         <div class="delete">
                       <button class="btn btn-red defaultbtnsearch searchBooking" onclick="statuschangeall
                           ('<?php echo $this->url('admin/state', array('action'=>
-                                    'statuschangeall'))?>',
+                                    'changeStatusAll'))?>',
                           statuschangeallresp,0)">De-Activate Selected</button> 
                          </div>
                     </div>
@@ -269,7 +269,7 @@ $this->url('admin/state', array('action'=>'ajaxradiosearch'))?>',radioSearchResu
                     <div class="delete">
                       <button class="btn btn-red defaultbtnsearch searchBooking" onclick="statuschangeall
                           ('<?php echo $this->url('admin/state', array
-                                    ('action'=>'statuschangeall'))?>',
+                                    ('action'=>'changeStatusAll'))?>',
                           statuschangeallresp,1)">Activate Selected</button>                                    
                     </div>
                   </div>

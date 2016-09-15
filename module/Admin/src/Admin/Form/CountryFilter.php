@@ -24,7 +24,7 @@ class CountryFilter extends InputFilter {
         ));
 
         $this->add(array(
-            'name' => 'IsActive',
+            'name' => 'is_active',
             'required'=> true,
         ));
 

@@ -16,7 +16,7 @@ use Zend\View\Model\ViewModel;
 
 class CountryController extends AppController {
 
-    protected $data = array();
+    protected $data = '';//array();
      protected $commonService;
     protected $adminService;
 
@@ -26,7 +26,8 @@ class CountryController extends AppController {
     }
 
     public function indexAction() {
-        $countries = $this->getCountryTable()->fetchAll($this->data);
+        //$countries = $this->getCountryTable()->fetchAll($this->data);
+        $countries = $this->adminService->getCountriesList($this->data);
 
         $action = $this->getRequest()->getUri() . "/searchboxresults";
         CountryForm::$actionName = $action;
@@ -58,21 +59,21 @@ class CountryController extends AppController {
         //exit;
         if ($request->isPost()) {
 
-            $countryEntity = new Countries();
-
+//            $countryEntity = new Countries();
+//
             $form->setInputFilter(new CountryFilter());
             $form->setData($request->getPost());
             
-            if ($form->getInputFilter()->getValue('IsActive')==null) {
-                $form->getInputFilter()->get('IsActive')->setRequired(false);
+            if ($form->getInputFilter()->getValue('is_active')==null) {
+                $form->getInputFilter()->get('is_active')->setRequired(false);
             }
 
 
             if ($form->isValid()) {
 
-                $countryEntity->exchangeArray($form->getData());
-                $res = $this->getCountryTable()->SaveCountry($countryEntity);
-
+                //$countryEntity->exchangeArray($form->getData());
+//                $res = $this->getCountryTable()->SaveCountry($countryEntity);
+                $res= $this->adminService->SaveCountry($form->getData());
                 //$response = $this->getResponse();
                 //$response->getHeaders()->addHeaderLine('Content-Type', 'application/json');
                 //$response->setContent(json_encode(array("response" => $res)));
@@ -106,9 +107,12 @@ class CountryController extends AppController {
         CountryForm::$actionName = $action;
         $form = new CountryForm();
         if ($this->params()->fromRoute('id') > 0) {
+//            echo  "<pre>";echo   "hello";exit;
             $id = $this->params()->fromRoute('id');
-            $country = $this->getCountryTable()->getCountry($id);
-            // print_r($country);die;
+            //$country = $this->getCountryTable()->getCountry($id);
+            $country= $this->adminService->getCountry($id);
+//             echo  "<pre>";
+//            print_r($country);exit;
             $form->bind($country);
             $form->get('submit')->setAttribute('value', 'Edit');
             // $this->editAction($form)
@@ -118,20 +122,21 @@ class CountryController extends AppController {
         if (!isset($_POST['chkedit'])) {
             if ($request->isPost()) {
 
-                $countryEntity = new Countries();
-
+//                $countryEntity = new Countries();
+//
                 $form->setInputFilter(new CountryFilter());
                 $form->setData($request->getPost());
 
-                if ($form->getInputFilter()->getValue('IsActive') == null) {
-                    $form->getInputFilter()->get('IsActive')->setRequired(false);
+                if ($form->getInputFilter()->getValue('is_active') == null) {
+                    $form->getInputFilter()->get('is_active')->setRequired(false);
                 }
 
                 if ($form->isValid()) {
 
-                    $countryEntity = $form->getData();
+                    //$countryEntity = $form->getData();
                     // print_r($countryEntity);die;
-                    $res = $this->getCountryTable()->SaveCountry($countryEntity);
+                    //$res = $this->getCountryTable()->SaveCountry($countryEntity);
+                    $res= $this->adminService->saveCountry($form->getData());
 
                     $response = $this->getResponse();
                     $response->getHeaders()->addHeaderLine('Content-Type', 'application/json');
@@ -159,10 +164,19 @@ class CountryController extends AppController {
 
     public function deleteAction() {
 
+//        $id = $this->params()->fromRoute('id');
+//        // print_r($id);
+//        $country = $this->getCountryTable()->deleteCountry($id);
+//        return $this->redirect()->toRoute('admin/country', array('action' => 'index'));
         $id = $this->params()->fromRoute('id');
-        // print_r($id);
-        $country = $this->getCountryTable()->deleteCountry($id);
-        return $this->redirect()->toRoute('admin/country', array('action' => 'index'));
+            //print_r($id);exit;
+            //$education = $this->getEducationfieldTable()->deleteEducationField($id);
+            $result= $this->adminService->delete('tbl_country', $id);
+//            return $this->redirect()->toRoute('admin', array(
+//                            'action' => 'index',
+//                            'controller' => 'religion'
+//                ));
+            return $this->redirect()->toRoute('admin/country', array('action' => 'index'));
     }
 
     public function viewAction() {
@@ -177,12 +191,23 @@ class CountryController extends AppController {
     
     public function viewByIdAction(){
         
+//        $id = $this->params()->fromRoute('id');
+//
+//        //$Info = $this->getCountryTable()->getCountry($id);
+//        $info = $this->getCountryTable()->getCountry($id);
+//
+//        // echo"<pre>"; print_r($Info);die;
+//        $view=new ViewModel(array('info'=>$info));
+//        $view->setTerminal(true);
+//        return $view;
         $id = $this->params()->fromRoute('id');
-
+//        echo   "<pre>";
+//        print_r($id);exit;
         //$Info = $this->getCountryTable()->getCountry($id);
-        $info = $this->getCountryTable()->getCountry($id);
-
-        // echo"<pre>"; print_r($Info);die;
+        //$info = $this->getEducationfieldTable()->getEducationfield($id);
+          $info = $this->adminService->viewByCountryId('tbl_country', $id);
+          //\Zend\Debug\Debug::dump($info);
+         //echo"<pre>"; print_r($info);die;
         $view=new ViewModel(array('info'=>$info));
         $view->setTerminal(true);
         return $view;
@@ -203,12 +228,14 @@ class CountryController extends AppController {
     }
 
     public function countrysearchAction() {
-        $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
+//        $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
 
         $data = $_POST['value'];
 
-        $result = $adapter->query("select * from tbl_country where country_name like '$data%' ", Adapter::QUERY_MODE_EXECUTE);
-
+//        $result = $adapter->query("select * from tbl_country where country_name like '$data%' ", Adapter::QUERY_MODE_EXECUTE);
+        $result = $this->adminService->countrySearch($data);
+//        echo   "<pre>";
+//                print_r($result);exit;
 
         $view = new ViewModel(array("Results" => $result));
         $view->setTerminal(true);
@@ -217,15 +244,17 @@ class CountryController extends AppController {
     }
 
     public function performsearchAction() {
-        $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
-
-        $field1 = empty($_POST['country_name']) ? "" : "country_name like '" . $_POST['country_name'] . "%' &&";
-        $field2 = empty($_POST['country_code']) ? "" : "country_code like '" . $_POST['country_code'] . "%' &&";
-        $field3 = empty($_POST['dial_code']) ? "" : "dial_code like '" . $_POST['dial_code'] . "%' ";
-
-        $sql = "select * from tbl_country where " . $field1 . $field2 . $field3 . "";
-        $sql = rtrim($sql, "&&");
-        $results = $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
+//        $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
+//
+//        $field1 = empty($_POST['country_name']) ? "" : "country_name like '" . $_POST['country_name'] . "%' &&";
+//        $field2 = empty($_POST['country_code']) ? "" : "country_code like '" . $_POST['country_code'] . "%' &&";
+//        $field3 = empty($_POST['dial_code']) ? "" : "dial_code like '" . $_POST['dial_code'] . "%' ";
+            
+//        $sql = "select * from tbl_country where " . $field1 . $field2 . $field3 . "";
+          $results = $this->adminService->performSearchCountry($_POST['country_name'],$_POST['country_code'],$_POST['dial_code']);
+        
+//        $sql = rtrim($sql, "&&");
+//        $results = $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
 
         $view = new ViewModel(array("results" => $results));
         $view->setTerminal(true);
@@ -236,10 +265,26 @@ class CountryController extends AppController {
     }
 
     public function ajaxradiosearchAction() {
-        $status = $_POST['IsActive'];
-        $this->data = array("IsActive=$status");
-
-        $countries = $this->getCountryTable()->fetchAll($this->data);
+//        $status = $_POST['IsActive'];
+//        $this->data = array("IsActive=$status");
+//
+//        $countries = $this->getCountryTable()->fetchAll($this->data);
+//        // return new ViewModel(array('countries' => $countries));
+//
+//        $view = new ViewModel(array('countries' => $countries));
+//        $view->setTemplate('admin/country/countryList');
+//        $view->setTerminal(true);
+//        return $view;
+        
+         $status = $_POST['is_active'];
+//        echo  "<pre>";
+//        print_r($status);exit;
+        //$this->data = array("IsActive=$status");
+        $this->data = $status;
+//        Debug::dump($this->data);
+//        exit;
+        //$educations = $this->getEducationfieldTable()->fetchAll($this->data);
+        $countries = $this->adminService->getCountryRadioList($_POST['is_active']);
         // return new ViewModel(array('countries' => $countries));
 
         $view = new ViewModel(array('countries' => $countries));
@@ -250,26 +295,56 @@ class CountryController extends AppController {
 
     public function changestatusAction() {
 
-        $data = (object) $_POST;
-        $return = $this->getCountryTable()->updatestatus($data);
+        //$data = (object) $_POST;
+        //$return = $this->getCountryTable()->updatestatus($data);
         // print_r($return);
-        return new JsonModel($return);
-        exit();
+        //return new JsonModel($return);
+        //exit();
+        
+        //        echo   "<pre>";
+//        print_r('hello');exit;
+        $request=$this->getRequest();
+//print_r($request->getPost());
+//exit;
+        
+       $result= $this->adminService->changeStatus('tbl_country', $request->getPost('id'), $request->getPost());
+
+//        $data = (object) $_POST;
+//        $return = $this->getEducationfieldTable()->updatestatus($data);
+//        // print_r($return);
+        return new JsonModel($result);
+//        exit();
     }
 
     public function delmultipleAction() {
-        $ids = $_POST['chkdata'];
-        $result = $this->getCountryTable()->delmultiple($ids);
+//        $ids = $_POST['chkdata'];
+//        $result = $this->getCountryTable()->delmultiple($ids);
+//
+//        echo $result;
+//        exit();
+         $ids = $_POST['chkdata'];
+//       echo   "<pre>";
+//        print_r($ids);exit;
+        //$result = $this->getEducationfieldTable()->delmultiple($ids);
+        $result= $this->adminService->deleteMultiple('tbl_country', $ids);
 
         echo $result;
         exit();
     }
 
-    public function statuschangeallAction() {
-        $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
-        $sql = "update tbl_country set IsActive=" . $_POST['val'] . " where id IN (" . $_POST['ids'] . ")";
-        $results = $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
-        if ($results)
+    public function changeStatusAllAction() {
+//        $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
+//        $sql = "update tbl_country set IsActive=" . $_POST['val'] . " where id IN (" . $_POST['ids'] . ")";
+//        $results = $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
+//        if ($results)
+//            echo "updated all";
+//        else
+//            echo "couldn't update";
+//        exit();
+        $result= $this->adminService->changeStatusAll('tbl_country', $_POST['ids'], $_POST['val']);
+        
+        //return new JsonModel($result);
+                if ($result)
             echo "updated all";
         else
             echo "couldn't update";

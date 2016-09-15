@@ -21,6 +21,7 @@
 					   $i=1;
                       foreach ($cities as $city) {
 //                          echo   "<pre>";
+//                          echo  "hi amir";
 //                          print_r($cities);die;
                       
                       ?>
@@ -31,19 +32,19 @@
                         <td><input type="checkbox" value="<?=$city->id?>" class="checkme" name="checkme[]"> </td> 
                         <td> <?=$i?></td>
                        
-                        <td class="hidden-480"><?= $city->city_name?></td>                       
-                        <td class="hidden-480"><?= $city->state_name?></td>
-                        <td class="hidden-480"><?= $city->modified_date?></td>
-                        <td class="hidden-480"><?= $city->created_date?></td>                        
+                        <td class="hidden-480"><?= $city->cityName?></td>                       
+                        <td class="hidden-480"><?= $city->stateName?></td>
+                        <td class="hidden-480"><?= $city->modifiedDate?></td>
+                        <td class="hidden-480"><?= $city->createdDate?></td>                        
                         
-                        <td class="hidden-480"><?php echo ($city->modified_by==1)? 'Admin': 'NotByAdmin'; ?></td>
+                        <td class="hidden-480"><?php echo ($city->modifiedBy==1)? 'Admin': 'NotByAdmin'; ?></td>
                         
                         <td class="hidden-480" align="center">
 												
-						<?php $status = ($city->IsActive==1)? 'Active': 'In-Active';
-                        $statuscolor = ($city->IsActive==1)? 'activestatus': 'de-activestatus';
+						<?php $status = ($city->isActive==1)? 'Active': 'In-Active';
+                        $statuscolor = ($city->isActive==1)? 'activestatus': 'de-activestatus';
                          ?>
-                          <div name="ChangeStatus" id="changestatus<?=$i;?>" onclick="changestatusquick(<?=$city->id?>,<?= ($city->IsActive==0)?0:1; ?>,'<?php echo $this->
+                          <div name="ChangeStatus" id="changestatus<?=$i;?>" onclick="changestatusquick(<?=$city->id?>,<?= ($city->isActive==0)?0:1; ?>,'<?php echo $this->
                                                                 url('admin/city', array('action'=>
                                                                     'changestatus')); ?>',changstatusresult);" class="<?=$statuscolor?>">
                         </div>

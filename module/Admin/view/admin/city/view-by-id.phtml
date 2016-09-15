@@ -23,7 +23,7 @@
                                                   <div class="col-sm-3">
                                                      <?php 
                                                      
-                                                     echo $info->city_name;
+                                                     echo $info->cityName;
                                                      ?>                                    
                                                   </div>
                            <label class="col-sm-2 control-label labelalign " id="flight_nos">
@@ -31,7 +31,7 @@
                            </label>
                                                   <div class="col-sm-3">
                                                      <?php 
-                                                     echo $info->state_name;
+                                                     echo $info->stateName;
                                                      ?>                                    
                                                   </div>
                                                  </div>
@@ -43,7 +43,7 @@
                            </label>
                                                   <div class="col-sm-3">
                                                      <?php 
-                                                     echo ($info->modified_by==1)?'Admin':'Not Available Now';
+                                                     echo ($info->modifiedBy==1)?'Admin':'Not Available Now';
                                                      ?>                                    
                                                   </div>
                                                  
@@ -52,7 +52,7 @@
                            </label>
                                                   <div class="col-sm-3">
                                                      <?php 
-                                                     echo ($info->IsActive==1)? 'Active':'In-Active';
+                                                     echo ($info->isActive==1)? 'Active':'In-Active';
                                                      ?>                                    
                                                   </div>
                                                  </div>
@@ -65,7 +65,7 @@
                            </label>
                                                   <div class="col-sm-3">
                                                      <?php 
-                                                     echo date('l d-m-Y',strtotime($info->created_date));
+                                                     echo date('l d-m-Y',strtotime($info->createdDate));
                                                      ?>                                    
                                                   </div>
                                                  
@@ -74,7 +74,7 @@
                            </label>
                                                   <div class="col-sm-3">
                                                      <?php 
-                                                     echo date('l d-m-Y',strtotime($info->modified_date));
+                                                     echo date('l d-m-Y',strtotime($info->modifiedDate));
                                                      ?>                                    
                                                   </div>
                                                  </div>

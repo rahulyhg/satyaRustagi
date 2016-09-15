@@ -23,20 +23,20 @@
                         <td><input type="checkbox" value="<?=$designation->id?>" class="checkme" name="checkme[]"> </td> 
                        <td><?= $i ?></td>  
                         <td><?= $designation->designation?></td>                       
-                        <td class="hidden-480"><?=$designation->modified_date?></td>
-                        <td class="hidden-480"><?=$designation->created_date?></td>
+                        <td class="hidden-480"><?=$designation->modifiedDate?></td>
+                        <td class="hidden-480"><?=$designation->createdDate?></td>
                         
                         <td class="hidden-480">
-						<!--<?php echo ($designation->IsActive==1)? 'Active': '<span class="label label-sm label-warning">In-Active</span>'; ?>-->
-                        <?php $status = ($designation->IsActive==1)? 'Active': 'In-Active';
-                        $statuscolor = ($designation->IsActive==1)? 'activestatus': 'de-activestatus';
+						<!--<?php echo ($designation->isActive==1)? 'Active': '<span class="label label-sm label-warning">In-Active</span>'; ?>-->
+                        <?php $status = ($designation->isActive==1)? 'Active': 'In-Active';
+                        $statuscolor = ($designation->isActive==1)? 'activestatus': 'de-activestatus';
                          ?>
-                          <div name="ChangeStatus" id="changestatus<?=$i;?>" onclick="changestatusquick(<?=$designation->id?>,<?= ($designation->IsActive==0)?0:1; ?>,'<?php echo $this->
+                          <div name="ChangeStatus" id="changestatus<?=$i;?>" onclick="changestatusquick(<?=$designation->id?>,<?= ($designation->isActive==0)?0:1; ?>,'<?php echo $this->
                                                                 url('admin/designation', array('action'=>
                                                                     'changestatus')); ?>',changstatusresult);" class="<?=$statuscolor?>">
                         </div>
                         </td>
-                        <td class="hidden-480"><?php echo ($designation->modified_by==1)? 'Admin': 'NotByAdmin'; ?></td>
+                        <td class="hidden-480"><?php echo ($designation->modifiedBy==1)? 'Admin': 'NotByAdmin'; ?></td>
                         <td><div class="hidden-sm hidden-xs action-buttons"> 
                         <!--<a class="blue" href="<?php echo $this->url('admin',array('controller'=>'designation','action'=>'view','id'=>$designation->id)); ?>">
                          <i class="ace-icon fa fa-search-plus bigger-130"></i> </a> -->

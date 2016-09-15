@@ -9,7 +9,7 @@ if(count($Results)>0){
 
 <tr>
 <td>
-<a href="javascript:void(0);" id="countrysearch<?=$i;?>" onclick="putCountry('<?=$result->state_name?>','<?=$result->country_name?>','<?=$result->country_id?>');"><?= $result->state_name?></a>
+<a href="javascript:void(0);" id="countrysearch<?=$i;?>" onclick="putCountry('<?=$result->stateName?>','<?=$result->countryName?>','<?=$result->country_id?>');"><?= $result->stateName?></a>
 </td>
 </tr>
 <?php

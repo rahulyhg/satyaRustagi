@@ -1,14 +1,19 @@
 <?php
 namespace Admin\Form;
 
+use Admin\Model\Entity\Starsigns;
 use Zend\Form\Form;
+use Zend\Stdlib\Hydrator\ClassMethods;
+
 
 class StarsignForm extends Form {
 
     public function __construct($name = null) {
         // we want to ignore the name passed
-        parent::__construct('tbl_star_sign');
+        parent::__construct('Starsigns');
         $this->setAttribute('method', 'post');
+        $this->setHydrator(new ClassMethods());
+        $this->setObject(new Starsigns());
         	
 		$this->add(array(
             'name' => 'id',
@@ -29,10 +34,10 @@ class StarsignForm extends Form {
 
         $this->add(array(
         'type' => 'Zend\Form\Element\Select',
-        'name' => 'IsActive',
+        'name' => 'is_active',
         'attributes' => array(
                 'class' => 'form-control',
-                'id'=>'IsActive'
+                'id'=>'is_active'
         ),
         'options' => array(
             'label' => 'Status',

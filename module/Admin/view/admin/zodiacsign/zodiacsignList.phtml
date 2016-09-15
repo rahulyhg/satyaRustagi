@@ -21,21 +21,21 @@
                       <tr>
                         <td><input type="checkbox" value="<?=$zodiacsign->id?>" class="checkme" name="checkme[]"> </td> 
                        <td><?= $i ?></td>  
-                        <td><?= $zodiacsign->zodiac_sign_name?></td>                       
-                        <td class="hidden-480"><?=$zodiacsign->modified_date?></td>
-                        <td class="hidden-480"><?=$zodiacsign->created_date?></td>
+                        <td><?= $zodiacsign->zodiacSignName?></td>                       
+                        <td class="hidden-480"><?=$zodiacsign->modifiedDate?></td>
+                        <td class="hidden-480"><?=$zodiacsign->createdDate?></td>
                         
                         <td class="hidden-480">
-						<!--<?php echo ($zodiacsign->IsActive==1)? 'Active': '<span class="label label-sm label-warning">In-Active</span>'; ?>-->
-                        <?php $status = ($zodiacsign->IsActive==1)? 'Active': 'In-Active';
-                        $statuscolor = ($zodiacsign->IsActive==1)? 'activestatus': 'de-activestatus';
+						<!--<?php echo ($zodiacsign->isActive==1)? 'Active': '<span class="label label-sm label-warning">In-Active</span>'; ?>-->
+                        <?php $status = ($zodiacsign->isActive==1)? 'Active': 'In-Active';
+                        $statuscolor = ($zodiacsign->isActive==1)? 'activestatus': 'de-activestatus';
                          ?>
-                          <div name="ChangeStatus" id="changestatus<?=$i;?>" onclick="changestatusquick(<?=$zodiacsign->id?>,<?= ($zodiacsign->IsActive==0)?0:1; ?>,'<?php echo $this->
+                          <div name="ChangeStatus" id="changestatus<?=$i;?>" onclick="changestatusquick(<?=$zodiacsign->id?>,<?= ($zodiacsign->isActive==0)?0:1; ?>,'<?php echo $this->
                                                                 url('admin/zodiacsign', array('action'=>
                                                                     'changestatus')); ?>',changstatusresult);" class="<?=$statuscolor?>">
                         </div>
                         </td>
-                        <td class="hidden-480"><?php echo ($zodiacsign->modified_by==1)? 'Admin': 'NotByAdmin'; ?></td>
+                        <td class="hidden-480"><?php echo ($zodiacsign->modifiedBy==1)? 'Admin': 'NotByAdmin'; ?></td>
                         <td><div class="hidden-sm hidden-xs action-buttons"> 
                         <!--<a class="blue" href="<?php echo $this->url('admin',array('controller'=>'zodiacsign','action'=>'view','id'=>$zodiacsign->id)); ?>">
                          <i class="ace-icon fa fa-search-plus bigger-130"></i> </a> -->

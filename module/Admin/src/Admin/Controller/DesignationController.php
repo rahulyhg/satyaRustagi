@@ -13,7 +13,7 @@ use Zend\View\Model\ViewModel;
 
 class DesignationController extends AppController
 {
-    protected $data = array();
+    protected $data = '';//array();
      protected $commonService;
     protected $adminService;
 
@@ -24,7 +24,8 @@ class DesignationController extends AppController
     
     public function indexAction()
     {   
-         $designations = $this->getDesignationTable()->fetchAll($this->data);
+         //$designations = $this->getDesignationTable()->fetchAll($this->data);
+         $designations = $this->adminService->getDesignationList();
             //echo   "<pre>";
           //print_r($designations);die;
          // print_r($cities);die;
@@ -46,17 +47,18 @@ class DesignationController extends AppController
         $request = $this->getRequest();
         if($request->isPost()){
 
-            $designationEntity = new Designations();
+            //$designationEntity = new Designations();
 
-               $form->setInputFilter(new DesignationFilter());
+               //$form->setInputFilter(new DesignationFilter());
                $form->setData($request->getPost());
 
 
                if($form->isValid()){
 
-                $designationEntity->exchangeArray($form->getData());
+                //$designationEntity->exchangeArray($form->getData());
                 // print_r($designationEntity);die;
-                $res = $this->getDesignationTable()->SaveDesignation($designationEntity);
+                //$res = $this->getDesignationTable()->SaveDesignation($designationEntity);
+                $res= $this->adminService->SaveDesignation($form->getData());
 
 //                     return $this->redirect()->toRoute('admin', array(
 //                            'action' => 'index',
@@ -82,7 +84,8 @@ class DesignationController extends AppController
         if($this->params()->fromRoute('id')>0){
             $id = $this->params()->fromRoute('id');
             // echo   $id;die;
-            $designation = $this->getDesignationTable()->getDesignation($id);
+            //$designation = $this->getDesignationTable()->getDesignation($id);
+            $designation= $this->adminService->getDesignation($id);
             // print_r($designation);die;
             $form->bind($designation);
             $form->get('submit')->setAttribute('value', 'Edit');
@@ -93,17 +96,18 @@ class DesignationController extends AppController
         if (!isset($_POST['chkedit'])) {
         if($request->isPost()){
 
-            $designationEntity = new Designations();
+            //$designationEntity = new Designations();
 
-               $form->setInputFilter(new DesignationFilter());
+               //$form->setInputFilter(new DesignationFilter());
                $form->setData($request->getPost());
 
 
                if($form->isValid()){
 
-                $designationEntity = $form->getData();
+                //$designationEntity = $form->getData();
                 // print_r($cityEntity);die;
-                $res = $this->getDesignationTable()->SaveDesignation($designationEntity);
+                //$res = $this->getDesignationTable()->SaveDesignation($designationEntity);
+                $res= $this->adminService->SaveDesignation($form->getData());
 
 //                     return $this->redirect()->toRoute('admin', array(
 //                            'action' => 'index',
@@ -139,7 +143,8 @@ class DesignationController extends AppController
     {
          
             $id = $this->params()->fromRoute('id');
-            $designation = $this->getDesignationTable()->deleteDesignation($id);
+            //$designation = $this->getDesignationTable()->deleteDesignation($id);
+            $designation= $this->adminService->delete('tbl_designation', $id);
 //            return $this->redirect()->toRoute('admin', array(
 //                            'action' => 'index',
 //                            'controller' => 'designation'
@@ -161,7 +166,8 @@ class DesignationController extends AppController
         $id = $this->params()->fromRoute('id');
 
         //$Info = $this->getCountryTable()->getCountry($id);
-        $info = $this->getDesignationTable()->getDesignation($id);
+        //$info = $this->getDesignationTable()->getDesignation($id);
+        $info = $this->adminService->viewByDesignationId('tbl_designation', $id);
 
         // echo"<pre>"; print_r($Info);die;
         $view=new ViewModel(array('info'=>$info));
@@ -172,26 +178,32 @@ class DesignationController extends AppController
     
     public function changestatusAction() {
 
-        $data = (object) $_POST;
-        $return = $this->getDesignationTable()->updatestatus($data);
+        //$data = (object) $_POST;
+        $request=$this->getRequest();
+        //$return = $this->getDesignationTable()->updatestatus($data);
+        $result= $this->adminService->changeStatus('tbl_designation', $request->getPost('id'), $request->getPost());
         // print_r($return);
-        return new JsonModel($return);
-        exit();
+        return new JsonModel($result);
+        //exit();
     }
     
     public function delmultipleAction() {
         $ids = $_POST['chkdata'];
-        $result = $this->getDesignationTable()->delmultiple($ids);
+        //$result = $this->getDesignationTable()->delmultiple($ids);
+        $result= $this->adminService->deleteMultiple('tbl_designation', $ids);
 
         echo $result;
         exit();
     }
     
-    public function statuschangeallAction() {
-        $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
-        $sql = "update tbl_designation set IsActive=" . $_POST['val'] . " where id IN (" . $_POST['ids'] . ")";
-        $results = $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
-        if ($results)
+    public function changeStatusAllAction() {
+//        $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
+//        $sql = "update tbl_designation set IsActive=" . $_POST['val'] . " where id IN (" . $_POST['ids'] . ")";
+//        $results = $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
+        $result= $this->adminService->changeStatusAll('tbl_designation', $_POST['ids'], $_POST['val']);
+
+//        return new JsonModel($result);
+                if ($result)
             echo "updated all";
         else
             echo "couldn't update";
@@ -199,10 +211,12 @@ class DesignationController extends AppController
     }
     
     public function ajaxradiosearchAction() {
-        $status = $_POST['IsActive'];
-        $this->data = array("IsActive=$status");
+        $status = $_POST['is_active'];
+        //$this->data = array("IsActive=$status");
+        $this->data = $status;
 
-        $designations = $this->getDesignationTable()->fetchAll($this->data);
+        //$designations = $this->getDesignationTable()->fetchAll($this->data);
+        $designations = $this->adminService->getDesignationRadioList($_POST['is_active']);
         // return new ViewModel(array('countries' => $countries));
 
         $view = new ViewModel(array('designations' => $designations));
@@ -212,13 +226,14 @@ class DesignationController extends AppController
     }
     
     public function performsearchAction() {
-        $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
+        //$adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
 
-        $field1 = empty($_POST['designation']) ? "" : "designation like '" . $_POST['designation'] . "%'";
+        //$field1 = empty($_POST['designation']) ? "" : "designation like '" . $_POST['designation'] . "%'";
         
-        $sql = "select * from tbl_designation where " . $field1 . "";
+        //$sql = "select * from tbl_designation where " . $field1 . "";
        // $sql = rtrim($sql, "&&");
-        $results = $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
+        //$results = $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
+        $results = $this->adminService->performSearchDesignation($_POST['designation']);
 
         $view = new ViewModel(array("results" => $results));
         $view->setTerminal(true);
@@ -229,13 +244,14 @@ class DesignationController extends AppController
     }
     
     public function designationsearchAction() {
-        $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
+        //$adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
 
         $data = $_POST['value'];
 //        echo  "<pre>";
 //        print_r($data);die;
 
-        $result = $adapter->query("select * from tbl_designation where designation like '$data%' ", Adapter::QUERY_MODE_EXECUTE);
+        //$result = $adapter->query("select * from tbl_designation where designation like '$data%' ", Adapter::QUERY_MODE_EXECUTE);
+        $result = $this->adminService->designationSearch($data);
 
 
         $view = new ViewModel(array("Results" => $result));

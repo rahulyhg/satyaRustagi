@@ -2,7 +2,9 @@
 
 namespace Admin\Form;
 
+use Admin\Model\Entity\Countries;
 use Zend\Form\Form;
+use Zend\Stdlib\Hydrator\ClassMethods;
 
 class CountryForm extends Form {
 
@@ -12,8 +14,10 @@ class CountryForm extends Form {
         
     
         // we want to ignore the name passed
-        parent::__construct('tbl_country');
+        parent::__construct('Countries');
         $this->setAttribute('method', 'post');
+        $this->setHydrator(new ClassMethods());
+        $this->setObject(new Countries());
 
         $this->add(array(
             'name' => 'id',
@@ -66,10 +70,10 @@ class CountryForm extends Form {
 
         $this->add(array(
             'type' => 'Zend\Form\Element\Select',
-            'name' => 'IsActive',
+            'name' => 'is_active',
             'attributes' => array(
                 'class' => 'form-control',
-                'id' => 'IsActive'
+                'id' => 'is_active'
             ),
             'options' => array(
                 'label' => 'Status',

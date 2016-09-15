@@ -1,14 +1,18 @@
 <?php
 namespace Admin\Form;
 
+use Admin\Model\Entity\Professions;
 use Zend\Form\Form;
+use Zend\Stdlib\Hydrator\ClassMethods;
 
 class ProfessionForm extends Form {
 
     public function __construct($name = null) {
         // we want to ignore the name passed
-        parent::__construct('tbl_profession');
+        parent::__construct('Professions');
         $this->setAttribute('method', 'post');
+        $this->setHydrator(new ClassMethods());
+        $this->setObject(new Professions());
             
         $this->add(array(
             'name' => 'id',
@@ -29,10 +33,10 @@ class ProfessionForm extends Form {
 
         $this->add(array(
         'type' => 'Zend\Form\Element\Select',
-        'name' => 'IsActive',
+        'name' => 'is_active',
         'attributes' => array(
                 'class' => 'form-control',
-                'id'=>'IsActive'
+                'id'=>'is_active'
         ),
         'options' => array(
             'label' => 'Status',

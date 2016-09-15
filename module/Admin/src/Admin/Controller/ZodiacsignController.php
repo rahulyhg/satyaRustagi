@@ -13,7 +13,7 @@ use Zend\View\Model\ViewModel;
 
 class ZodiacsignController extends AppController
 {
-    protected $data = array();
+    protected $data = '';//array();
      protected $commonService;
     protected $adminService;
 
@@ -24,7 +24,8 @@ class ZodiacsignController extends AppController
     
     public function indexAction()
     {   
-         $zodiacsigns = $this->getZodiacsignTable()->fetchAll($this->data);
+         //$zodiacsigns = $this->getZodiacsignTable()->fetchAll($this->data);
+         $zodiacsigns = $this->adminService->getZodiacsignList();
             //echo   "<pre>";
           //print_r($zodiacsigns);die;
          // print_r($cities);die;
@@ -46,17 +47,18 @@ class ZodiacsignController extends AppController
         $request = $this->getRequest();
         if($request->isPost()){
 
-            $zodiacsignEntity = new Zodiacsigns();
+            //$zodiacsignEntity = new Zodiacsigns();
 
-               $form->setInputFilter(new ZodiacsignFilter());
+               //$form->setInputFilter(new ZodiacsignFilter());
                $form->setData($request->getPost());
 
 
                if($form->isValid()){
 
-                $zodiacsignEntity->exchangeArray($form->getData());
+                //$zodiacsignEntity->exchangeArray($form->getData());
                 // print_r($zodiacsignEntity);die;
-                $res = $this->getZodiacsignTable()->SaveZodiacsign($zodiacsignEntity);
+                //$res = $this->getZodiacsignTable()->SaveZodiacsign($zodiacsignEntity);
+                $res= $this->adminService->SaveZodiacsign($form->getData());
 
 //                     return $this->redirect()->toRoute('admin', array(
 //                            'action' => 'index',
@@ -82,7 +84,8 @@ class ZodiacsignController extends AppController
         if($this->params()->fromRoute('id')>0){
             $id = $this->params()->fromRoute('id');
             // echo   $id;die;
-            $zodiacsign = $this->getZodiacsignTable()->getZodiacsign($id);
+            //$zodiacsign = $this->getZodiacsignTable()->getZodiacsign($id);
+            $zodiacsign= $this->adminService->getZodiacsign($id);
             // print_r($zodiacsign);die;
             $form->bind($zodiacsign);
             $form->get('submit')->setAttribute('value', 'Edit');
@@ -93,17 +96,18 @@ class ZodiacsignController extends AppController
         if (!isset($_POST['chkedit'])) {
         if($request->isPost()){
 
-            $zodiacsignEntity = new Zodiacsigns();
+            //$zodiacsignEntity = new Zodiacsigns();
 
-               $form->setInputFilter(new ZodiacsignFilter());
+               //$form->setInputFilter(new ZodiacsignFilter());
                $form->setData($request->getPost());
 
 
                if($form->isValid()){
 
-                $zodiacsignEntity = $form->getData();
+                //$zodiacsignEntity = $form->getData();
                 // print_r($cityEntity);die;
-                $res = $this->getZodiacsignTable()->SaveZodiacsign($zodiacsignEntity);
+                //$res = $this->getZodiacsignTable()->SaveZodiacsign($zodiacsignEntity);
+                $res= $this->adminService->SaveZodiacsign($form->getData());
 
 //                     return $this->redirect()->toRoute('admin', array(
 //                            'action' => 'index',
@@ -139,7 +143,8 @@ class ZodiacsignController extends AppController
     {
          
             $id = $this->params()->fromRoute('id');
-            $zodiacsign = $this->getZodiacsignTable()->deleteZodiacsign($id);
+           // $zodiacsign = $this->getZodiacsignTable()->deleteZodiacsign($id);
+            $zodiacsign= $this->adminService->delete('tbl_zodiac_sign_raasi', $id);
 //            return $this->redirect()->toRoute('admin', array(
 //                            'action' => 'index',
 //                            'controller' => 'zodiacsign'
@@ -161,7 +166,8 @@ class ZodiacsignController extends AppController
         $id = $this->params()->fromRoute('id');
 
         //$Info = $this->getCountryTable()->getCountry($id);
-        $info = $this->getZodiacsignTable()->getZodiacsign($id);
+        //$info = $this->getZodiacsignTable()->getZodiacsign($id);
+        $info = $this->adminService->viewByZodiacsignId('tbl_zodiac_sign_raasi', $id);
 
         // echo"<pre>"; print_r($Info);die;
         $view=new ViewModel(array('info'=>$info));
@@ -172,26 +178,32 @@ class ZodiacsignController extends AppController
     
     public function changestatusAction() {
 
-        $data = (object) $_POST;
-        $return = $this->getZodiacsignTable()->updatestatus($data);
+        //$data = (object) $_POST;
+        $request=$this->getRequest();
+        //$return = $this->getZodiacsignTable()->updatestatus($data);
+        $result= $this->adminService->changeStatus('tbl_zodiac_sign_raasi', $request->getPost('id'), $request->getPost());
         // print_r($return);
-        return new JsonModel($return);
-        exit();
+        return new JsonModel($result);
+        //exit();
     }
     
     public function delmultipleAction() {
         $ids = $_POST['chkdata'];
-        $result = $this->getZodiacsignTable()->delmultiple($ids);
+        //$result = $this->getZodiacsignTable()->delmultiple($ids);
+        $result= $this->adminService->deleteMultiple('tbl_zodiac_sign_raasi', $ids);
 
         echo $result;
         exit();
     }
     
-    public function statuschangeallAction() {
-        $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
-        $sql = "update tbl_zodiac_sign_raasi set IsActive=" . $_POST['val'] . " where id IN (" . $_POST['ids'] . ")";
-        $results = $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
-        if ($results)
+    public function changeStatusAllAction() {
+//        $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
+//        $sql = "update tbl_zodiac_sign_raasi set IsActive=" . $_POST['val'] . " where id IN (" . $_POST['ids'] . ")";
+//        $results = $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
+        $result= $this->adminService->changeStatusAll('tbl_zodiac_sign_raasi', $_POST['ids'], $_POST['val']);
+
+//        return new JsonModel($result);
+                if ($result)
             echo "updated all";
         else
             echo "couldn't update";
@@ -199,10 +211,12 @@ class ZodiacsignController extends AppController
     }
     
     public function ajaxradiosearchAction() {
-        $status = $_POST['IsActive'];
-        $this->data = array("IsActive=$status");
+        $status = $_POST['is_active'];
+        //$this->data = array("IsActive=$status");
+        $this->data = $status;
 
-        $zodiacsigns = $this->getZodiacsignTable()->fetchAll($this->data);
+        //$zodiacsigns = $this->getZodiacsignTable()->fetchAll($this->data);
+        $zodiacsigns = $this->adminService->getZodiacsignRadioList($_POST['is_active']);
         // return new ViewModel(array('countries' => $countries));
 
         $view = new ViewModel(array('zodiacsigns' => $zodiacsigns));
@@ -212,13 +226,14 @@ class ZodiacsignController extends AppController
     }
     
     public function performsearchAction() {
-        $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
+        //$adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
 
-        $field1 = empty($_POST['zodiac_sign_name']) ? "" : "zodiac_sign_name like '" . $_POST['zodiac_sign_name'] . "%'";
+        //$field1 = empty($_POST['zodiac_sign_name']) ? "" : "zodiac_sign_name like '" . $_POST['zodiac_sign_name'] . "%'";
         
-        $sql = "select * from tbl_zodiac_sign_raasi where " . $field1 . "";
+        //$sql = "select * from tbl_zodiac_sign_raasi where " . $field1 . "";
        // $sql = rtrim($sql, "&&");
-        $results = $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
+        //$results = $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
+        $results = $this->adminService->performSearchZodiacsign($_POST['zodiac_sign_name']);
 
         $view = new ViewModel(array("results" => $results));
         $view->setTerminal(true);
@@ -229,13 +244,14 @@ class ZodiacsignController extends AppController
     }
     
     public function zodiacsignsearchAction() {
-        $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
+        //$adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
 
         $data = $_POST['value'];
 //        echo  "<pre>";
 //        print_r($data);die;
 
-        $result = $adapter->query("select * from tbl_zodiac_sign_raasi where zodiac_sign_name like '$data%' ", Adapter::QUERY_MODE_EXECUTE);
+        //$result = $adapter->query("select * from tbl_zodiac_sign_raasi where zodiac_sign_name like '$data%' ", Adapter::QUERY_MODE_EXECUTE);
+        $result = $this->adminService->zodiacsignSearch($data);
 
 
         $view = new ViewModel(array("Results" => $result));
