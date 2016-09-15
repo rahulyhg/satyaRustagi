@@ -2,7 +2,9 @@
 
 namespace Application\Form;
 
+use Application\Model\Entity\Family;
 use Zend\Form\Form;
+use Zend\Stdlib\Hydrator\ClassMethods;
 
 class FamilyInfoForm extends Form {
 
@@ -16,6 +18,8 @@ class FamilyInfoForm extends Form {
         $this->setAttribute('method', 'post');
         $this->setAttribute('id', 'FamilyInfoForm');
         $this->setAttribute('class', 'custom_error');
+        $this->setHydrator(new ClassMethods());
+        $this->setObject(new Family());
 
         $this->add(array(
             'name' => 'id',
@@ -30,6 +34,7 @@ class FamilyInfoForm extends Form {
                 'type' => 'hidden',
             ),
         ));
+   
         $this->add(array(
             'type' => 'Zend\Form\Element\Select',
             'name' => 'family_values',
@@ -381,7 +386,7 @@ class FamilyInfoForm extends Form {
         ));
         $this->add(array(
             'type' => 'Zend\Form\Element\Select',
-            'name' => 'name_title_grand_gfather',
+            'name' => 'name_title_grand_grand_father',
             'attributes' => array(
                 'class' => 'form-control tileF',
                 'id' => 'name_title_g_gfather'
@@ -392,7 +397,7 @@ class FamilyInfoForm extends Form {
             )
         ));
         $this->add(array(
-            'name' => 'g_grand_father_name',
+            'name' => 'grand_grand_father_name',
             'attributes' => array(
                 'type' => 'text',
                 'class' => 'form-control',
@@ -405,7 +410,7 @@ class FamilyInfoForm extends Form {
 
         $this->add(array(
             'type' => 'Zend\Form\Element\Select',
-            'name' => 'g_grand_father_status',
+            'name' => 'grand_grand_father_status',
             'attributes' => array(
                 'class' => 'form-control status_live',
                 'id' => 'g_grand_father_status'
@@ -416,11 +421,11 @@ class FamilyInfoForm extends Form {
             )
         ));
         $this->add(array(
-            'name' => 'g_grand_father_dob',
+            'name' => 'grand_grand_father_dob',
             'attributes' => array(
                 'type' => 'text',
                 'class' => 'form-control inputDate',
-                'id' => 'g_grand_father_dob',
+                'id' => 'grand_grand_father_dob',
                 'readonly' => 'readonly'
             ),
             'options' => array(
@@ -429,14 +434,14 @@ class FamilyInfoForm extends Form {
         ));
         $this->add(array(
             'type' => 'Zend\Form\Element\File',
-            'name' => 'g_grand_father_photo',
+            'name' => 'grand_grand_father_photo',
             'attributes' => array(
                 'class' => 'form-control',
-                'id' => 'g_grand_father_photo'
+                'id' => 'grand_grand_father_photo'
             ),
         ));
         $this->add(array(
-            'name' => 'g_grand_father_dod',
+            'name' => 'grand_grand_father_dod',
             'attributes' => array(
                 'type' => 'text',
                 'class' => 'form-control inputDate dod',
@@ -449,7 +454,7 @@ class FamilyInfoForm extends Form {
         ));
         $this->add(array(
             'type' => 'Zend\Form\Element\Select',
-            'name' => 'name_title_grand_gmother',
+            'name' => 'name_title_grand_grand_mother',
             'attributes' => array(
                 'class' => 'form-control tileF',
                 'id' => 'name_title_g_gmother'
@@ -460,7 +465,7 @@ class FamilyInfoForm extends Form {
             )
         ));
         $this->add(array(
-            'name' => 'g_grand_mother_name',
+            'name' => 'grand_grand_mother_name',
             'attributes' => array(
                 'type' => 'text',
                 'class' => 'form-control',
@@ -473,7 +478,7 @@ class FamilyInfoForm extends Form {
 
         $this->add(array(
             'type' => 'Zend\Form\Element\Select',
-            'name' => 'g_grand_mother_status',
+            'name' => 'grand_grand_mother_status',
             'attributes' => array(
                 'class' => 'form-control status_live',
                 'id' => 'g_grand_mother_status'
@@ -484,7 +489,7 @@ class FamilyInfoForm extends Form {
             )
         ));
         $this->add(array(
-            'name' => 'g_grand_mother_dob',
+            'name' => 'grand_grand_mother_dob',
             'attributes' => array(
                 'type' => 'text',
                 'class' => 'form-control inputDate',
@@ -497,14 +502,14 @@ class FamilyInfoForm extends Form {
         ));
         $this->add(array(
             'type' => 'Zend\Form\Element\File',
-            'name' => 'g_grand_mother_photo',
+            'name' => 'grand_grand_mother_photo',
             'attributes' => array(
                 'class' => 'form-control',
                 'id' => 'g_grand_mother_photo'
             ),
         ));
         $this->add(array(
-            'name' => 'g_grand_mother_dod',
+            'name' => 'grand_grand_mother_dod',
             'attributes' => array(
                 'type' => 'text',
                 'class' => 'form-control inputDate dod',
@@ -518,7 +523,7 @@ class FamilyInfoForm extends Form {
 //*********spouse family elements
         $this->add(array(
             'type' => 'Zend\Form\Element\Select',
-            'name' => 'spouse_first_name_title',
+            'name' => 'spouse_father_name_title',
             'attributes' => array(
                 'class' => 'form-control tileF',
                 'id' => 'spouse_fName_title'

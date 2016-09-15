@@ -7,6 +7,7 @@ use Application\Form\EducationAndCareerForm;
 use Application\Form\EducationForm;
 use Application\Form\FamilyInfoForm;
 use Application\Form\Filter\EducationAndCareerFormFilter;
+use Application\Form\Filter\Family;
 use Application\Form\MetrimoniForm;
 use Application\Form\PersonolDetailForm;
 use Application\Form\PostForm;
@@ -18,6 +19,7 @@ use Application\Service\UserServiceInterface;
 use Common\Service\CommonServiceInterface;
 use Zend\Db\Adapter\Adapter;
 use Zend\Db\Metadata\Metadata;
+use Zend\Debug\Debug;
 use Zend\Mvc\MvcEvent;
 use Zend\Session\Container;
 use Zend\View\Model\JsonModel;
@@ -347,19 +349,70 @@ class ProfileController extends AppController {
         //$familyInfo = $this->getFamilyInfoTable()->getFamilyInfo($session->offsetGet('id'));
         // print_r($udata->mother_photo);die;
         $FamilyInfoForm = new FamilyInfoForm();
+        $familyInfo = $this->userService->getFamilyInfoById($user_id);
+        $userInfo=$this->userService->getUserInfoById($user_id, array('marital_status'));
+        //Debug::dump($familyInfo->sisterData);
+        //\Zend\Debug\Debug::dump($this->userService->getFamilyInfoById($user_id));
+        //exit;
         //$FamilyInfoForm->get('user_id')->setValue($session->offsetGet('id'));
-        //$FamilyInfoForm->bind($familyInfo);
+//        foreach ($familyInfo->brotherData as $results) {
+//            \Zend\Debug\Debug::dump($results);
+//        }
+        //\Zend\Debug\Debug::dump($familyInfo->brotherData);
+        //exit;
+        //\Zend\Debug\Debug::dump($familyInfo->familyInfoObject);
+        $FamilyInfoForm->bind($familyInfo->familyInfoObject);
         $request = $this->getRequest();
+        
         if ($request->isPost()) {
-          
+            //$page = new Family();
+           $FamilyInfoForm->setInputFilter(new Family());
+           $FamilyInfoForm->setData($request->getPost());
+           if($FamilyInfoForm->isValid()){
+                $this->userService->saveFamilyInfo($user_id, $request->getPost());
+                 //Debug::dump();
+                 //exit;
+               
+           }elseif ( ! $FamilyInfoForm->isValid()) {
+            
+                $errors = $FamilyInfoForm->getMessages();
+                foreach($errors as $key=>$row)
+                {
+                    if (!empty($row) && $key != 'submit') {
+                        foreach($row as $keyer => $rower)
+                        {
+                            //save error(s) per-element that
+                            //needed by Javascript
+                            $messages[$key][] = $rower;    
+                        }
+                    }
+                }
+            }
+            
+           // Debug::dump($messages);
+           // exit;
+           
+           // \Zend\Debug\Debug::dump($request->getPost());
         }
 
 
         $percentage = $this->userService->ProfileBar($user_id);
         $pro_per = array($percentage, $this->profileBarTemplate($percentage));
         //Debug::dump($pro_per);
+        
+        
+        $broDataJson=  \Zend\Json\Json::encode($familyInfo->brotherData);
+        $sisDataJson=  \Zend\Json\Json::encode($familyInfo->sisterData);
+        
 
         return new ViewModel(array("form" => $FamilyInfoForm,
+            'userInfo'=>$userInfo,
+            'familyInfoObject' => $familyInfo->familyInfoObject, 
+            'brotherData'=>$familyInfo->brotherData,
+            'sisterData'=>$familyInfo->sisterData,
+            'broDataJson'=>$broDataJson,
+            'sisDataJson'=>$sisDataJson,
+            'familyInfoArray'=>$familyInfo->familyInfoArray,
             'userSummary' => $this->userService->userSummaryById($user_id),
             "percent" => $pro_per));
     }

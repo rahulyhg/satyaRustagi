@@ -141,4 +141,12 @@ class UserService implements UserServiceInterface {
         return $this->userMapper->saveUserPost($userPostData);
     }
 
+    public function getFamilyInfoById($user_id) {
+        return $this->userMapper->getFamilyInfoById($user_id);
+    }
+    
+    public function saveFamilyInfo($user_id, $familyData){
+        return $this->userMapper->saveFamilyInfo($user_id, $familyData);
+    }
+
 }
