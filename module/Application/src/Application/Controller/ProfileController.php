@@ -515,31 +515,29 @@ class ProfileController extends AppController {
 
 
         $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
-        $session = new Container('user');
-        $user_id = $session->offsetGet('id');
-        $ref_no = $session->offsetGet('ref_no');
-        $data = $adapter->query("select * from tbl_user_gallery where user_id='$user_id' AND ref_no='$ref_no' ORDER BY id DESC limit 6", Adapter::QUERY_MODE_EXECUTE)->toArray();
-
-        $metadata = new Metadata($adapter);
-        $table = $metadata->getTable("tbl_family_info");
-        $table->getColumns();
-
-        foreach ($table->getColumns() as $column) {
-            if (strpos($column->getName(), "photo")) {
-                $columns[] = $column->getName();
-            }
-        }
+    
+        $data = $adapter->query("select * from tbl_user_gallery where user_id='1' AND ref_no='PMR1' ORDER BY id DESC limit 6", Adapter::QUERY_MODE_EXECUTE)->toArray();
+        Debug::dump($data);
+//        $metadata = new Metadata($adapter);
+//        $table = $metadata->getTable("tbl_family_info");
+//        $table->getColumns();
+//
+//        foreach ($table->getColumns() as $column) {
+//            if (strpos($column->getName(), "photo")) {
+//                $columns[] = $column->getName();
+//            }
+//        }
         // foreach ($columns as $key => $value) {
-        $Fdata = $adapter->query("select * from tbl_family_info where user_id='$user_id' ORDER BY id DESC", Adapter::QUERY_MODE_EXECUTE);
+        //$Fdata = $adapter->query("select * from tbl_family_info where user_id='$user_id' ORDER BY id DESC", Adapter::QUERY_MODE_EXECUTE);
         // }
-        foreach ($Fdata as $F_data) {
-            foreach ($columns as $key => $value) {
-                if (empty($F_data->$value))
-                    continue;
-                else
-                    $Fphotos[] = $F_data->$value;
-            }
-        }
+//        foreach ($Fdata as $F_data) {
+//            foreach ($columns as $key => $value) {
+//                if (empty($F_data->$value))
+//                    continue;
+//                else
+//                    $Fphotos[] = $F_data->$value;
+//            }
+//        }
 
         foreach ($data as $P_data) {
             foreach ($P_data as $key => $value) {
@@ -549,7 +547,7 @@ class ProfileController extends AppController {
             }
         }
 
-        shuffle($Fphotos);
+        //shuffle($Fphotos);
         shuffle($Pphotos);
         $data_gallery = $adapter->query("select * from tbl_user_gallery where user_id='$user_id' AND ref_no='$ref_no' ORDER BY id DESC", Adapter::QUERY_MODE_EXECUTE);
 

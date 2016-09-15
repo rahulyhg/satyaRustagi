@@ -76,12 +76,98 @@ class IndexController extends AppController {
         return new ViewModel();
     }
 
-    public function contactAction() {
-        return new ViewModel();
+   public function contactAction() {
+        if ($this->params()->fromRoute('id') == 1) {
+            $msg = "Message sent successfully";
+        } else
+            $msg = "";
+
+        $contactform = new \Application\Form\ContactForm();
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            $page = new \Application\Model\Entity\Contact();
+            $contactform->setInputFilter($page->getInputFilter());
+            $contactform->setData($request->getPost());
+            $data = (array) $request->getPost();
+            if ($contactform->isValid()) {
+                $page->exchangeArray($data);
+                unset($page->inputFilter);
+                // print_r($page); exit;
+//                  // $this->renderer = $this->getServiceLocator()->get('ViewRenderer');  
+                $content = "<table border=1>
+<tbody>
+<tr>
+<td>Name</td>
+<td>'" . $page->name . "'</td>
+</tr>
+<tr>
+<td>Phone Number</td>
+<td>" . $page->phone_no . "</td>
+</tr>
+<tr>
+<td>Email</td>
+<td>" . $page->email . "</td>
+</tr>
+<tr>
+<td>Message</td>
+<td>" . $page->message . "</td>
+</tr>
+</tbody>
+</table>";
+
+
+
+                $this->mailsetup($content);
+
+
+                $id = $this->getContactTable()->saveContact($page);
+                return $this->redirect()->toRoute('application/default', array(
+                            'action' => 'contact',
+                            'controller' => 'pages',
+                            "id" => 1
+                ));
+            }
+        }
+
+        $sql = "select * from tbl_rustagi_institutions";
+
+        $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
+        /*         * ****Fetch all Members Data from db******** */
+        $InstData = $adapter->query($sql, \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+
+        $CommunityData = array();
+
+        foreach ($InstData as $idata) {
+
+            $result[] = $idata;
+            $MemberData = $adapter->query("select * from tbl_rustagi_institutions_members where institute_id='" . $idata->id . "'", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+            if (count($MemberData) > 0) {
+                $CommunityData[$idata->id] = $MemberData;
+            }
+        }
+
+
+        $filters_data = $this->sidebarFilters();
+
+        return new ViewModel(array('InstData' => $result, 'CommunityData' => $CommunityData, "filters_data" => $filters_data, "form" => $contactform, "message" => $msg));
     }
 
     public function galleryAction() {
         return new ViewModel();
+    }
+    
+     public function sidebarFilters()
+    {
+       $adapter=$this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
+       // $select=$this->getServiceLocator()->get('Zend\Db\sql\Expression');
+
+        $filters_array = array("country"=>"tbl_country","city"=>"tbl_city","state"=>"tbl_state");
+
+        foreach($filters_array as $key =>$table){
+
+            $filters_data[$key] = $adapter->query("select * from ".$table."", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+        }
+        return $filters_data;
     }
 
 }
