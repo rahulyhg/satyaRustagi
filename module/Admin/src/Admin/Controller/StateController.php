@@ -13,7 +13,7 @@ use Zend\View\Model\ViewModel;
 
 class StateController extends AppController
 {
-    protected $data = array();
+    protected $data = '';//array();
      protected $commonService;
     protected $adminService;
 
@@ -23,9 +23,15 @@ class StateController extends AppController
     }
     
     public function indexAction()
-    {   
-         $states = $this->getStateTable()->fetchAll($this->data);
-        $countryNameList = $this->getCountryTable()->customFields(array('id','country_name'));
+    {               
+//         $states = $this->getStateTable()->fetchAll();
+         $states = $this->adminService->getStatesList();
+//          echo   "<pre>";
+//          print_r($states);exit;
+        //$countryNameList = $this->getCountryTable()->customFields(array('id','country_name'));
+        $countryNameList = $this->adminService->customFields();
+//        echo  "<pre>";
+//                print_r($countryNameList);exit;
 		  StateForm::$country_nameList = $countryNameList;
           $action = $this->getRequest()->getUri()."/searchboxresults";
          StateForm::$actionName = $action;
@@ -40,7 +46,8 @@ class StateController extends AppController
 
     public function AddAction()
     {
-        $countryNameList = $this->getCountryTable()->customFields(array('id','country_name'));
+//        $countryNameList = $this->getCountryTable()->customFields(array('id','country_name'));
+        $countryNameList = $this->adminService->customFields();
 
         StateForm::$country_nameList = $countryNameList;
 
@@ -60,9 +67,10 @@ class StateController extends AppController
 
                if($form->isValid()){
 
-                $stateEntity->exchangeArray($form->getData());
+                //$stateEntity->exchangeArray($form->getData());
                 // print_r($stateEntity);die;
-                $res = $this->getStateTable()->SaveState($stateEntity);
+//                $res = $this->getStateTable()->SaveState($stateEntity);
+                 $res= $this->adminService->saveState($form->getData());
 
                 //      return $this->redirect()->toRoute('admin', array(
                 //             'action' => 'index',
@@ -93,7 +101,8 @@ class StateController extends AppController
 
     public function editAction()
     {
-        $countryNameList = $this->getCountryTable()->customFields(array('id','country_name'));
+//        $countryNameList = $this->getCountryTable()->customFields(array('id','country_name'));
+        $countryNameList = $this->adminService->customFields();
         
         
 
@@ -109,8 +118,9 @@ class StateController extends AppController
         $form = new StateForm();
         if($this->params()->fromRoute('id')>0){
             $id = $this->params()->fromRoute('id');
-            $state = $this->getStateTable()->getState($id);
-            // print_r($state);die;
+//            $state = $this->getStateTable()->getState($id);
+            $state= $this->adminService->getState($id);
+//             print_r($state);die;
             $form->bind($state);
             $form->get('submit')->setAttribute('value', 'Edit');
             // $this->editAction($form)
@@ -121,7 +131,7 @@ class StateController extends AppController
         if($request->isPost()){
 
             
-            $stateEntity = new States();
+//            $stateEntity = new States();
 
                $form->setInputFilter(new StateFilter());
                $form->setData($request->getPost());
@@ -129,9 +139,10 @@ class StateController extends AppController
 
                if($form->isValid()){
 
-                $stateEntity = $form->getData();
+//                $stateEntity = $form->getData();
                 //print_r($stateEntity);die;
-                $res = $this->getStateTable()->SaveState($stateEntity);
+//                $res = $this->getStateTable()->SaveState($stateEntity);
+                $res= $this->adminService->saveState($form->getData());
 
                      $response = $this->getResponse();
             $response->getHeaders()->addHeaderLine( 'Content-Type', 'application/json' );
@@ -164,7 +175,8 @@ class StateController extends AppController
          
             $id = $this->params()->fromRoute('id');
             // print_r($id);
-            $state = $this->getStateTable()->deleteState($id);
+//            $state = $this->getStateTable()->deleteState($id);
+            $result= $this->adminService->delete('tbl_state', $id);
             //return $this->redirect()->toRoute('admin', array(
                            // 'action' => 'index',
                           //  'controller' => 'state'
@@ -191,7 +203,8 @@ class StateController extends AppController
         $id = $this->params()->fromRoute('id');
 
         //$Info = $this->getCountryTable()->getCountry($id);
-        $info = $this->getStateTable()->getStatejoin($id);
+//        $info = $this->getStateTable()->getStatejoin($id);
+        $info = $this->adminService->viewByStateId('tbl_state', $id);
 
          //echo"<pre>"; print_r($Info);die;
         $view=new ViewModel(array('info'=>$info));
@@ -222,35 +235,38 @@ class StateController extends AppController
     public function changestatusAction()
     {   
 
-        $data = (object) $_POST;
-        $return = $this->getStateTable()->updatestatus($data);
-        // print_r($return);
-        return new JsonModel($return);
-        exit();
+//        $data = (object) $_POST;
+//        $return = $this->getStateTable()->updatestatus($data);
         
-//         $data = (object) $_POST;
-//        $return = $this->getCountryTable()->updatestatus($data);
-//        // print_r($return);
+        // print_r($return);
 //        return new JsonModel($return);
 //        exit();
-
+        
+        $request=$this->getRequest();
+        $result= $this->adminService->changeStatus('tbl_state', $request->getPost('id'), $request->getPost());
+        return new JsonModel($result);
     }
 
     public function delmultipleAction()
     {
         $ids = $_POST['chkdata'];
-        $result = $this->getStateTable()->delmultiple($ids);
-        
+         $result= $this->adminService->deleteMultiple('tbl_state', $ids);
+
         echo $result;
         exit();
     }
 
-    public function statuschangeallAction()
+    public function changeStatusAllAction()
     {
-        $adapter=$this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
-        $sql = "update tbl_state set IsActive=".$_POST['val']." where id IN (".$_POST['ids'].")";
-         $results = $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE); 
-         if($results)
+//        $adapter=$this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
+//        $sql = "update tbl_state set IsActive=".$_POST['val']." where id IN (".$_POST['ids'].")";
+//         $results = $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE); 
+
+        
+        $result= $this->adminService->changeStatusAll('tbl_state', $_POST['ids'], $_POST['val']);
+        
+//        return new JsonModel($result);
+                 if($result)
             echo "updated all";
         else echo "couldn't update"; 
         exit();
@@ -258,12 +274,14 @@ class StateController extends AppController
 
     public function ajaxradiosearchAction()
     {
-        $status = $_POST['IsActive'];
+        $status = $_POST['is_active'];
 //       echo  "<pre>";
 //       print_r($status);die;
-         $this->data = array("tbl_state.IsActive=$status");
+//         $this->data = array("tbl_state.IsActive=$status");
+         $this->data = $status;
 
-         $states = $this->getStateTable()->fetchAll($this->data);
+//         $states = $this->getStateTable()->fetchAll($this->data);
+         $states = $this->adminService->getStateRadioList($_POST['is_active']);
 //         echo   "<pre>";
 //         print_r($states);die;
          $view = new ViewModel(array('states' => $states));
@@ -271,28 +289,21 @@ class StateController extends AppController
          $view->setTerminal(true);
          return $view;
          
-//         $status = $_POST['IsActive'];
-//        $this->data = array("IsActive=$status");
-//
-//        $countries = $this->getCountryTable()->fetchAll($this->data);
-//        // return new ViewModel(array('countries' => $countries));
-//
-//        $view = new ViewModel(array('countries' => $countries));
-//        $view->setTemplate('admin/country/countryList');
-//        $view->setTerminal(true);
-//        return $view;
+
 
     }
 
     public function countrysearchAction()
     {
-        $adapter=$this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
+        //$adapter=$this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
 
         $data = $_POST['value'];
-        $countryname = (empty($fieldname = $_POST['fieldname']))?"":" && tbl_state.country_id=".$_POST['fieldname'];
+        //$countryname = (empty($fieldname = $_POST['fieldname']))?"":" && tbl_state.country_id=".$_POST['fieldname'];
 
-        $result=$adapter->query("select * from tbl_state inner join tbl_country on tbl_state.country_id = tbl_country.id
-            where (tbl_state.state_name like '$data%' ".$countryname.")", Adapter::QUERY_MODE_EXECUTE); 
+        //$result=$adapter->query("select * from tbl_state inner join tbl_country on tbl_state.country_id = tbl_country.id
+           // where (tbl_state.state_name like '$data%' ".$countryname.")", Adapter::QUERY_MODE_EXECUTE); 
+        
+        $result = $this->adminService->stateSearch($data,$_POST['fieldname']);
 
 
         $view = new ViewModel(array("Results"=>$result));
@@ -304,19 +315,19 @@ class StateController extends AppController
 
     public function performsearchAction()
     {
-        $adapter=$this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
+//        $adapter=$this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
         
          // $field1 = empty($_POST['country_name'])? "": "country_name like '".$_POST['country_name']."%' &&";   
-         $field1 = empty($_POST['country_id'])? "": "tbl_state.country_id= '".$_POST['country_id']."' &&";   
-         $field2 = empty($_POST['state_name'])? "": " tbl_state.state_name like '".$_POST['state_name']."%' ";   
-           
-         $sql = "select `tbl_state`.*,`tbl_country`.`country_name` AS `country_name` from `tbl_state` inner join 
-             tbl_country on tbl_state.country_id = tbl_country.id 
-         where ".$field1.$field2."";         
-         
-         $sql = rtrim($sql,"&&");
-        $results = $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE); 
-
+//         $field1 = empty($_POST['country_id'])? "": "tbl_state.country_id= '".$_POST['country_id']."' &&";   
+//         $field2 = empty($_POST['state_name'])? "": " tbl_state.state_name like '".$_POST['state_name']."%' ";   
+//           
+//         $sql = "select `tbl_state`.*,`tbl_country`.`country_name` AS `country_name` from `tbl_state` inner join 
+//             tbl_country on tbl_state.country_id = tbl_country.id 
+//         where ".$field1.$field2."";         
+//         
+//         $sql = rtrim($sql,"&&");
+//        $results = $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE); 
+$results = $this->adminService->performSearchState($_POST['country_id'],$_POST['state_name']);
          $view = new ViewModel(array("results"=>$results));
         $view->setTerminal(true);
         return $view;

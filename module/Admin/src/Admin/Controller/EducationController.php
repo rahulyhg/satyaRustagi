@@ -27,7 +27,7 @@ class EducationController extends AppController
     
     public function indexAction()
     {   
-         $educations = $this->adminService->getEducationFieldList($this->data);
+         $educations = $this->adminService->getEducationFieldList();
          //\Zend\Debug\Debug::dump($educations);
          //exit;
             //echo   "<pre>";
@@ -221,16 +221,16 @@ class EducationController extends AppController
 //        $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
 //        $sql = "update tbl_education_field set IsActive=" . $_POST['val'] . " where id IN (" . $_POST['ids'] . ")";
 //        $results = $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
-//        if ($results)
-//            echo "updated all";
-//        else
-//            echo "couldn't update";
-//        exit();
+
         //$request=$this->getRequest();
         
         $result= $this->adminService->changeStatusAll('tbl_education_field', $_POST['ids'], $_POST['val']);
-        
-        return new JsonModel($result);
+                if ($result)
+            echo "updated all";
+        else
+            echo "couldn't update";
+        exit();
+//        return new JsonModel($result);
         
     }
     
@@ -291,7 +291,8 @@ class EducationController extends AppController
     
     public function manageEducationLevelAction()
     {   
-         $educations = $this->getEducationlevelTable()->fetchAll($this->data);
+         //$educations = $this->getEducationlevelTable()->fetchAll($this->data);
+         $educations = $this->adminService->getEducationlevelList();
             //echo   "<pre>";
           //print_r($educations);die;
          // print_r($cities);die;
@@ -314,17 +315,18 @@ class EducationController extends AppController
         $request = $this->getRequest();
         if($request->isPost()){
 
-            $educationlevelEntity = new Educationlevels();
+            //$educationlevelEntity = new Educationlevels();
 
-               $form->setInputFilter(new EducationlevelFilter());
+               //$form->setInputFilter(new EducationlevelFilter());
                $form->setData($request->getPost());
 
 
                if($form->isValid()){
 
-                $educationlevelEntity->exchangeArray($form->getData());
+                //$educationlevelEntity->exchangeArray($form->getData());
                 // print_r($religionEntity);die;
-                $res = $this->getEducationlevelTable()->SaveEducationlevel($educationlevelEntity);
+                //$res = $this->getEducationlevelTable()->SaveEducationlevel($educationlevelEntity);
+                $res= $this->adminService->SaveEducationlevel($form->getData());
 
 //                     return $this->redirect()->toRoute('admin', array(
 //                            'action' => 'index',
@@ -350,7 +352,8 @@ class EducationController extends AppController
         if($this->params()->fromRoute('id')>0){
             $id = $this->params()->fromRoute('id');
             // echo   $id;die;
-            $education = $this->getEducationlevelTable()->getEducationlevel($id);
+            //$education = $this->getEducationlevelTable()->getEducationlevel($id);
+            $education= $this->adminService->getEducationlevel($id);
             // print_r($religion);die;
             $form->bind($education);
             $form->get('submit')->setAttribute('value', 'Edit');
@@ -361,17 +364,18 @@ class EducationController extends AppController
         if (!isset($_POST['chkedit'])) {
         if($request->isPost()){
 
-            $educationlevelEntity = new Educationlevels();
+            //$educationlevelEntity = new Educationlevels();
 
-               $form->setInputFilter(new EducationlevelFilter());
+               //$form->setInputFilter(new EducationlevelFilter());
                $form->setData($request->getPost());
 
 
                if($form->isValid()){
 
-                $educationlevelEntity = $form->getData();
+                //$educationlevelEntity = $form->getData();
                 // print_r($cityEntity);die;
-                $res = $this->getEducationlevelTable()->SaveEducationlevel($educationlevelEntity);
+                //$res = $this->getEducationlevelTable()->SaveEducationlevel($educationlevelEntity);
+                $res= $this->adminService->SaveEducationlevel($form->getData());
 
 //                     return $this->redirect()->toRoute('admin', array(
 //                            'action' => 'index',
@@ -407,7 +411,8 @@ class EducationController extends AppController
     {
          
             $id = $this->params()->fromRoute('id');
-            $education = $this->getEducationlevelTable()->deleteEducationLevel($id);
+            //$education = $this->getEducationlevelTable()->deleteEducationLevel($id);
+            $education= $this->adminService->delete('tbl_education_level', $id);
 //            return $this->redirect()->toRoute('admin', array(
 //                            'action' => 'index',
 //                            'controller' => 'religion'
@@ -429,7 +434,8 @@ class EducationController extends AppController
         $id = $this->params()->fromRoute('id');
 
         //$Info = $this->getCountryTable()->getCountry($id);
-        $info = $this->getEducationlevelTable()->getEducationlevel($id);
+        //$info = $this->getEducationlevelTable()->getEducationlevel($id);
+        $info = $this->adminService->viewByEducationlevelId('tbl_education_level', $id);
 
         // echo"<pre>"; print_r($Info);die;
         $view=new ViewModel(array('info'=>$info));
@@ -440,26 +446,32 @@ class EducationController extends AppController
     
     public function changestatuseduLevelAction() {
 
-        $data = (object) $_POST;
-        $return = $this->getEducationlevelTable()->updatestatus($data);
+        //$data = (object) $_POST;
+        $request=$this->getRequest();
+        //$return = $this->getEducationlevelTable()->updatestatus($data);
+        $result= $this->adminService->changeStatus('tbl_education_level', $request->getPost('id'), $request->getPost());
         // print_r($return);
-        return new JsonModel($return);
-        exit();
+        return new JsonModel($result);
+        //exit();
     }
     
     public function delmultipleeduLevelAction() {
         $ids = $_POST['chkdata'];
-        $result = $this->getEducationlevelTable()->delmultiple($ids);
+        //$result = $this->getEducationlevelTable()->delmultiple($ids);
+        $result= $this->adminService->deleteMultiple('tbl_education_level', $ids);
 
         echo $result;
         exit();
     }
     
     public function statuschangealleduLevelAction() {
-        $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
-        $sql = "update tbl_education_level set IsActive=" . $_POST['val'] . " where id IN (" . $_POST['ids'] . ")";
-        $results = $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
-        if ($results)
+//        $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
+//        $sql = "update tbl_education_level set IsActive=" . $_POST['val'] . " where id IN (" . $_POST['ids'] . ")";
+//        $results = $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
+        $result= $this->adminService->changeStatusAll('tbl_education_level', $_POST['ids'], $_POST['val']);
+
+//        return new JsonModel($result);
+                if ($result)
             echo "updated all";
         else
             echo "couldn't update";
@@ -467,10 +479,12 @@ class EducationController extends AppController
     }
     
     public function ajaxradiosearcheduLevelAction() {
-        $status = $_POST['IsActive'];
-        $this->data = array("IsActive=$status");
+        $status = $_POST['is_active'];
+        //$this->data = array("IsActive=$status");
+        $this->data = $status;
 
-        $educations = $this->getEducationlevelTable()->fetchAll($this->data);
+        //$educations = $this->getEducationlevelTable()->fetchAll($this->data);
+        $educations = $this->adminService->getEducationlevelRadioList($_POST['is_active']);
         // return new ViewModel(array('countries' => $countries));
 
         $view = new ViewModel(array('educations' => $educations));
@@ -480,13 +494,14 @@ class EducationController extends AppController
     }
     
     public function performsearchlevelAction() {
-        $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
-
-        $field1 = empty($_POST['education_level']) ? "" : "education_level like '" . $_POST['education_level'] . "%'";
-        
-        $sql = "select * from tbl_education_level where " . $field1 . "";
+//        $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
+//
+//        $field1 = empty($_POST['education_level']) ? "" : "education_level like '" . $_POST['education_level'] . "%'";
+//        
+//        $sql = "select * from tbl_education_level where " . $field1 . "";
        // $sql = rtrim($sql, "&&");
-        $results = $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
+        //$results = $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
+        $results = $this->adminService->performSearchEducationlevel($_POST['education_level']);
 
         $view = new ViewModel(array("results" => $results));
         $view->setTerminal(true);
@@ -497,13 +512,14 @@ class EducationController extends AppController
     }
     
     public function educationlevelsearchAction() {
-        $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
+        //$adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
 
         $data = $_POST['value'];
 //       echo  "<pre>";
 //       print_r($data);die;
 
-        $result = $adapter->query("select * from tbl_education_level where education_level like '$data%' ", Adapter::QUERY_MODE_EXECUTE);
+        //$result = $adapter->query("select * from tbl_education_level where education_level like '$data%' ", Adapter::QUERY_MODE_EXECUTE);
+        $result = $this->adminService->educationLevelSearch($data);
 
 
         $view = new ViewModel(array("Results" => $result));

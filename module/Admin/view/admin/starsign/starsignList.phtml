@@ -21,21 +21,21 @@
                       <tr>
                         <td><input type="checkbox" value="<?=$starsign->id?>" class="checkme" name="checkme[]"> </td> 
                        <td><?= $i ?></td>  
-                        <td><?= $starsign->star_sign_name?></td>                       
-                        <td class="hidden-480"><?=$starsign->modified_date?></td>
-                        <td class="hidden-480"><?=$starsign->created_date?></td>
+                        <td><?= $starsign->starSignName?></td>                       
+                        <td class="hidden-480"><?=$starsign->modifiedDate?></td>
+                        <td class="hidden-480"><?=$starsign->createdDate?></td>
                         
                         <td class="hidden-480">
-						<!--<?php echo ($starsign->IsActive==1)? 'Active': '<span class="label label-sm label-warning">In-Active</span>'; ?>-->
-                        <?php $status = ($starsign->IsActive==1)? 'Active': 'In-Active';
-                        $statuscolor = ($starsign->IsActive==1)? 'activestatus': 'de-activestatus';
+						<!--<?php echo ($starsign->isActive==1)? 'Active': '<span class="label label-sm label-warning">In-Active</span>'; ?>-->
+                        <?php $status = ($starsign->isActive==1)? 'Active': 'In-Active';
+                        $statuscolor = ($starsign->isActive==1)? 'activestatus': 'de-activestatus';
                          ?>
-                          <div name="ChangeStatus" id="changestatus<?=$i;?>" onclick="changestatusquick(<?=$starsign->id?>,<?= ($starsign->IsActive==0)?0:1; ?>,'<?php echo $this->
+                          <div name="ChangeStatus" id="changestatus<?=$i;?>" onclick="changestatusquick(<?=$starsign->id?>,<?= ($starsign->isActive==0)?0:1; ?>,'<?php echo $this->
                                                                 url('admin/starsign', array('action'=>
                                                                     'changestatus')); ?>',changstatusresult);" class="<?=$statuscolor?>">
                         </div>
                         </td>
-                        <td class="hidden-480"><?php echo ($starsign->modified_by==1)? 'Admin': 'NotByAdmin'; ?></td>
+                        <td class="hidden-480"><?php echo ($starsign->modifiedBy==1)? 'Admin': 'NotByAdmin'; ?></td>
                         <td><div class="hidden-sm hidden-xs action-buttons"> 
                         <!--<a class="blue" href="<?php echo $this->url('admin',array('controller'=>'starsign','action'=>'view','id'=>$starsign->id)); ?>">
                          <i class="ace-icon fa fa-search-plus bigger-130"></i> </a> -->

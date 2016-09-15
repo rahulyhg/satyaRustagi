@@ -6,29 +6,78 @@ class Designations {
 
     public $id;
     public $designation;
-    public $IsActive;
-    public $created_date;
-    public $modified_date;
-    public $modified_by;
+    public $isActive;
+    public $createdDate;
+    public $modifiedDate;
+    public $modifiedBy;
 
-    public function exchangeArray($data) {
+//    public function exchangeArray($data) {
+//
+//        $this->id = (!empty($data['id'])) ? $data['id'] : null;
+//
+//        $this->designation = (!empty($data['designation'])) ? $data['designation'] : null;
+//
+//        $this->IsActive = (!empty($data['IsActive'])) ? $data['IsActive'] : null;
+//
+//        $this->created_date = (!empty($data['created_date'])) ? $data['created_date'] : null;
+//        
+//        $this->modified_date = (!empty($data['modified_date'])) ? $data['modified_date'] : null;
+//
+//        $this->modified_by = (!empty($data['modified_by'])) ? $data['modified_by'] : null;
+//    }
+//
+//    public function getArrayCopy() {
+//        return get_object_vars($this);
+//    }
 
-        $this->id = (!empty($data['id'])) ? $data['id'] : null;
-
-        $this->designation = (!empty($data['designation'])) ? $data['designation'] : null;
-
-        $this->IsActive = (!empty($data['IsActive'])) ? $data['IsActive'] : null;
-
-        $this->created_date = (!empty($data['created_date'])) ? $data['created_date'] : null;
-        
-        $this->modified_date = (!empty($data['modified_date'])) ? $data['modified_date'] : null;
-
-        $this->modified_by = (!empty($data['modified_by'])) ? $data['modified_by'] : null;
+    function getId() {
+        return $this->id;
     }
 
-    public function getArrayCopy() {
-        return get_object_vars($this);
+    function getDesignation() {
+        return $this->designation;
     }
+
+    function getIsActive() {
+        return $this->isActive;
+    }
+
+    function getCreatedDate() {
+        return $this->createdDate;
+    }
+
+    function getModifiedDate() {
+        return $this->modifiedDate;
+    }
+
+    function getModifiedBy() {
+        return $this->modifiedBy;
+    }
+
+    function setId($id) {
+        $this->id = $id;
+    }
+
+    function setDesignation($designation) {
+        $this->designation = $designation;
+    }
+
+    function setIsActive($isActive) {
+        $this->isActive = $isActive;
+    }
+
+    function setCreatedDate($createdDate) {
+        $this->createdDate = $createdDate;
+    }
+
+    function setModifiedDate($modifiedDate) {
+        $this->modifiedDate = $modifiedDate;
+    }
+
+    function setModifiedBy($modifiedBy) {
+        $this->modifiedBy = $modifiedBy;
+    }
+
 
 }
    

@@ -22,21 +22,21 @@
                       <tr>
                         <td><input type="checkbox" value="<?=$gothra->id?>" class="checkme" name="checkme[]"> </td> 
                        <td><?= $i ?></td>  
-                        <td><?= $gothra->gothra_name?></td>                       
-                        <td class="hidden-480"><?=$gothra->modified_date?></td>
-                        <td class="hidden-480"><?=$gothra->created_date?></td>
+                        <td><?= $gothra->gothraName?></td>                       
+                        <td class="hidden-480"><?=$gothra->modifiedDate?></td>
+                        <td class="hidden-480"><?=$gothra->createdDate?></td>
                         
                         <td class="hidden-480">
-						<!--<?php echo ($gothra->IsActive==1)? 'Active': '<span class="label label-sm label-warning">In-Active</span>'; ?>-->
-                        <?php $status = ($gothra->IsActive==1)? 'Active': 'In-Active';
-                        $statuscolor = ($gothra->IsActive==1)? 'activestatus': 'de-activestatus';
+						<!--<?php echo ($gothra->isActive==1)? 'Active': '<span class="label label-sm label-warning">In-Active</span>'; ?>-->
+                        <?php $status = ($gothra->isActive==1)? 'Active': 'In-Active';
+                        $statuscolor = ($gothra->isActive==1)? 'activestatus': 'de-activestatus';
                          ?>
-                          <div name="ChangeStatus" id="changestatus<?=$i;?>" onclick="changestatusquick(<?=$gothra->id?>,<?= ($gothra->IsActive==0)?0:1; ?>,'<?php echo $this->
+                          <div name="ChangeStatus" id="changestatus<?=$i;?>" onclick="changestatusquick(<?=$gothra->id?>,<?= ($gothra->isActive==0)?0:1; ?>,'<?php echo $this->
                                                                 url('admin/gothra', array('action'=>
                                                                     'changestatus')); ?>',changstatusresult);" class="<?=$statuscolor?>">
                         </div>
                         </td>
-                        <td class="hidden-480"><?php echo ($gothra->modified_by==1)? 'Admin': 'NotByAdmin'; ?></td>
+                        <td class="hidden-480"><?php echo ($gothra->modifiedBy==1)? 'Admin': 'NotByAdmin'; ?></td>
                         <td><div class="hidden-sm hidden-xs action-buttons"> 
                         <!--<a class="blue" href="<?php echo $this->url('admin',array('controller'=>'gothra','action'=>'view','id'=>$gothra->id)); ?>">
                          <i class="ace-icon fa fa-search-plus bigger-130"></i> </a> -->

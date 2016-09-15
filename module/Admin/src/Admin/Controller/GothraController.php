@@ -13,7 +13,7 @@ use Zend\View\Model\ViewModel;
 
 class GothraController extends AppController
 {   
-    protected $data = array();
+    protected $data = '';//array();
      protected $commonService;
     protected $adminService;
 
@@ -25,7 +25,8 @@ class GothraController extends AppController
     public function indexAction()
     {   
         
-         $gothras = $this->getGothraTable()->fetchAll($this->data);
+         //$gothras = $this->getGothraTable()->fetchAll($this->data);
+         $gothras = $this->adminService->getGothrasList();
 //            echo   "<pre>";
 //          print_r($gothras);die;
 		 
@@ -48,17 +49,18 @@ class GothraController extends AppController
         $request = $this->getRequest();
         if($request->isPost()){
 
-            $gothraEntity = new Gothras();
+            //$gothraEntity = new Gothras();
 
-               $form->setInputFilter(new GothraFilter());
+               //$form->setInputFilter(new GothraFilter());
                $form->setData($request->getPost());
 
 
                if($form->isValid()){
 
-                $gothraEntity->exchangeArray($form->getData());
+                //$gothraEntity->exchangeArray($form->getData());
                 // print_r($religionEntity);die;
-                $res = $this->getGothraTable()->SaveGothra($gothraEntity);
+                //$res = $this->getGothraTable()->SaveGothra($gothraEntity);
+                $res= $this->adminService->SaveGothra($form->getData());
 
 //                     return $this->redirect()->toRoute('admin', array(
 //                            'action' => 'index',
@@ -88,7 +90,8 @@ class GothraController extends AppController
         if($this->params()->fromRoute('id')>0){
             $id = $this->params()->fromRoute('id');
             // echo   $id;die;
-            $gothra = $this->getGothraTable()->getGothra($id);
+            //$gothra = $this->getGothraTable()->getGothra($id);
+            $gothra= $this->adminService->getGothra($id);
             // print_r($religion);die;
             $form->bind($gothra);
             $form->get('submit')->setAttribute('value', 'Edit');
@@ -99,17 +102,18 @@ class GothraController extends AppController
         if (!isset($_POST['chkedit'])) {
         if($request->isPost()){
 
-            $gothraEntity = new Gothras();
+            //$gothraEntity = new Gothras();
 
-               $form->setInputFilter(new GothraFilter());
+               //$form->setInputFilter(new GothraFilter());
                $form->setData($request->getPost());
 
 
                if($form->isValid()){
 
-                $gothraEntity = $form->getData();
+                //$gothraEntity = $form->getData();
                 // print_r($cityEntity);die;
-                $res = $this->getGothraTable()->SaveGothra($gothraEntity);
+                //$res = $this->getGothraTable()->SaveGothra($gothraEntity);
+                $res= $this->adminService->SaveGothra($form->getData());
 //
 //                     return $this->redirect()->toRoute('admin', array(
 //                            'action' => 'index',
@@ -144,7 +148,8 @@ class GothraController extends AppController
     {
          
             $id = $this->params()->fromRoute('id');
-            $gothra = $this->getGothraTable()->deleteGothra($id);
+            //$gothra = $this->getGothraTable()->deleteGothra($id);
+            $gothra= $this->adminService->delete('tbl_gothra_gothram', $id);
 //            return $this->redirect()->toRoute('admin', array(
 //                            'action' => 'index',
 //                            'controller' => 'gothra'
@@ -166,7 +171,8 @@ class GothraController extends AppController
         $id = $this->params()->fromRoute('id');
 
         //$Info = $this->getCountryTable()->getCountry($id);
-        $info = $this->getGothraTable()->getGothra($id);
+        //$info = $this->getGothraTable()->getGothra($id);
+        $info = $this->adminService->viewByGothraId('tbl_gothra_gothram', $id);
 
         // echo"<pre>"; print_r($Info);die;
         $view=new ViewModel(array('info'=>$info));
@@ -177,26 +183,32 @@ class GothraController extends AppController
     
     public function changestatusAction() {
 
-        $data = (object) $_POST;
-        $return = $this->getGothraTable()->updatestatus($data);
+        //$data = (object) $_POST;
+        $request=$this->getRequest();
+        //$return = $this->getGothraTable()->updatestatus($data);
+        $result= $this->adminService->changeStatus('tbl_gothra_gothram', $request->getPost('id'), $request->getPost());
         // print_r($return);
-        return new JsonModel($return);
-        exit();
+        return new JsonModel($result);
+        //exit();
     }
     
     public function delmultipleAction() {
         $ids = $_POST['chkdata'];
-        $result = $this->getGothraTable()->delmultiple($ids);
+        //$result = $this->getGothraTable()->delmultiple($ids);
+        $result= $this->adminService->deleteMultiple('tbl_gothra_gothram', $ids);
 
         echo $result;
         exit();
     }
     
-    public function statuschangeallAction() {
-        $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
-        $sql = "update tbl_gothra_gothram set IsActive=" . $_POST['val'] . " where id IN (" . $_POST['ids'] . ")";
-        $results = $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
-        if ($results)
+    public function changeStatusAllAction() {
+//        $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
+//        $sql = "update tbl_gothra_gothram set IsActive=" . $_POST['val'] . " where id IN (" . $_POST['ids'] . ")";
+//        $results = $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
+        $result= $this->adminService->changeStatusAll('tbl_gothra_gothram', $_POST['ids'], $_POST['val']);
+
+//        return new JsonModel($result);
+                if ($result)
             echo "updated all";
         else
             echo "couldn't update";
@@ -204,10 +216,12 @@ class GothraController extends AppController
     }
     
     public function ajaxradiosearchAction() {
-        $status = $_POST['IsActive'];
-        $this->data = array("IsActive=$status");
+        $status = $_POST['is_active'];
+        //$this->data = array("IsActive=$status");
+        $this->data = $status;
 
-        $gothras = $this->getGothraTable()->fetchAll($this->data);
+        //$gothras = $this->getGothraTable()->fetchAll($this->data);
+        $gothras = $this->adminService->getGothraRadioList($_POST['is_active']);
         // return new ViewModel(array('countries' => $countries));
 
         $view = new ViewModel(array('gothras' => $gothras));
@@ -217,13 +231,14 @@ class GothraController extends AppController
     }
     
     public function performsearchAction() {
-        $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
+        //$adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
 
-        $field1 = empty($_POST['gothra_name']) ? "" : "gothra_name like '" . $_POST['gothra_name'] . "%'";
+        //$field1 = empty($_POST['gothra_name']) ? "" : "gothra_name like '" . $_POST['gothra_name'] . "%'";
         
-        $sql = "select * from tbl_gothra_gothram where " . $field1 . "";
+        //$sql = "select * from tbl_gothra_gothram where " . $field1 . "";
        // $sql = rtrim($sql, "&&");
-        $results = $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
+        //$results = $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
+        $results = $this->adminService->performSearchGothra($_POST['gothra_name']);
 
         $view = new ViewModel(array("results" => $results));
         $view->setTerminal(true);
@@ -234,13 +249,14 @@ class GothraController extends AppController
     }
     
     public function gothrasearchAction() {
-        $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
+        //$adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
 
         $data = $_POST['value'];
 //        echo  "<pre>";
 //        print_r($data);die;
 
-        $result = $adapter->query("select * from tbl_gothra_gothram where gothra_name like '$data%' ", Adapter::QUERY_MODE_EXECUTE);
+        //$result = $adapter->query("select * from tbl_gothra_gothram where gothra_name like '$data%' ", Adapter::QUERY_MODE_EXECUTE);
+        $result = $this->adminService->gothraSearch($data);
 
 
         $view = new ViewModel(array("Results" => $result));

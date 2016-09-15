@@ -1,18 +1,24 @@
 <?php
 namespace Admin\Form;
 
+use Admin\Model\Entity\Cities;
 use Zend\Form\Form;
+use Zend\Stdlib\Hydrator\ClassMethods;
+
 
 class CityForm extends Form {
 
     public static $state_nameList = array();
     public static $country_nameList = array();
+    
 
 
     public function __construct($name = null) {
         // we want to ignore the name passed
-        parent::__construct('tbl_city');
+        parent::__construct('Cities');
         $this->setAttribute('method', 'post');
+        $this->setHydrator(new ClassMethods());
+        $this->setObject(new Cities());
         	
 		$this->add(array(
             'name' => 'id',
@@ -62,10 +68,10 @@ class CityForm extends Form {
 
         $this->add(array(
         'type' => 'Zend\Form\Element\Select',
-        'name' => 'IsActive',
+        'name' => 'is_active',
         'attributes' => array(
                 'class' => 'form-control',
-                'id'=>'IsActive'
+                'id'=>'is_active'
         ),
         'options' => array(
             'label' => 'Status',

@@ -68,8 +68,8 @@
                                         <div class="form-group clearfix margintopbottom20">
                                             <label id="flight_nos" class="col-sm-2 control-label labelalign ">Education Level Name</label>
                                             <div class="col-sm-2 ">
-                                                <input id="search_educationlevelName" class=" form-control inputchange" placeholder="Bachelors" type="text" 
-                                                       onkeyup="educationlevelsearchactions($(this).val(), '<?php echo $this->url('admin/education', array('action'=>'educationlevelsearch'))?>', educationlevelsearchresp, 'education_level')" name="education_level">
+                                                <input id="search_educationlevelName" class=" form-control inputchange" placeholder="Education Level" type="text" 
+                                                       onkeyup="educationlevelsearchactions($(this).val(), '<?php echo $this->url('admin/education', array('action'=>'educationlevelsearch'))?>', educationlevelsearchresp, 'educationLevel')" name="education_level">
                                                 <div class="col-sm-3" id="educationlevelsearchresults" style="position: absolute;overflow-y:scroll;background:#FFF;width:93%;height:auto;z-index: 9999;display:none;">
                                                 </div>                                    
                                             </div>                                           
@@ -165,11 +165,11 @@
                                                      ?>                                    
                                                   </div>
                                                    <label id="flight_nos" class="col-sm-1 control-label labelalign ">
-                            <?= $this->translate($form->get('IsActive')->getLabel()) ?>
+                            <?= $this->translate($form->get('is_active')->getLabel()) ?>
                            </label>
                                                   <div class="col-sm-2">
                                                      <?php 
-                                                     echo $this->formElement($form->get('IsActive'));
+                                                     echo $this->formElement($form->get('is_active'));
                                                      ?>                                    
                                                   </div>
                                                   

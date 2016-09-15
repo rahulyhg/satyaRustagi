@@ -1,7 +1,9 @@
 <?php
 namespace Admin\Form;
 
+use Admin\Model\Entity\States;
 use Zend\Form\Form;
+use Zend\Stdlib\Hydrator\ClassMethods;
 
 class StateForm extends Form {
 
@@ -11,8 +13,10 @@ class StateForm extends Form {
 
     public function __construct($name = null) {
         // we want to ignore the name passed
-        parent::__construct('tbl_state');
+        parent::__construct('States');
         $this->setAttribute('method', 'post');
+        $this->setHydrator(new ClassMethods());
+        $this->setObject(new States());
         	
 		$this->add(array(
             'name' => 'id',
@@ -58,10 +62,10 @@ class StateForm extends Form {
 
         $this->add(array(
         'type' => 'Zend\Form\Element\Select',
-        'name' => 'IsActive',
+        'name' => 'is_active',
         'attributes' => array(
                 'class' => 'form-control',
-                'id'=>'IsActive'
+                'id'=>'is_active'
         ),
         'options' => array(
             'label' => 'Status',

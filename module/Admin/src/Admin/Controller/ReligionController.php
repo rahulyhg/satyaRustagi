@@ -13,7 +13,7 @@ use Zend\View\Model\ViewModel;
 
 class ReligionController extends AppController
 {
-    protected $data = array();
+    protected $data = '';//array();
      protected $commonService;
     protected $adminService;
 
@@ -24,7 +24,8 @@ class ReligionController extends AppController
     
     public function indexAction()
     {   
-         $religions = $this->getReligionTable()->fetchAll($this->data);
+         //$religions = $this->getReligionTable()->fetchAll($this->data);
+         $religions = $this->adminService->getReligionList();
             //echo   "<pre>";
           //print_r($religions);die;
          // print_r($cities);die;
@@ -46,17 +47,18 @@ class ReligionController extends AppController
         $request = $this->getRequest();
         if($request->isPost()){
 
-            $religionEntity = new Religions();
+            //$religionEntity = new Religions();
 
-               $form->setInputFilter(new ReligionFilter());
+               //$form->setInputFilter(new ReligionFilter());
                $form->setData($request->getPost());
 
 
                if($form->isValid()){
 
-                $religionEntity->exchangeArray($form->getData());
+                //$religionEntity->exchangeArray($form->getData());
                 // print_r($religionEntity);die;
-                $res = $this->getReligionTable()->SaveReligion($religionEntity);
+                //$res = $this->getReligionTable()->SaveReligion($religionEntity);
+                $res= $this->adminService->SaveReligion($form->getData());
 
 //                     return $this->redirect()->toRoute('admin', array(
 //                            'action' => 'index',
@@ -82,7 +84,8 @@ class ReligionController extends AppController
         if($this->params()->fromRoute('id')>0){
             $id = $this->params()->fromRoute('id');
             // echo   $id;die;
-            $religion = $this->getReligionTable()->getReligion($id);
+            //$religion = $this->getReligionTable()->getReligion($id);
+            $religion= $this->adminService->getReligion($id);
             // print_r($religion);die;
             $form->bind($religion);
             $form->get('submit')->setAttribute('value', 'Edit');
@@ -93,17 +96,18 @@ class ReligionController extends AppController
         if (!isset($_POST['chkedit'])) {
         if($request->isPost()){
 
-            $religionEntity = new Religions();
+            //$religionEntity = new Religions();
 
-               $form->setInputFilter(new ReligionFilter());
+               //$form->setInputFilter(new ReligionFilter());
                $form->setData($request->getPost());
 
 
                if($form->isValid()){
 
-                $religionEntity = $form->getData();
+                //$religionEntity = $form->getData();
                 // print_r($cityEntity);die;
-                $res = $this->getReligionTable()->SaveReligion($religionEntity);
+                //$res = $this->getReligionTable()->SaveReligion($religionEntity);
+                $res= $this->adminService->SaveReligion($form->getData());
 
 //                     return $this->redirect()->toRoute('admin', array(
 //                            'action' => 'index',
@@ -139,7 +143,8 @@ class ReligionController extends AppController
     {
          
             $id = $this->params()->fromRoute('id');
-            $religion = $this->getReligionTable()->deleteReligion($id);
+            //$religion = $this->getReligionTable()->deleteReligion($id);
+            $religion= $this->adminService->delete('tbl_religion', $id);
 //            return $this->redirect()->toRoute('admin', array(
 //                            'action' => 'index',
 //                            'controller' => 'religion'
@@ -161,7 +166,8 @@ class ReligionController extends AppController
         $id = $this->params()->fromRoute('id');
 
         //$Info = $this->getCountryTable()->getCountry($id);
-        $info = $this->getReligionTable()->getReligion($id);
+        //$info = $this->getReligionTable()->getReligion($id);
+        $info = $this->adminService->viewByReligionId('tbl_religion', $id);
 
         // echo"<pre>"; print_r($Info);die;
         $view=new ViewModel(array('info'=>$info));
@@ -172,37 +178,44 @@ class ReligionController extends AppController
     
     public function changestatusAction() {
 
-        $data = (object) $_POST;
-        $return = $this->getReligionTable()->updatestatus($data);
+        //$data = (object) $_POST;
+        $request=$this->getRequest();
+        //$return = $this->getReligionTable()->updatestatus($data);
+        $result= $this->adminService->changeStatus('tbl_religion', $request->getPost('id'), $request->getPost());
         // print_r($return);
-        return new JsonModel($return);
-        exit();
+        return new JsonModel($result);
+        //exit();
     }
     
     public function delmultipleAction() {
         $ids = $_POST['chkdata'];
-        $result = $this->getReligionTable()->delmultiple($ids);
+        //$result = $this->getReligionTable()->delmultiple($ids);
+        $result= $this->adminService->deleteMultiple('tbl_religion', $ids);
 
         echo $result;
         exit();
     }
     
-    public function statuschangeallAction() {
-        $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
-        $sql = "update tbl_religion set IsActive=" . $_POST['val'] . " where id IN (" . $_POST['ids'] . ")";
-        $results = $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
-        if ($results)
+    public function changeStatusAllAction() {
+//        $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
+//        $sql = "update tbl_religion set IsActive=" . $_POST['val'] . " where id IN (" . $_POST['ids'] . ")";
+//        $results = $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
+        $result= $this->adminService->changeStatusAll('tbl_religion', $_POST['ids'], $_POST['val']);
+        if ($result)
             echo "updated all";
         else
             echo "couldn't update";
         exit();
+        //return new JsonModel($result);
     }
     
     public function ajaxradiosearchAction() {
-        $status = $_POST['IsActive'];
-        $this->data = array("IsActive=$status");
+        $status = $_POST['is_active'];
+        //$this->data = array("IsActive=$status");
+        $this->data = $status;
 
-        $religions = $this->getReligionTable()->fetchAll($this->data);
+        //$religions = $this->getReligionTable()->fetchAll($this->data);
+        $religions = $this->adminService->getReligionRadioList($_POST['is_active']);
         // return new ViewModel(array('countries' => $countries));
 
         $view = new ViewModel(array('religions' => $religions));
@@ -212,13 +225,14 @@ class ReligionController extends AppController
     }
     
     public function performsearchAction() {
-        $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
+        //$adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
 
-        $field1 = empty($_POST['religion_name']) ? "" : "religion_name like '" . $_POST['religion_name'] . "%'";
+        //$field1 = empty($_POST['religion_name']) ? "" : "religion_name like '" . $_POST['religion_name'] . "%'";
         
-        $sql = "select * from tbl_religion where " . $field1 . "";
+        //$sql = "select * from tbl_religion where " . $field1 . "";
        // $sql = rtrim($sql, "&&");
-        $results = $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
+        //$results = $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
+        $results = $this->adminService->performSearchReligion($_POST['religion_name']);
 
         $view = new ViewModel(array("results" => $results));
         $view->setTerminal(true);
@@ -229,13 +243,14 @@ class ReligionController extends AppController
     }
     
     public function religionsearchAction() {
-        $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
+        //$adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
 
         $data = $_POST['value'];
 //        echo  "<pre>";
 //        print_r($data);die;
 
-        $result = $adapter->query("select * from tbl_religion where religion_name like '$data%' ", Adapter::QUERY_MODE_EXECUTE);
+        //$result = $adapter->query("select * from tbl_religion where religion_name like '$data%' ", Adapter::QUERY_MODE_EXECUTE);
+        $result = $this->adminService->religionSearch($data);
 
 
         $view = new ViewModel(array("Results" => $result));

@@ -26,21 +26,21 @@ foreach ($results as $country) {
                                     <tr>
                                         <td><input type="checkbox" value="<?= $country->id ?>" class="checkme" name="checkme[]"></td> 
                                         <td><?= $i ?></td>
-                                        <td ><?= $country->country_name ?></td>
+                                        <td ><?= $country->countryName ?></td>
 
-                                        <td class="hidden-480"><?= $country->dial_code ?></td>
-                                        <td><?= $country->country_code ?></td>
-                                        <td class="hidden-480"><?= $country->modified_date ?></td>
-                                        <td class="hidden-480"><?= $country->created_date ?></td>                                        
+                                        <td class="hidden-480"><?= $country->dialCode ?></td>
+                                        <td><?= $country->countryCode ?></td>
+                                        <td class="hidden-480"><?= $country->modifiedDate ?></td>
+                                        <td class="hidden-480"><?= $country->createdDate ?></td>                                        
                                         <td class="hidden-480" align="center">
 
     <?php
-    $status = ($country->IsActive == 1) ? 'Active' : 'In-Active';
-    $statuscolor = ($country->IsActive == 1) ? 'activestatus' : 'de-activestatus';
+    $status = ($country->isActive == 1) ? 'Active' : 'In-Active';
+    $statuscolor = ($country->isActive == 1) ? 'activestatus' : 'de-activestatus';
     ?>
                                             <div name="ChangeStatus" id="changestatus<?= $i; ?>" onclick=
                                                 "changestatusquick(<?= $country->id ?>,<?= ($country->
-                                                        IsActive == 0) ? 0 : 1; ?>, '<?php echo $this->
+                                                        isActive == 0) ? 0 : 1; ?>, '<?php echo $this->
                                                                 url('admin/country', array('action'=>
                                                                     'changestatus')); ?>', 
                                                                         changstatusresult);" class="<?= 
@@ -48,7 +48,7 @@ foreach ($results as $country) {
                                             </div>
 
                                         </td>
-                                        <td class="hidden-480"><?php echo ($country->modified_by == 1) ? 'Admin' : 'NotByAdmin'; ?></td>
+                                        <td class="hidden-480"><?php echo ($country->modifiedBy == 1) ? 'Admin' : 'NotByAdmin'; ?></td>
                                         <td aria-expanded="false" class="accordion1"><div class="hidden-sm hidden-xs action-buttons"> 
                                                 <a class="blue" style="cursor:pointer;" data-toggle="modal" data-target="#myModal"  
                                                    tar="indview<?= $i ?>"> <i onclick="findRowDataByCountryId('<?php echo $this->url

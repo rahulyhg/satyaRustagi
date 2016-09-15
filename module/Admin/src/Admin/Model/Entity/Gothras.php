@@ -5,30 +5,79 @@ namespace Admin\Model\Entity;
 class Gothras {
 
     public $id;
-    public $gothra_name;
-    public $IsActive;
-    public $created_date;
-    public $modified_date;
-    public $modified_by;
+    public $gothraName;
+    public $isActive;
+    public $createdDate;
+    public $modifiedDate;
+    public $modifiedBy;
 
-    public function exchangeArray($data) {
+//    public function exchangeArray($data) {
+//
+//        $this->id = (!empty($data['id'])) ? $data['id'] : null;
+//
+//        $this->gothra_name = (!empty($data['gothra_name'])) ? $data['gothra_name'] : null;
+//
+//        $this->IsActive = (!empty($data['IsActive'])) ? $data['IsActive'] : null;
+//
+//        $this->created_date = (!empty($data['created_date'])) ? $data['created_date'] : null;
+//        
+//        $this->modified_date = (!empty($data['modified_date'])) ? $data['modified_date'] : null;
+//
+//        $this->modified_by = (!empty($data['modified_by'])) ? $data['modified_by'] : null;
+//    }
+//
+//    public function getArrayCopy() {
+//        return get_object_vars($this);
+//    }
 
-        $this->id = (!empty($data['id'])) ? $data['id'] : null;
-
-        $this->gothra_name = (!empty($data['gothra_name'])) ? $data['gothra_name'] : null;
-
-        $this->IsActive = (!empty($data['IsActive'])) ? $data['IsActive'] : null;
-
-        $this->created_date = (!empty($data['created_date'])) ? $data['created_date'] : null;
-        
-        $this->modified_date = (!empty($data['modified_date'])) ? $data['modified_date'] : null;
-
-        $this->modified_by = (!empty($data['modified_by'])) ? $data['modified_by'] : null;
+    function getId() {
+        return $this->id;
     }
 
-    public function getArrayCopy() {
-        return get_object_vars($this);
+    function getGothraName() {
+        return $this->gothraName;
     }
+
+    function getIsActive() {
+        return $this->isActive;
+    }
+
+    function getCreatedDate() {
+        return $this->createdDate;
+    }
+
+    function getModifiedDate() {
+        return $this->modifiedDate;
+    }
+
+    function getModifiedBy() {
+        return $this->modifiedBy;
+    }
+
+    function setId($id) {
+        $this->id = $id;
+    }
+
+    function setGothraName($gothraName) {
+        $this->gothraName = $gothraName;
+    }
+
+    function setIsActive($isActive) {
+        $this->isActive = $isActive;
+    }
+
+    function setCreatedDate($createdDate) {
+        $this->createdDate = $createdDate;
+    }
+
+    function setModifiedDate($modifiedDate) {
+        $this->modifiedDate = $modifiedDate;
+    }
+
+    function setModifiedBy($modifiedBy) {
+        $this->modifiedBy = $modifiedBy;
+    }
+
 
 }
    

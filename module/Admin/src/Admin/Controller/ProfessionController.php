@@ -13,7 +13,7 @@ use Zend\View\Model\ViewModel;
 
 class ProfessionController extends AppController
 {
-    protected $data = array();
+    protected $data = '';//array();
      protected $commonService;
     protected $adminService;
 
@@ -24,7 +24,8 @@ class ProfessionController extends AppController
     
     public function indexAction()
     {   
-         $professions = $this->getProfessionTable()->fetchAll($this->data);
+         //$professions = $this->getProfessionTable()->fetchAll($this->data);
+         $professions = $this->adminService->getProfessionList();
             //echo   "<pre>";
           //print_r($professions);die;
          // print_r($cities);die;
@@ -46,17 +47,18 @@ class ProfessionController extends AppController
         $request = $this->getRequest();
         if($request->isPost()){
 
-            $professionEntity = new Professions();
+            //$professionEntity = new Professions();
 
-               $form->setInputFilter(new ProfessionFilter());
+               //$form->setInputFilter(new ProfessionFilter());
                $form->setData($request->getPost());
 
 
                if($form->isValid()){
 
-                $professionEntity->exchangeArray($form->getData());
+                //$professionEntity->exchangeArray($form->getData());
                 // print_r($professionEntity);die;
-                $res = $this->getProfessionTable()->SaveProfession($professionEntity);
+                //$res = $this->getProfessionTable()->SaveProfession($professionEntity);
+                $res= $this->adminService->SaveProfession($form->getData());
 
 //                     return $this->redirect()->toRoute('admin', array(
 //                            'action' => 'index',
@@ -82,7 +84,8 @@ class ProfessionController extends AppController
         if($this->params()->fromRoute('id')>0){
             $id = $this->params()->fromRoute('id');
             // echo   $id;die;
-            $profession = $this->getProfessionTable()->getProfession($id);
+            //$profession = $this->getProfessionTable()->getProfession($id);
+            $profession= $this->adminService->getProfession($id);
             // print_r($profession);die;
             $form->bind($profession);
             $form->get('submit')->setAttribute('value', 'Edit');
@@ -93,17 +96,18 @@ class ProfessionController extends AppController
         if (!isset($_POST['chkedit'])) {
         if($request->isPost()){
 
-            $professionEntity = new Professions();
+            //$professionEntity = new Professions();
 
-               $form->setInputFilter(new ProfessionFilter());
+               //$form->setInputFilter(new ProfessionFilter());
                $form->setData($request->getPost());
 
 
                if($form->isValid()){
 
-                $professionEntity = $form->getData();
+                //$professionEntity = $form->getData();
                 // print_r($cityEntity);die;
-                $res = $this->getProfessionTable()->SaveProfession($professionEntity);
+                //$res = $this->getProfessionTable()->SaveProfession($professionEntity);
+                $res= $this->adminService->SaveProfession($form->getData());
 
 //                     return $this->redirect()->toRoute('admin', array(
 //                            'action' => 'index',
@@ -139,7 +143,8 @@ class ProfessionController extends AppController
     {
          
             $id = $this->params()->fromRoute('id');
-            $profession = $this->getProfessionTable()->deleteProfession($id);
+            //$profession = $this->getProfessionTable()->deleteProfession($id);
+            $profession= $this->adminService->delete('tbl_profession', $id);
 //            return $this->redirect()->toRoute('admin', array(
 //                            'action' => 'index',
 //                            'controller' => 'profession'
@@ -161,7 +166,8 @@ class ProfessionController extends AppController
         $id = $this->params()->fromRoute('id');
 
         //$Info = $this->getCountryTable()->getCountry($id);
-        $info = $this->getProfessionTable()->getProfession($id);
+        //$info = $this->getProfessionTable()->getProfession($id);
+        $info = $this->adminService->viewByProfessionId('tbl_profession', $id);
 
         // echo"<pre>"; print_r($Info);die;
         $view=new ViewModel(array('info'=>$info));
@@ -172,26 +178,32 @@ class ProfessionController extends AppController
     
     public function changestatusAction() {
 
-        $data = (object) $_POST;
-        $return = $this->getProfessionTable()->updatestatus($data);
+        //$data = (object) $_POST;
+        $request=$this->getRequest();
+        //$return = $this->getProfessionTable()->updatestatus($data);
+        $result= $this->adminService->changeStatus('tbl_profession', $request->getPost('id'), $request->getPost());
         // print_r($return);
-        return new JsonModel($return);
-        exit();
+        return new JsonModel($result);
+        //exit();
     }
     
     public function delmultipleAction() {
         $ids = $_POST['chkdata'];
-        $result = $this->getProfessionTable()->delmultiple($ids);
+        //$result = $this->getProfessionTable()->delmultiple($ids);
+        $result= $this->adminService->deleteMultiple('tbl_profession', $ids);
 
         echo $result;
         exit();
     }
     
-    public function statuschangeallAction() {
-        $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
-        $sql = "update tbl_profession set IsActive=" . $_POST['val'] . " where id IN (" . $_POST['ids'] . ")";
-        $results = $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
-        if ($results)
+    public function changeStatusAllAction() {
+//        $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
+//        $sql = "update tbl_profession set IsActive=" . $_POST['val'] . " where id IN (" . $_POST['ids'] . ")";
+//        $results = $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
+        $result= $this->adminService->changeStatusAll('tbl_profession', $_POST['ids'], $_POST['val']);
+
+//        return new JsonModel($result);
+                if ($result)
             echo "updated all";
         else
             echo "couldn't update";
@@ -199,10 +211,12 @@ class ProfessionController extends AppController
     }
     
     public function ajaxradiosearchAction() {
-        $status = $_POST['IsActive'];
-        $this->data = array("IsActive=$status");
+        $status = $_POST['is_active'];
+        //$this->data = array("IsActive=$status");
+        $this->data = $status;
 
-        $professions = $this->getProfessionTable()->fetchAll($this->data);
+        //$professions = $this->getProfessionTable()->fetchAll($this->data);
+        $professions = $this->adminService->getProfessionRadioList($_POST['is_active']);
         // return new ViewModel(array('countries' => $countries));
 
         $view = new ViewModel(array('professions' => $professions));
@@ -212,13 +226,14 @@ class ProfessionController extends AppController
     }
     
      public function performsearchAction() {
-        $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
+        //$adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
 
-        $field1 = empty($_POST['profession']) ? "" : "profession like '" . $_POST['profession'] . "%'";
+        //$field1 = empty($_POST['profession']) ? "" : "profession like '" . $_POST['profession'] . "%'";
         
-        $sql = "select * from tbl_profession where " . $field1 . "";
+        //$sql = "select * from tbl_profession where " . $field1 . "";
        // $sql = rtrim($sql, "&&");
-        $results = $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
+        //$results = $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
+        $results = $this->adminService->performSearchProfession($_POST['profession']);
 
         $view = new ViewModel(array("results" => $results));
         $view->setTerminal(true);
@@ -235,8 +250,8 @@ class ProfessionController extends AppController
 //        echo  "<pre>";
 //        print_r($data);die;
 
-        $result = $adapter->query("select * from tbl_profession where profession like '$data%' ", Adapter::QUERY_MODE_EXECUTE);
-
+        //$result = $adapter->query("select * from tbl_profession where profession like '$data%' ", Adapter::QUERY_MODE_EXECUTE);
+        $result = $this->adminService->professionSearch($data);
 
         $view = new ViewModel(array("Results" => $result));
         $view->setTerminal(true);

@@ -6,8 +6,8 @@
                          
                            <th><input type="checkbox" value="" id="checkAll" onclick="checkall(this.id)" > </th>
                          <th> Sr. No. </th>
+                        <th>City Name</th>
                         <th>State Name</th>
-                        <th>Country Name</th>
                         <th class="hidden-480">Modified Date</th>
                         <th class="hidden-480">Created Date</th>
                         <th class="hidden-480">Status</th>
@@ -19,54 +19,54 @@
                       <?php 
                       $i=1;
                       if(count($results)>0){
-//                          echo "<pre>";print_r($results);exit;
-                      foreach ($results as $state) {
+                          
+                      foreach ($results as $city) {
                       
                       ?>
                       <tr>
-                            <td><input type="checkbox" value="<?=$state->id?>" class="checkme" name="checkme[]"> </td>  
+                            <td><input type="checkbox" value="<?=$city->id?>" class="checkme" name="checkme[]"> </td>  
                         <td> <?=$i?></td>
-                        <td><?= $state->stateName?></td>                       
-                        <td class="hidden-480"><?= $state->countryName?></td>
-                        <td class="hidden-480"><?= $state->modifiedDate?></td>
-                        <td class="hidden-480"><?= $state->createdDate?></td>
+                        <td><?= $city->cityName?></td>                       
+                        <td class="hidden-480"><?= $city->stateName?></td>
+                        <td class="hidden-480"><?= $city->modifiedDate?></td>
+                        <td class="hidden-480"><?= $city->createdDate?></td>
                         
                         <td class="hidden-480" align="center">
 
     <?php
-    $status = ($state->isActive == 1) ? 'Active' : 'In-Active';
-    $statuscolor = ($state->isActive == 1) ? 'activestatus' : 'de-activestatus';
+    $status = ($city->isActive == 1) ? 'Active' : 'In-Active';
+    $statuscolor = ($city->isActive == 1) ? 'activestatus' : 'de-activestatus';
     ?>
                                             <div name="ChangeStatus" id="changestatus<?= $i; ?>" onclick=
-                                                "changestatusquick(<?= $state->id ?>,<?= ($state->
+                                                "changestatusquick(<?= $city->id ?>,<?= ($city->
                                                         isActive == 0) ? 0 : 1; ?>, '<?php echo $this->
-                                                                url('admin/state', array('action'=>
+                                                                url('admin/city', array('action'=>
                                                                     'changestatus')); ?>', 
                                                                         changstatusresult);" class="<?= 
                                                         $statuscolor ?>">
                                             </div>
 
                                         </td>
-                        <td class="hidden-480"><?php echo ($state->modifiedBy==1)? 'Admin': 'NotByAdmin'; ?></td>
+                        <td class="hidden-480"><?php echo ($city->modifiedBy==1)? 'Admin': 'NotByAdmin'; ?></td>
                         <td aria-expanded="false" class="accordion1">
                         <div class="hidden-sm hidden-xs action-buttons">                        
                          <a class="blue" style="cursor:pointer;" data-toggle="modal" data-target="#myModal" tar="indview<?=$i?>
-                            "> <i onclick="findRowDataByStateId('<?php echo $this->url
-                                                           ('admin/state', array('action'=>'viewById','id'=>$state->id)); ?>', 
+                            "> <i onclick="findRowDataByCityId('<?php echo $this->url
+                                                           ('admin/city', array('action'=>'viewById','id'=>$city->id)); ?>', 
                                                                        viewRowDataById);" class="ace-icon fa fa-search-plus bigger-130">
                                                     </i> </a>
                         
                          
                         
-                        <a class="green" href="javascript:void(0);" onclick="editbox(<?= $state->id ?>, '<?php echo 
-                                        $this->url('admin/state', array('action' => 'edit', 'id' => $state->id));
+                        <a class="green" href="javascript:void(0);" onclick="editbox(<?= $city->id ?>, '<?php echo 
+                                        $this->url('admin/city', array('action' => 'edit', 'id' => $city->id));
                                         ?>', editformresp);" > <i class="ace-icon fa fa-pencil bigger-130"></i> </a>
 
                          
                         
                         <a class="red" 
-                                           href="<?php echo $this->url('admin/state', array('action' => 'delete', 'id' => 
-                                               $state->id)); ?>" onclick="return confirm('are you sure you want to delete');"> 
+                                           href="<?php echo $this->url('admin/city', array('action' => 'delete', 'id' => 
+                                               $city->id)); ?>" onclick="return confirm('are you sure you want to delete');"> 
                                             <i class="ace-icon fa fa-trash-o bigger-130"></i> </a>
                         </div>
                           </td>
