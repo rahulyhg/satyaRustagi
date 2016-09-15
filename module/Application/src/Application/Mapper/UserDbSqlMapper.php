@@ -3,18 +3,20 @@
 namespace Application\Mapper;
 
 use Application\Form\Entity\SingUpFormInterface;
+use Application\Model\Entity\Family;
 use Application\Model\Entity\Post;
 use Application\Model\Entity\User;
 use Application\Model\Entity\UserInfo;
 use Zend\Db\Adapter\Adapter;
 use Zend\Db\Adapter\AdapterInterface;
 use Zend\Db\Adapter\Driver\ResultInterface;
-use Zend\Db\ResultSet\HydratingResultSet;
 use Zend\Db\ResultSet\ResultSet;
 use Zend\Db\Sql\Insert;
+use Zend\Db\Sql\Predicate\Predicate;
 use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Update;
 use Zend\Debug\Debug;
+use Zend\Http\PhpEnvironment\RemoteAddress;
 use Zend\Stdlib\Hydrator\ClassMethods;
 
 class UserDbSqlMapper implements UserMapperInterface {
@@ -658,8 +660,41 @@ class UserDbSqlMapper implements UserMapperInterface {
         $result = $stmt->execute();
     }
 
+    function my_array_search($array, $key, $value) {
+        $results = array();
+
+        if (is_array($array)) {
+            if (isset($array[$key]) && $array[$key] == $value) {
+                $results[] = $array;
+            }
+
+            foreach ($array as $subarray) {
+                $results = array_merge($results, $this->my_array_search($subarray, $key, $value));
+            }
+        }
+
+        return $results;
+    }
+
     public function getFamilyInfoById($user_id) {
-        $family = new \Application\Model\Entity\Family();
+//        $allParent=$this->getFirstParent($user_id);
+//        $myChild = $this->getAllChild($user_id);
+//        $allChild = $this->getAllChild($user_id);
+//        $myFatherId=$allParent[0];
+//        $myGrandFatherId=$allParent[1];
+//        $brotherArray=$this->my_array_search($this->getAllChild($myFatherId), 'father_id', $myFatherId);
+//        $keyMy = array_search($user_id, array_column($brotherArray, 'user_id'));
+//        unset($brotherArray[$keyMy]);
+//        //array_reduce($a, 'array_merge', array());
+//        $myBrotherData=$this->my_array_search(array_values($brotherArray), 'gender', 'Male');
+//        $mySisterData=$this->my_array_search(array_values($brotherArray), 'gender', 'Female');
+        //$mybrotherId=$mybrotherData['user_id'];
+        //Debug::dump($this->my_array_search($child, 'father_id', '38'));
+        //Debug::dump($allChild);
+        $family = new Family();
+        $familyInfo = array();
+
+
         $statement = $this->dbAdapter->query("SELECT tui.name_title_user, tui.full_name, 
             tui.dob, tui.live_status,
             tui.profile_photo, tui.gender, tui.family_values_status, tui.user_id as user_id,
@@ -670,6 +705,7 @@ class UserDbSqlMapper implements UserMapperInterface {
         );
         $result = $statement->execute($parameters);
         $userInfo = $result->current();
+        $family->setUserId($userInfo['user_id']);
         $family->setFamilyValues($userInfo['family_values_status']);
 
 
@@ -678,6 +714,13 @@ class UserDbSqlMapper implements UserMapperInterface {
         );
         $result = $statement->execute($parameters);
         $fatherInfo = $result->current();
+        $familyInfo['father_id'] = $fatherInfo['user_id'];
+        $familyInfo['name_title_father'] = $fatherInfo['name_title_user'];
+        $familyInfo['father_name'] = $fatherInfo['full_name'];
+        $familyInfo['father_dob'] = $fatherInfo['dob'];
+        $familyInfo['father_status'] = $fatherInfo['live_status'];
+        $familyInfo['father_photo'] = $fatherInfo['profile_photo'];
+
         $family->setFatherId($fatherInfo['user_id']);
         $family->setNameTitleFather($fatherInfo['name_title_user']);
         $family->setFatherName($fatherInfo['full_name']);
@@ -692,6 +735,7 @@ class UserDbSqlMapper implements UserMapperInterface {
         );
         $result = $statement->execute($parameters);
         $motherInfo = $result->current();
+        $familyInfo['mother_id'] = $motherInfo['user_id'];
         $family->setMotherId($motherInfo['user_id']);
         $family->setNameTitleMother($motherInfo['name_title_user']);
         $family->setMotherName($motherInfo['full_name']);
@@ -707,13 +751,13 @@ class UserDbSqlMapper implements UserMapperInterface {
             );
             $result = $statement->execute($parameters);
             $wifeInfo = $result->current();
+            $familyInfo['spouse_id'] = $wifeInfo['user_id'];
             $family->setSpouseId($wifeInfo['user_id']);
             $family->setNameTitleSpouse($wifeInfo['name_title_user']);
             $family->setSpouseName($wifeInfo['full_name']);
             $family->setSpouseDob($wifeInfo['dob']);
-            $family->setSisterStatus($wifeInfo['live_status']);
+            $family->setSpouseStatus($wifeInfo['live_status']);
             $family->setSpousePhoto($wifeInfo['profile_photo']);
-            
         }
 
         if ($userInfo['gender'] === "Female") {
@@ -722,11 +766,12 @@ class UserDbSqlMapper implements UserMapperInterface {
             );
             $result = $statement->execute($parameters);
             $husbandInfo = $result->current();
+            $familyInfo['spouse_id'] = $husbandInfo['user_id'];
             $family->setSpouseId($husbandInfo['user_id']);
             $family->setNameTitleSpouse($husbandInfo['name_title_user']);
             $family->setSpouseName($husbandInfo['full_name']);
             $family->setSpouseDob($husbandInfo['dob']);
-            $family->setSisterStatus($husbandInfo['live_status']);
+            $family->setSpouseStatus($husbandInfo['live_status']);
             $family->setSpousePhoto($husbandInfo['profile_photo']);
         }
 
@@ -736,6 +781,8 @@ class UserDbSqlMapper implements UserMapperInterface {
         );
         $result = $statement->execute($parameters);
         $grandFatherInfo = $result->current();
+        $familyInfo['grand_father_id'] = $grandFatherInfo['user_id'];
+
         $family->setGrandFatherId($grandFatherInfo['user_id']);
         $family->setNameTitleGrandFather($grandFatherInfo['name_title_user']);
         $family->setGrandFatherName($grandFatherInfo['full_name']);
@@ -746,10 +793,11 @@ class UserDbSqlMapper implements UserMapperInterface {
 
 
         $parameters = array(
-            'user_id' => $fatherInfo['wife_id']
+            'user_id' => $fatherInfo['mother_id']
         );
         $result = $statement->execute($parameters);
         $grandMotherInfo = $result->current();
+        $familyInfo['grand_mother_id'] = $grandMotherInfo['user_id'];
         $family->setGrandMotherId($grandMotherInfo['user_id']);
         $family->setNameTitleGrandMother($grandMotherInfo['name_title_user']);
         $family->setGrandMotherName($grandMotherInfo['full_name']);
@@ -757,57 +805,104 @@ class UserDbSqlMapper implements UserMapperInterface {
         $family->setGrandMotherStatus($grandMotherInfo['live_status']);
         $family->setGrandMotherPhoto($grandMotherInfo['profile_photo']);
 
+
         $parameters = array(
-            'user_id' => $fatherInfo['mother_id']
+            'user_id' => $grandFatherInfo['mother_id']
         );
         $result = $statement->execute($parameters);
         $grandGrandMotherInfo = $result->current();
+        $familyInfo['grand_grand_mother_id'] = $grandGrandMotherInfo['user_id'];
         $family->setGrandGrandMotherId($grandGrandMotherInfo['user_id']);
         $family->setNameTitleGrandGrandMother($grandGrandMotherInfo['name_title_user']);
         $family->setGrandGrandMotherName($grandGrandMotherInfo['full_name']);
         $family->setGrandGrandMotherDob($grandGrandMotherInfo['dob']);
         $family->setGrandGrandMotherStatus($grandGrandMotherInfo['live_status']);
         $family->setGrandGrandMotherPhoto($grandGrandMotherInfo['profile_photo']);
-        
+
+        //Debug::dump($familyInfo);
+
         $parameters = array(
             'user_id' => $grandFatherInfo['father_id']
         );
         $result = $statement->execute($parameters);
         $grandGrandFatherInfo = $result->current();
+        $familyInfo['grand_grand_father_id'] = $grandGrandFatherInfo['user_id'];
         $family->setGrandGrandFatherId($grandGrandFatherInfo['user_id']);
         $family->setNameTitleGrandGrandFather($grandGrandFatherInfo['name_title_user']);
         $family->setGrandGrandFatherName($grandGrandFatherInfo['full_name']);
         $family->setGrandGrandFatherDob($grandGrandFatherInfo['dob']);
         $family->setGrandGrandFatherStatus($grandGrandFatherInfo['live_status']);
         $family->setGrandGrandFatherPhoto($grandGrandFatherInfo['profile_photo']);
-        
+
         // brother
-        
+
         $sql = new Sql($this->dbAdapter);
-        $select = $sql->select(array('tui'=>'tbl_user_info'));
-        $select->join(array('tfr' => 'tbl_family_relation'), 'tui.user_id=tfr.user_id', array('user_id_rel'=>'user_id', 'father_id'), $select::JOIN_LEFT);
-        $select->columns(array('name_title_user', 'brother_name'=>'full_name', 
-           'dob', 'live_status',
-            'profile_photo', 'gender', 'family_values_status', 'user_id'=>'user_id',
-          ));
+        $select = $sql->select(array('tui' => 'tbl_user_info'));
+        $select->join(array('tfr' => 'tbl_family_relation'), 'tui.user_id=tfr.user_id', array('user_id_rel' => 'user_id', 'father_id'), $select::JOIN_LEFT);
+        $select->columns(array('name_title_user', 'brother_name' => 'full_name',
+            'dob', 'live_status',
+            'profile_photo', 'gender', 'family_values_status', 'user_id' => 'user_id',
+        ));
         $select->where(array('tfr.father_id = ?' => $userInfo['father_id']));
+        $select->where(array('tui.user_id != ?' => $user_id), Predicate::OP_AND);
+        $select->where(array('tui.gender = ?' => 'Male'), Predicate::OP_AND);
         $stmt = $sql->prepareStatementForSqlObject($select);
         $result = $stmt->execute();
-        
+
         //$resultSet = new HydratingResultSet($this->hydrator, $family);
-       
-        $brotherData=$this->resultSet->initialize($result);
-        $family->setNumbor($brotherData->count());
+
+        $resultSet = $this->resultSet->initialize($result);
+        $brotherData=$resultSet->toArray();
+        //Debug::dump($brotherData);
+        $family->setNumbor($resultSet->count() > 0 ? $resultSet->count() : '');
+
+        // Sister
+
+        $sql = new Sql($this->dbAdapter);
+        $select = $sql->select(array('tui' => 'tbl_user_info'));
+        $select->join(array('tfr' => 'tbl_family_relation'), 'tui.user_id=tfr.user_id', array('user_id_rel' => 'user_id', 'father_id'), $select::JOIN_LEFT);
+        $select->columns(array('name_title_user', 'sister_name' => 'full_name',
+            'dob', 'live_status',
+            'profile_photo', 'gender', 'family_values_status', 'user_id' => 'user_id',
+        ));
+        $select->where(array('tfr.father_id = ?' => $userInfo['father_id']));
+        $select->where(array('tui.user_id != ?' => $user_id), Predicate::OP_AND);
+        $select->where(array('tui.gender = ?' => 'Female'), Predicate::OP_AND);
         
+        $stmt = $sql->prepareStatementForSqlObject($select);
+        $result = $stmt->execute();
+
+        //$resultSet = new HydratingResultSet($this->hydrator, $family);
+
+        $resultSet = $this->resultSet->initialize($result);
+        //Debug::dump($resultSet);
+        $sisterData=$resultSet->toArray();
+        //$family->setNumbor($brotherData->count() > 0 ? $brotherData->count() : '');
+        // Sister
+//        $sql = new Sql($this->dbAdapter);
+//        $select = $sql->select(array('tui'=>'tbl_user_info'));
+//        $select->join(array('tfr' => 'tbl_family_relation'), 'tui.user_id=tfr.user_id', array('user_id_rel'=>'user_id', 'father_id'), $select::JOIN_LEFT);
+//        $select->columns(array('name_title_user', 'brother_name'=>'full_name', 
+//           'dob', 'live_status',
+//            'profile_photo', 'gender', 'family_values_status', 'user_id'=>'user_id',
+//          ));
+//        $select->where(array('tfr.father_id = ?' => $userInfo['father_id']));
+//        $select->where(array('tui.user_id != ?' => $user_id), \Zend\Db\Sql\Predicate\Predicate::OP_AND);
+//        $stmt = $sql->prepareStatementForSqlObject($select);
+//        $result = $stmt->execute();
+//        
+//        //$resultSet = new HydratingResultSet($this->hydrator, $family);
+//       
+//        $brotherData=$this->resultSet->initialize($result);
+//        $family->setNumbor($brotherData->count());
         //$family->setBrotherName($resultSet->full_name']);
-        
 //         $statement = $this->dbAdapter->query("SELECT tui.name_title_user, tui.full_name, 
 //            tui.dob, tui.live_status,
 //            tui.profile_photo, tui.gender, tui.family_values_status, tui.user_id as user_id,
 //            tfr.user_id as user_id_rel, tfr.father_id, tfr.mother_id, tfr.wife_id, tfr.husband_id  FROM tbl_user_info as tui LEFT JOIN tbl_family_relation as tfr 
 //                ON tui.user_id=tfr.user_id WHERE tui.user_id=:user_id");
         //$statement = $this->dbAdapter->query("SELECT tfr.*  FROM  tbl_family_relation as tfr 
-            //WHERE tfr.father_id='".$userInfo['father_id']."' GROUP BY tfr.father_id");
+        //WHERE tfr.father_id='".$userInfo['father_id']."' GROUP BY tfr.father_id");
 //        $parameters = array(
 //            'father_id' => $userInfo['father_id']
 //        );
@@ -816,9 +911,16 @@ class UserDbSqlMapper implements UserMapperInterface {
         //foreach ($resultSet as $results){
         //Debug::dump($results);
         //}
-        return (object) array('userInfo' => $userInfo, 'family' => $family, 'brotherData'=>$brotherData);
-        //return $family;
+        //Debug::dump($family);
+        //exit;
+        //$familyInfo['family_id']=  ;
 
+        return (object) array('userInfo' => $userInfo,
+                    'familyInfoObject' => $family,
+                    'brotherData' => $brotherData,
+                    'sisterData' => $sisterData,
+                    'familyInfoArray' => $familyInfo);
+        //return $family;
         //Debug::dump($fatherInfo);
         //exit;
 //        if ($result instanceof ResultInterface && $result->isQueryResult() && $result->getAffectedRows()) {
@@ -831,6 +933,542 @@ class UserDbSqlMapper implements UserMapperInterface {
 //            //return $this->hydrator->hydrate($result->current(), new \Application\Model\Entity\Family());
 //            //return $result->current();
 //        }
+    }
+
+    public function saveFamilyInfo($user_id, $familyData) {
+
+        $family_id = unserialize($familyData['family_id']);
+        //Debug::dump($family_id);
+        //Debug::dump($familyData);
+        //exit;
+        $sql = new Sql($this->dbAdapter);
+
+
+
+        if ($family_id['father_id']) {
+
+            $userData['user_id'] = $family_id['father_id'];
+            $userData['name_title_user'] = $familyData['name_title_father'];
+            $userData['full_name'] = $familyData['father_name'];
+            $userData['live_status'] = $familyData['father_status'];
+            $userData['dob'] = date('Y-m-d', strtotime($familyData['spouse_dob']));
+            $userData['dod'] = date('Y-m-d', strtotime($familyData['father_died_on']));
+            //$userData['time'] = $familyData;
+
+            $action = new Update('tbl_user_info');
+            $action->set($userData);
+            $action->where(array('user_id = ?' => $userData['user_id']));
+            $stmt = $sql->prepareStatementForSqlObject($action);
+            //Debug::dump($userData);
+            //exit;
+            $result = $stmt->execute();
+        }
+
+        if ($family_id['mother_id']) {
+
+            $userData['user_id'] = $family_id['mother_id'];
+            $userData['name_title_user'] = $familyData['name_title_mother'];
+            $userData['full_name'] = $familyData['mother_name'];
+            $userData['live_status'] = $familyData['mother_status'];
+            $userData['dob'] = date('Y-m-d', strtotime($familyData['mother_dob']));
+            $userData['dod'] = date('Y-m-d', strtotime($familyData['mother_died_on']));
+            //$userData['time'] = $familyData;
+
+            $action = new Update('tbl_user_info');
+            $action->set($userData);
+            $action->where(array('user_id = ?' => $userData['user_id']));
+            $stmt = $sql->prepareStatementForSqlObject($action);
+            //Debug::dump($userData);
+            //exit;
+            $result = $stmt->execute();
+        } elseif (!empty($familyData['mother_name'])) {
+
+            //$remote = new RemoteAddress;
+            //$allParent = $this->getFirstParent($user_id);
+            //$myFatherId = $allParent[0];
+            //$myGrandFatherId=$allParent[1];
+            //$relationIds = $this->getRelationIds($myFatherId);
+            //Debug::dump($familyData);
+            //exit;
+
+            $profileId = $this->createFamilyProfile($familyData['mother_name'], $familyData['name_title_mother'], $familyData['mother_status'], '', '', 'Female');
+            //exit;
+            $this->saveRelation($user_id, $profileId, 'm');
+        }
+
+        if ($family_id['spouse_id']) {
+
+            $userData['user_id'] = $family_id['spouse_id'];
+            $userData['name_title_user'] = $familyData['name_title_spouse'];
+            $userData['full_name'] = $familyData['spouse_name'];
+            $userData['live_status'] = $familyData['spouse_status'];
+            $userData['dob'] = date('Y-m-d', strtotime($familyData['spouse_dob']));
+            $userData['dod'] = date('Y-m-d', strtotime($familyData['spouse_died_on']));
+            //$userData['time'] = $familyData;
+
+            $action = new Update('tbl_user_info');
+            $action->set($userData);
+            $action->where(array('user_id = ?' => $userData['user_id']));
+            $stmt = $sql->prepareStatementForSqlObject($action);
+            //Debug::dump($userData);
+            //exit;
+            $result = $stmt->execute();
+        } elseif (!empty($familyData['spouse_name'])) {
+
+            //$remote = new RemoteAddress;
+            //$allParent = $this->getFirstParent($user_id);
+            //$myFatherId = $allParent[0];
+            //$myGrandFatherId=$allParent[1];
+            //$relationIds = $this->getRelationIds($myFatherId);
+            //Debug::dump($familyData);
+            //exit;
+         
+            $profileId = $this->createFamilyProfile($familyData['spouse_name'], $familyData['name_title_spouse'], $familyData['spouse_status'], '', '', 'Female');
+            //exit;
+            $this->saveRelation($user_id, $profileId, 'w');
+        }
+
+        if ($familyData['numbor'] > '0') {
+
+            for ($i = 0; $i < $familyData['numbor']; $i++) {
+                //Debug::dump($familyData['brother_name'][$i]);
+                //exit;
+
+                if (!empty($familyData['brother_id'][$i])) {
+                    //Debug::dump($familyData);
+                    //exit;
+                    $bNum = count($familyData['brother_id']);
+
+
+                    $brotherData['user_id'] = $familyData['brother_id'][$i];
+                    $brotherData['name_title_user'] = $familyData['name_title_brother'][$i];
+                    $brotherData['full_name'] = $familyData['brother_name'][$i];
+                    $brotherData['live_status'] = $familyData['brother_status'][$i];
+                    $brotherData['dob'] = date('Y-m-d', strtotime($familyData['brother_dob'][$i]));
+                    $brotherData['dod'] = date('Y-m-d', strtotime($familyData['brother_dod'][$i]));
+                    //$userData['time'] = $familyData;
+
+                    $action = new Update('tbl_user_info');
+                    $action->set($brotherData);
+                    $action->where(array('user_id = ?' => $brotherData['user_id']));
+                    $stmt = $sql->prepareStatementForSqlObject($action);
+                    //Debug::dump($stmt);
+                    //exit;
+                    $result = $stmt->execute();
+                } elseif (!empty($familyData['brother_name'][$i])) {
+//                    Debug::dump($familyData);
+//                    exit;
+                    $allParent = $this->getFirstParent($user_id);
+                    $myFatherId = $allParent[0];
+                    //Debug::dump($familyData);
+                    //exit;
+                    $profileId = $this->createFamilyProfile($familyData['brother_name'][$i], $familyData['name_title_brother'][$i], $familyData['brother_status'][$i], '', '', 'Male');
+                    //Debug::dump($myFatherId);
+                    //Debug::dump($profileId);
+                    //exit;
+                    $this->saveRelation($profileId, $myFatherId, 'b');
+                }
+            }
+        } else {
+
+            //$bNum = count($familyData['brother_name']);
+            //Debug::dump($bNum);
+            //exit;
+
+   
+        }
+
+
+
+        if ($family_id['grand_father_id']) {
+
+            $userData['user_id'] = $family_id['grand_father_id'];
+            $userData['name_title_user'] = $familyData['name_title_grand_father'];
+            $userData['full_name'] = $familyData['grand_father_name'];
+            $userData['live_status'] = $familyData['grand_father_status'];
+            $userData['dob'] = date('Y-m-d', strtotime($familyData['grand_father_dob']));
+            $userData['dod'] = date('Y-m-d', strtotime($familyData['grand_father_dod']));
+            //$userData['time'] = $familyData;
+
+            $action = new Update('tbl_user_info');
+            $action->set($userData);
+            $action->where(array('user_id = ?' => $userData['user_id']));
+            $stmt = $sql->prepareStatementForSqlObject($action);
+            //Debug::dump($userData);
+            //exit;
+            $result = $stmt->execute();
+        } elseif ($familyData['gf'] == 'yes') {
+
+            $remote = new RemoteAddress;
+            $allParent = $this->getFirstParent($user_id);
+
+            $myFatherId = $allParent[0];
+            //$myGrandFatherId=$allParent[1];
+            //$relationIds = $this->getRelationIds($myFatherId);
+            //Debug::dump($familyData);
+            //exit;
+
+            $profileId = $this->createFamilyProfile($familyData['grand_father_name'], $familyData['name_title_grand_father'], $familyData['grand_father_status'], '', '', 'Male');
+            //exit;
+            $this->saveRelation($myFatherId, $profileId, 'f');
+        }
+
+        if ($family_id['grand_grand_father_id']) {
+
+            $userData['user_id'] = $family_id['grand_grand_father_id'];
+            $userData['name_title_user'] = $familyData['name_title_grand_grand_father'];
+            $userData['full_name'] = $familyData['grand_grand_father_name'];
+            $userData['live_status'] = $familyData['grand_grand_father_status'];
+            $userData['dob'] = date('Y-m-d', strtotime($familyData['grand_grand_father_dob']));
+            $userData['dod'] = date('Y-m-d', strtotime($familyData['grand_grand_father_dod']));
+            //$userData['time'] = $familyData;
+
+            $action = new Update('tbl_user_info');
+            $action->set($userData);
+            $action->where(array('user_id = ?' => $userData['user_id']));
+            $stmt = $sql->prepareStatementForSqlObject($action);
+            //Debug::dump($userData);
+            //exit;
+            $result = $stmt->execute();
+        } elseif ($familyData['ggf'] == 'yes') {
+
+            $remote = new RemoteAddress;
+            $allParent = $this->getFirstParent($user_id);
+
+            $myFatherId = $allParent[0];
+            $myGrandFatherId = $allParent[1];
+
+            //$relationIds = $this->getRelationIds($myFatherId);
+            //Debug::dump($allParent);
+            //exit;
+            if ($myGrandFatherId == 0) {
+                $profileId = $this->createFamilyProfile('', 'Mr.', '', '', '');
+                $this->saveRelation($myFatherId, $profileId, 'f');
+            }
+            $allParent = $this->getFirstParent($user_id);
+            $myGrandFatherId = $allParent[1];
+            $profileId = $this->createFamilyProfile($familyData['grand_grand_father_name'], $familyData['name_title_grand_grand_father'], $familyData['grand_grand_father_status'], '', '', 'Male');
+            //exit;
+            $this->saveRelation($myGrandFatherId, $profileId, 'f');
+        }
+        if ($family_id['grand_mother_id']) {
+
+            $userData['user_id'] = $family_id['grand_mother_id'];
+            $userData['name_title_user'] = $familyData['name_title_grand_mother'];
+            $userData['full_name'] = $familyData['grand_mother_name'];
+            $userData['live_status'] = $familyData['grand_mother_status'];
+            $userData['dob'] = date('Y-m-d', strtotime($familyData['grand_mother_dob']));
+            $userData['dod'] = date('Y-m-d', strtotime($familyData['grand_mother_dod']));
+            //$userData['time'] = $familyData;
+
+            $action = new Update('tbl_user_info');
+            $action->set($userData);
+            $action->where(array('user_id = ?' => $userData['user_id']));
+            $stmt = $sql->prepareStatementForSqlObject($action);
+            //Debug::dump($userData);
+            //exit;
+            $result = $stmt->execute();
+        } elseif ($familyData['gm'] == 'yes') {
+
+            $remote = new RemoteAddress;
+            $allParent = $this->getFirstParent($user_id);
+
+            $myFatherId = $allParent[0];
+            //$myGrandFatherId=$allParent[1];
+            //$relationIds = $this->getRelationIds($myFatherId);
+            // Debug::dump($familyData);
+            // exit;
+
+            $profileId = $this->createFamilyProfile($familyData['grand_mother_name'], $familyData['name_title_grand_mother'], $familyData['grand_mother_status'], '', '', 'Female');
+            //exit;
+            $this->saveRelation($myFatherId, $profileId, 'm');
+        }
+        if ($family_id['grand_grand_mother_id']) {
+            //Debug::dump($family_id);
+            //exit;
+            $userData['user_id'] = $family_id['grand_grand_mother_id'];
+            $userData['name_title_user'] = $familyData['name_title_grand_grand_mother'];
+            $userData['full_name'] = $familyData['grand_grand_mother_name'];
+            $userData['live_status'] = $familyData['grand_grand_mother_status'];
+            $userData['dob'] = date('Y-m-d', strtotime($familyData['grand_grand_mother_dob']));
+            $userData['dod'] = date('Y-m-d', strtotime($familyData['grand_grand_mother_dod']));
+
+
+            $action = new Update('tbl_user_info');
+            $action->set($userData);
+            $action->where(array('user_id = ?' => $userData['user_id']));
+            $stmt = $sql->prepareStatementForSqlObject($action);
+            //Debug::dump($userData);
+            //exit;
+            $result = $stmt->execute();
+        } elseif ($familyData['ggm'] == 'yes') {
+
+            $remote = new RemoteAddress;
+            $allParent = $this->getFirstParent($user_id);
+
+            //$myFatherId = $allParent[0];
+            $myGrandFatherId = $allParent[1];
+
+            //$relationIds = $this->getRelationIds($myFatherId);
+            // Debug::dump($familyData);
+            // exit;
+
+            $profileId = $this->createFamilyProfile($familyData['grand_grand_mother_name'], $familyData['name_title_grand_grand_mother'], $familyData['grand_grand_mother_status'], '', '', 'Female');
+            //exit;
+            $this->saveRelation($myGrandFatherId, $profileId, 'm');
+        }
+    }
+
+    public function createFamilyProfile($name = "Unknown", $NameTitle, $liveStatus = 'Alive', $dob, $dod, $gender) {
+
+        $sql = new Sql($this->dbAdapter);
+        if (empty($name)) {
+            $name = "Unknown";
+        }
+        //Debug::dump($name);
+        //exit;
+        $remote = new RemoteAddress;
+
+        $userDataGGM['user_type_id'] = '0';
+        $userDataGGM['username'] = time() + rand(11111);
+        $userDataGGM['password'] = md5(time() + rand(11111));
+        $userDataGGM['email'] = time() + rand(11111);
+        $userDataGGM['mobile_no'] = rand(1111111111, 9999999999);
+        $userDataGGM['activation_key'] = md5(time());
+        $userDataGGM['ip'] = $remote->getIpAddress();
+        $userDataGGM['created_date'] = date("Y-m-d H:i:s");
+        $userDataGGM['Modified_Date'] = date("Y-m-d H:i:s");
+        //Debug::dump($userDataGGM);
+        //exit;
+        $action = new Insert('tbl_user');
+        $action->values($userDataGGM);
+        $stmt = $sql->prepareStatementForSqlObject($action);
+//        Debug::dump($stmt);
+//        exit;
+        $result = $stmt->execute();
+        //Debug::dump($result);
+        //exit;
+        if ($result instanceof ResultInterface) {
+            if ($newId = $result->getGeneratedValue()) {
+
+
+                //Debug::dump($newId);
+                //exit;
+                //$userObject->setUserId($newId);
+//                $userDataGGM['name_title_user'] = $familyData['name_title_grand_grand_mother'];
+//                $userDataGGM['full_name'] = $familyData['grand_grand_mother_name'];
+//                $userDataGGM['live_status'] = $familyData['grand_grand_mother_status'];
+//                $userDataGGM['dob'] = date('Y-m-d', strtotime($familyData['grand_grand_mother_dob']));
+//                $userDataGGM['dod'] = date('Y-m-d', strtotime($familyData['grand_grand_mother_dod']));
+                $ref_no = $this->createReferenceNumber($name, $newId);
+                //$userObject->setRefNo($ref_no);
+                $action = new Update('tbl_user');
+                $action->set(array('ref_no' => $ref_no));
+                $action->where(array('id = ?' => $newId));
+                $stmt = $sql->prepareStatementForSqlObject($action);
+                $result = $stmt->execute();
+            }
+            if ($newId) {
+                $userInfoData['ref_no'] = $ref_no;
+                $userInfoData['user_id'] = $newId;
+                $userInfoData['user_type_id'] = 0;
+                $userInfoData['ip'] = $remote->getIpAddress();
+                $userInfoData['full_name'] = $name;
+                $userInfoData['name_title_user'] = $NameTitle;
+                $userInfoData['live_status'] = $liveStatus;
+                $userInfoData['gender'] = $gender;
+                if (isset($dob)) {
+                    $dob = date('Y-m-d', strtotime($dob));
+                } else {
+                    $dob = date("0000-00-00");
+                }
+                if (isset($dod)) {
+                    $dod = date('Y-m-d', strtotime($dod));
+                } else {
+                    $dod = date("0000-00-00");
+                }
+
+                $userInfoData['dob'] = $dob;
+                $userInfoData['dod'] = $dod;
+                $userInfoData['created_date'] = date("Y-m-d H:i:s");
+                $userInfoData['modified_date'] = date("Y-m-d H:i:s");
+
+                $action = new Insert('tbl_user_info');
+                $action->values($userInfoData);
+                $stmt = $sql->prepareStatementForSqlObject($action);
+                $result = $stmt->execute();
+                if ($result instanceof ResultInterface) {
+                    return $userInfoData['user_id'];
+                }
+            }
+        }
+    }
+
+    public function saveRelation($user_id, $relation_id, $relation) {
+        $sql = new Sql($this->dbAdapter);
+        if ($relation == 'f') {
+
+            $action = new Update('tbl_family_relation');
+            $action->set(array('father_id' => $relation_id));
+            $action->where(array('user_id = ?' => $user_id));
+            $stmt = $sql->prepareStatementForSqlObject($action);
+            $result = $stmt->execute();
+            if ($result instanceof ResultInterface) {
+                $parentData['user_id'] = $relation_id;
+                $parentData['gender'] = 'Male';
+                $action = new Insert('tbl_family_relation');
+                $action->values($parentData);
+                $stmt = $sql->prepareStatementForSqlObject($action);
+                $result = $stmt->execute();
+            }
+        }
+        if ($relation == 'm') {
+            $action = new Update('tbl_family_relation');
+            $action->set(array('mother_id' => $relation_id));
+            $action->where(array('user_id = ?' => $user_id));
+            $stmt = $sql->prepareStatementForSqlObject($action);
+            $result = $stmt->execute();
+            if ($result instanceof ResultInterface) {
+                $parentData['user_id'] = $relation_id;
+                $parentData['gender'] = 'Female';
+                $action = new Insert('tbl_family_relation');
+                $action->values($parentData);
+                $stmt = $sql->prepareStatementForSqlObject($action);
+                $result = $stmt->execute();
+            }
+        }
+        if ($relation == 'w') {
+            $action = new Update('tbl_family_relation');
+            $action->set(array('wife_id' => $relation_id));
+            $action->where(array('user_id = ?' => $user_id));
+            $stmt = $sql->prepareStatementForSqlObject($action);
+            $result = $stmt->execute();
+            if ($result instanceof ResultInterface) {
+                $parentData['user_id'] = $relation_id;
+                $parentData['gender'] = 'Female';
+                $action = new Insert('tbl_family_relation');
+                $action->values($parentData);
+                $stmt = $sql->prepareStatementForSqlObject($action);
+                $result = $stmt->execute();
+            }
+        }
+
+        if ($relation == 'h') {
+            $action = new Update('tbl_family_relation');
+            $action->set(array('husband_id' => $relation_id));
+            $action->where(array('user_id = ?' => $user_id));
+            $stmt = $sql->prepareStatementForSqlObject($action);
+            $result = $stmt->execute();
+            if ($result instanceof ResultInterface) {
+                $parentData['user_id'] = $relation_id;
+                $parentData['gender'] = 'Male';
+                $action = new Insert('tbl_family_relation');
+                $action->values($parentData);
+                $stmt = $sql->prepareStatementForSqlObject($action);
+                $result = $stmt->execute();
+            }
+        }
+
+        if ($relation == 'b') {
+
+            $parentData['user_id'] = $user_id;
+            $parentData['gender'] = 'Male';
+            $action = new Insert('tbl_family_relation');
+            $action->values($parentData);
+            $stmt = $sql->prepareStatementForSqlObject($action);
+            $result = $stmt->execute();
+
+            if ($result instanceof ResultInterface) {
+                $action = new Update('tbl_family_relation');
+                $action->set(array('father_id' => $relation_id));
+                $action->where(array('user_id = ?' => $user_id));
+                $stmt = $sql->prepareStatementForSqlObject($action);
+                $result = $stmt->execute();
+            }
+        }
+    }
+
+    public function getFamilyInfoByRelationId() {
+
+        $statement = $this->dbAdapter->query("SELECT tui.name_title_user, tui.full_name, 
+            tui.dob, tui.live_status,
+            tui.profile_photo, tui.gender, tui.family_values_status, tui.user_id as user_id,
+            tfr.user_id as user_id_rel, tfr.father_id, tfr.mother_id, tfr.wife_id, tfr.husband_id  FROM tbl_user_info as tui LEFT JOIN tbl_family_relation as tfr 
+                ON tui.user_id=tfr.user_id WHERE tui.user_id=:user_id");
+        $parameters = array(
+            'user_id' => $user_id
+        );
+        $result = $statement->execute($parameters);
+        $userInfo = $result->current();
+    }
+
+    function getFirstParent($id) {
+        $statement = $this->dbAdapter->query("SELECT * FROM tbl_family_relation WHERE user_id=$id");
+        $result = $statement->execute();
+        $rows = $result->current();
+//return $rows;
+        $parent = array();
+        if (isset($rows['father_id'])) {
+            $parent[] = $rows['father_id'];
+        }
+        //array_merge($parent, $rows['father_id']);
+        //return $parent[];
+        if ($result->count() > 0) {
+            # It has children, let's get them.
+            # Add the child to the list of children, and get its subchildren
+            $parent = array_merge($parent, $this->getFirstParent($rows['father_id']));
+            //echo $this->getFirstParent($rows['father_id']);
+        }
+        return $parent;
+    }
+
+    function getAllChild($id) {
+        $statement = $this->dbAdapter->query("SELECT * FROM tbl_family_relation WHERE father_id=$id");
+        $result = $statement->execute();
+        //$rows = $result->current();
+        $resulrSet = $this->resultSet->initialize($result)->toArray();
+//return $rows;
+        $parent = array();
+
+        $parent[] = $resulrSet;
+
+        //array_merge($parent, $rows['father_id']);
+        //return $parent[];
+        if ($result->count() > 0) {
+            # It has children, let's get them.
+            # Add the child to the list of children, and get its subchildren
+            $parent = array_merge($parent, $this->getAllChild($resulrSet[0]['user_id']));
+            //echo $this->getFirstParent($rows['father_id']);
+        }
+        return $parent;
+    }
+
+    function getMyChild($id) {
+        $statement = $this->dbAdapter->query("SELECT * FROM tbl_family_relation WHERE father_id=$id");
+        $result = $statement->execute();
+        //$rows = $result->current();
+        $resulrSet = $this->resultSet->initialize($result)->toArray();
+//return $rows;
+        $parent = array();
+
+        $parent[] = $resulrSet;
+
+        //array_merge($parent, $rows['father_id']);
+        //return $parent[];
+        if ($result->count() > 0) {
+            # It has children, let's get them.
+            # Add the child to the list of children, and get its subchildren
+            $parent = array_merge($parent, $this->getAllChild($resulrSet[0]['user_id']));
+            //echo $this->getFirstParent($rows['father_id']);
+        }
+        return $parent;
+    }
+
+    function getRelationIds($id) {
+        $statement = $this->dbAdapter->query("SELECT * FROM tbl_family_relation WHERE user_id=$id");
+        $result = $statement->execute();
+        $rows = $result->current();
+        return $rows;
     }
 
 }

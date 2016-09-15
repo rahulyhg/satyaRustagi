@@ -92,15 +92,6 @@ class Family {
     public $spouseSisterDob;
     public $spouseSisterPhoto;
     
-    function getNumbor() {
-        return $this->numbor;
-    }
-
-    function setNumbor($numbor) {
-        $this->numbor = $numbor;
-    }
-
-        
     function getId() {
         return $this->id;
     }
@@ -123,6 +114,10 @@ class Family {
 
     function getHusbandId() {
         return $this->husbandId;
+    }
+
+    function getSpouseId() {
+        return $this->spouseId;
     }
 
     function getGrandFatherId() {
@@ -381,6 +376,10 @@ class Family {
         return $this->kidsPhoto;
     }
 
+    function getNumbor() {
+        return $this->numbor;
+    }
+
     function getNameTitleBrother() {
         return $this->nameTitleBrother;
     }
@@ -463,6 +462,10 @@ class Family {
 
     function setHusbandId($husbandId) {
         $this->husbandId = $husbandId;
+    }
+
+    function setSpouseId($spouseId) {
+        $this->spouseId = $spouseId;
     }
 
     function setGrandFatherId($grandFatherId) {
@@ -721,6 +724,10 @@ class Family {
         $this->kidsPhoto = $kidsPhoto;
     }
 
+    function setNumbor($numbor) {
+        $this->numbor = $numbor;
+    }
+
     function setNameTitleBrother($nameTitleBrother) {
         $this->nameTitleBrother = $nameTitleBrother;
     }
@@ -781,13 +788,6 @@ class Family {
         $this->spouseSisterPhoto = $spouseSisterPhoto;
     }
 
-    function getSpouseId() {
-        return $this->spouseId;
-    }
-
-    function setSpouseId($spouseId) {
-        $this->spouseId = $spouseId;
-    }
 
 
 

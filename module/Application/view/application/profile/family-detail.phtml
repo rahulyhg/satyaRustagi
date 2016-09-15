@@ -1,4 +1,7 @@
+<?php
+\Zend\Debug\Debug::dump($this->sisDataJson);
 
+?>
 
 <style>
 
@@ -92,31 +95,36 @@
      <?php
 		$form = $this->form;
 		$form->prepare();
-		echo $this->form()->openTag($form);?>
+		echo $this->form()->openTag($form);
+                echo $this->formHidden($form->get('id'));
+                echo $this->formHidden($form->get('user_id'));
+               
+                ?>
+                    <input type="hidden" name="family_id" value="<?php echo htmlentities(serialize($this->familyInfoArray))?>">   
 		 <div class="col-sm-4" style="width:100%;">
         <h3><?php echo $this->translate('Update About Family') ?></h3> 
 		
 		<div class="form-group row" >
 		<label for="Education Field" class="col-sm-2 form-control-label lblline"><?php echo $this->translate('Marital Status') ?></label>
 			<div class="col-sm-9" style="height:auto !important; min-height: 0; padding:9px 0 0 0;">
-			<div class="col-sm-1"><input type="radio" name="marital_status" value="Single" <?php echo ($this->userInfo->marital_status == "Single")? "checked='checked'":"";?>   class="mrtlrd"/></div>
+			<div class="col-sm-1"><input type="radio" name="marital_status" value="Single" <?php echo ($this->userInfo->getMaritalStatus() == "Single")? "checked='checked'":"";?>   class="mrtlrd"/></div>
 			<label class="col-sm-1 lableforstatusm">Single</label>
-			<div class="col-sm-1"><input type="radio" name="marital_status" value="Married"  <?php echo ($this->userInfo->marital_status == "Married")? "checked='checked'":"";?> class="mrtlrd"/></div>
+			<div class="col-sm-1"><input type="radio" name="marital_status" value="Married"  <?php echo ($this->userInfo->getMaritalStatus() == "Married")? "checked='checked'":"";?> class="mrtlrd"/></div>
 			<label class="col-sm-1 lableforstatusm">Married</label>
-			<div class="col-sm-1"><input type="radio" name="marital_status" value="Divorced" <?php echo ($this->userInfo->marital_status == "Divorced")? "checked='checked'":"";?> class="mrtlrd"/></div>
+			<div class="col-sm-1"><input type="radio" name="marital_status" value="Divorced" <?php echo ($this->userInfo->getMaritalStatus() == "Divorced")? "checked='checked'":"";?> class="mrtlrd"/></div>
 			<label class="col-sm-1 lableforstatusm">Divorced</label>			
-			<div class="col-sm-1"><input type="radio" name="marital_status" value="Widowed" <?php echo ($this->userInfo->marital_status == "Widowed")? "checked='checked'":"";?>  class="mrtlrd"/></div>
+			<div class="col-sm-1"><input type="radio" name="marital_status" value="Widowed" <?php echo ($this->userInfo->getMaritalStatus() == "Widowed")? "checked='checked'":"";?>  class="mrtlrd"/></div>
 			<label class="col-sm-1 lableforstatusm">Widowed</label>
-			<div class="col-sm-1"><input type="radio" name="marital_status" value="Separated" <?php echo ($this->userInfo->marital_status == "Separated")? "checked='checked'":"";?> class="mrtlrd"/></div>
+			<div class="col-sm-1"><input type="radio" name="marital_status" value="Separated" <?php echo ($this->userInfo->getMaritalStatus() == "Separated")? "checked='checked'":"";?> class="mrtlrd"/></div>
 			<label class="col-sm-2 lableforstatusm">Separated</label>			
 			</div>
 		</div>
 		
         <div class="form-group row">
 		<label for="Alt. Mobile No." class="col-sm-2 form-control-label edupading"><?php echo $this->translate('Family Values');?></label>
-		<div class="col-sm-3"><?php  echo $this->formHidden($form->get('id'));
-					echo $this->formHidden($form->get('user_id'));
-					echo $this->formRow($form->get('family_values'));?></div>
+		<div class="col-sm-3"><?php echo $this->formRow($form->get('family_values'));?></div>
+					
+					
 		  <div class="col-sm-3"></div>
 		</div>
 		
@@ -235,13 +243,14 @@
 		<label for="grand_fatherName" class="col-sm-2 form-control-label edupading"><?php echo $this->translate('No of Brothers');?></label>
 		<div class="col-sm-3"> 
                       
-        <select class="form-control" name="numbor" id="noofbro">
+        <select class="form-control dropFamily" name="numbor" id="noofbro" onchange="GetSelectedTextValue(this)">
             <?php for($i=0; $i<5; $i++){ ?>
-            <option value="<?php echo $i; ?>" <?php echo $i==$this->familyInfo->getNumbor()?"selected":"";?>><?php echo $i;?></option>
+            <option value="<?php echo $i; ?>" <?php echo $i===$this->familyInfoObject->getNumbor()?"selected='selected'":"";?>><?php echo $i;?></option>
        
             <?php } ?>
         
         </select>
+
         </div>
 		<label for="Phone No." class="col-sm-2 form-control-label edupading"><?php echo $this->translate('') ?></label>
 		<div class="col-sm-3"></div>
@@ -254,12 +263,11 @@
         <div class="form-group row">
 		<label for="grand_fatherName" class="col-sm-2 form-control-label edupading"><?php echo $this->translate('No of Sisters');?></label>
 		<div class="col-sm-3"> 
-        <select class="form-control" name="numsis" id="noofsis">
-        	<option>0</option>
-            <option>1</option>
-            <option>2</option>
-            <option>3</option>
-            <option>4</option>        
+        <select class="form-control dropFamily" name="numsis" id="noofsis" >
+        	 <?php for($sis=0; $sis<5; $sis++){ ?>
+            <option value="<?php echo $sis; ?>" <?php echo $sis===count($this->sisterData)?"selected='selected'":"";?>><?php echo $sis;?></option>
+       
+            <?php } ?>      
         </select>
         </div>
 		<label for="Phone No." class="col-sm-2 form-control-label edupading"><?php echo $this->translate('') ?></label>
@@ -272,11 +280,11 @@
         <div class="form-group row">
 		<label for="grand_fatherName" class="col-sm-2 form-control-label edupading" style="width:50%; line-height: normal;"><?php echo $this->translate('Do You have the details of Grand Father');?></label>
 		<div class="col-sm-2" style="width:10%;">
-        	<input name="gf" type="radio" value="yes" id="showgf" /> Yes 
+        	<input name="gf" type="radio" <?php if (isset($this->familyInfoArray['grand_father_id'])) echo "checked";?> value="yes" id="showgf" /> Yes 
         </div>
         <div class="col-sm-2"><input name="gf" type="radio" value="" id="hidegf" /> No</div>
 		</div>
-        <div id="gf" style="display:none;">        
+        <div id="gf" <?php if (isset($this->familyInfoArray['grand_father_id'])){ ?> style="display:block;" <?php }else{ ?>  style="display:none;" <?php } ?>>        
 			<div class="form-group row">
 			<label for="grand_fatherName" class="col-sm-2 form-control-label edupading"><?php echo $this->translate('Grand Father Name');?></label>
 		   <div class="col-sm-3 coltilte" ><?php  echo $this->formRow($form->get('name_title_grand_father'));?></div>
@@ -313,11 +321,11 @@
         <div class="form-group row">
 			<label for="grand_fatherName" class="col-sm-2 form-control-label edupading" style="width:50%; line-height: normal;"><?php echo $this->translate('Do You have the details of Grand Mother');?></label>
 			<div class="col-sm-2" style="width:10%;">
-				<input name="g_m" type="radio" value="yes" id="showgm" /> Yes 
+				<input name="gm" type="radio" <?php if (isset($this->familyInfoArray['grand_mother_id'])) echo "checked";?> value="yes" id="showgm" /> Yes 
 			</div>
-			<div class="col-sm-2"><input name="g_m" type="radio" value="" id="hidegm" /> No</div>
+			<div class="col-sm-2"><input name="gm" type="radio" value="" id="hidegm" /> No</div>
 		</div>
-        <div id="gm" style="display:none;">
+        <div id="gm" <?php if (isset($this->familyInfoArray['grand_mother_id'])){ ?> style="display:block;" <?php }else{ ?>  style="display:none;" <?php } ?>>
 			<div class="form-group row">
 			<label for="grand_fatherName" class="col-sm-2 form-control-label edupading"><?php echo $this->translate('Grand Mother Name');?></label>
 			 <div class="col-sm-3 coltilte" ><?php  echo $this->formRow($form->get('name_title_grand_mother'));?></div>
@@ -353,11 +361,11 @@
          <div class="form-group row">
 			<label for="grand_fatherName" class="col-sm-2 form-control-label edupading" style="width:50%; line-height: normal;"><?php echo $this->translate('Do You have the details of Grand Grand Father');?></label>
 			<div class="col-sm-2" style="width:10%;">
-				<input name="gf" type="radio" value="yes" id="show1" /> Yes 
+				<input name="ggf" type="radio" <?php if (isset($this->familyInfoArray['grand_grand_father_id'])) echo "checked";?> value="yes" id="show1" /> Yes 
 			</div>
-			<div class="col-sm-2"><input name="gf" type="radio" value="" id="hide1" /> No</div>
+			<div class="col-sm-2"><input name="ggf" type="radio" value="" id="hide1" /> No</div>
 		</div>
-        <div id="ggf" style="display:none;">
+        <div id="ggf" <?php if (isset($this->familyInfoArray['grand_grand_father_id'])){ ?> style="display:block;" <?php }else{ ?>  style="display:none;" <?php } ?>>
 			<div class="form-group row">
 				<label for="grand_fatherName" class="col-sm-2 form-control-label edupading"><?php echo $this->translate('G Grand Father Name');?></label>
 				
@@ -394,11 +402,11 @@
          <div class="form-group row">
 			<label for="grand_fatherName" class="col-sm-2 form-control-label edupading" style="width:50%; line-height: normal;"><?php echo $this->translate('Do You have the details of Grand Grand Mother');?></label>
 			<div class="col-sm-2" style="width:10%;">
-				<input name="gm" type="radio" value="yes" id="show" /> Yes 
+				<input name="ggm" type="radio" <?php if (isset($this->familyInfoArray['grand_grand_mother_id'])) echo "checked";?> value="yes" id="show" /> Yes 
 			</div>
-			<div class="col-sm-2"><input name="gm" type="radio" value="" id="hide" /> No</div>
+			<div class="col-sm-2"><input name="ggm" type="radio" value="" id="hide" /> No</div>
 		</div>
-        <div id="ggm" style="display:none;">
+        <div id="ggm" <?php if (isset($this->familyInfoArray['grand_grand_mother_id'])){ ?> style="display:block;" <?php }else{ ?>  style="display:none;" <?php } ?>>
 			<div class="form-group row">
 			<label for="grand_fatherName" class="col-sm-2 form-control-label edupading"><?php echo $this->translate('G Grand Mother Name');?></label>		
 			 <div class="col-sm-3 coltilte" ><?php  echo $this->formRow($form->get('name_title_grand_grand_mother'));?></div>
@@ -512,7 +520,7 @@
              <div class="form-group row">
 		<label for="grand_father_name" class="col-sm-2 form-control-label edupading"><?php echo $this->translate('No of Brothers');?></label>
 		<div class="col-sm-3"> 
-        <select class="form-control" name="numbor" id="noofbro">
+        <select class="form-control" name="spouse_numbor" id="noofbro">
         	<option>0</option>
             <option>1</option>
             <option>2</option>
@@ -527,7 +535,7 @@
         <div class="form-group row">
 		<label for="grand_father_name" class="col-sm-2 form-control-label edupading"><?php echo $this->translate('No of Sisters');?></label>
 		<div class="col-sm-3"> 
-        <select class="form-control" name="numsis" id="noofSpsis">
+        <select class="form-control" name="spouse_numsis" id="noofSpsis">
         	<option>0</option>
             <option>1</option>
             <option>2</option>
@@ -984,28 +992,62 @@ $(document).ready(function(){
 </script>
 
 <script type="text/javascript">
+
 $(document).ready(function() {
+    
     $("#noofbro").change(function() {		
         var selVal = $(this).val();		
         $("#textboxDiv").html('');
         if(selVal > 0) {
             for(var i = 1; i<= selVal; i++) {				
-              $("#textboxDiv").append('<div class="form-group row"><label for="grand_fatherName" class="col-sm-2 form-control-label edupading"><?php echo $this->translate('Brother Name');?></label><div class="col-sm-3 coltilte" ><select class="form-control" name="name_title_brother[]" style="padding:0;"><option>Mr.</option><option>Mrs</option><option>Miss</option><option>Dr.</option></select></div><div class="col-sm-3 colname"><input type="text" name="brother_name[]" class="form-control" /></div><label for="Phone No." class="col-sm-2 form-control-label edupading"><?php echo $this->translate('Brother Status') ?></label><div class="col-sm-3"><select class="form-control" name="brother_status[]"><option>Select</option><option>Alive</option><option>Passed Away</option></select></div></div><div class="form-group row"><label for="Alt. Mobile No." class="col-sm-2 form-control-label edupading"><?php echo $this->translate('Date of Birth');?></label><div class="col-sm-3"> <input type="text" name="brother_dob[]" class="form-control datepicker1" /></div><div id="mother_AliveInfoArea"><label for="Phone No." class="col-sm-2 form-control-label edupading"><?php  echo $this->translate('Brother Photo') ?></label><div class="col-sm-3"><label>  <a href="#" data-toggle="modal" data-target="#avatar-modal1" onclick="showcropbox(&quot;brother_photo&quot;,&quot;tbl_family_info&quot;)"><img src="<?php echo $this->basePath() ?>/gallery/thumb/gallery.jpg" height="30" width="30" />Upload Photo</a></label></div></div></div>');
+              $("#textboxDiv").append('<div class="form-group row"><label for="grand_fatherName" class="col-sm-2 form-control-label edupading"><?php echo $this->translate('Brother Name');?></label><div class="col-sm-3 coltilte" ><select class="form-control" name="name_title_brother[]" style="padding:0;"><option>Mr.</option><option>Mrs</option><option>Miss</option><option>Dr.</option></select></div><div class="col-sm-3 colname"><input type="text" name="brother_name[]" class="form-control" /><input type="hidden" name="brother_id[]" class="form-control" /></div><label for="Phone No." class="col-sm-2 form-control-label edupading"><?php echo $this->translate('Brother Status') ?></label><div class="col-sm-3"><select class="form-control" name="brother_status[]"><option>Select</option><option>Alive</option><option>Passed Away</option></select></div></div><div class="form-group row"><label for="Alt. Mobile No." class="col-sm-2 form-control-label edupading"><?php echo $this->translate('Date of Birth');?></label><div class="col-sm-3"> <input type="text" name="brother_dob[]" class="form-control datepicker1" /></div><div id="mother_AliveInfoArea"><label for="Phone No." class="col-sm-2 form-control-label edupading"><?php  echo $this->translate('Brother Photo') ?></label><div class="col-sm-3"><label>  <a href="#" data-toggle="modal" data-target="#avatar-modal1" onclick="showcropbox(&quot;brother_photo&quot;,&quot;tbl_family_info&quot;)"><img src="<?php echo $this->basePath() ?>/gallery/thumb/gallery.jpg" height="30" width="30" />Upload Photo</a></label></div></div></div>');
             }
         }
         $( ".datepicker1" ).datepicker({ changeYear: true,dateFormat: "mm/dd/yy" });
-
+        var broData=JSON.parse('<?php echo $this->broDataJson?>');
+        var brotherName=document.getElementsByName("brother_name[]");
+        var brotherId=document.getElementsByName("brother_id[]");
+        var nameTitleBrother=document.getElementsByName("name_title_brother[]");
+        var brotherStatus=document.getElementsByName("brother_status[]");
+        var brotherDob=document.getElementsByName("brother_dob[]");
+        for(var i =0;i<broData.length;i++){
+            console.log(broData[i]);
+            brotherName[i].value=broData[i].brother_name;
+            brotherId[i].value=broData[i].user_id;
+            nameTitleBrother[i].value=broData[i].name_title_user;
+            brotherStatus[i].value=broData[i].live_status;
+            brotherDob[i].value=broData[i].dob;
+      
+        }
+        
     });
+    
+    
 	
-	 $("#noofsis").change(function() {		
+    $("#noofsis").change(function() {		
         var selVal = $(this).val();		
         $("#sisterDiv").html('');
         if(selVal > 0) {
             for(var i = 1; i<= selVal; i++) {				
-              $("#sisterDiv").append('<div class="form-group row"><label for="grand_fatherName" class="col-sm-2 form-control-label edupading"><?php echo $this->translate('Sister Name');?></label><div class="col-sm-3 coltilte" ><select class="form-control" name="name_title_sister[]" style="padding:0;"><option>Mrs</option><option>Miss</option><option>Dr.</option></select></div><div class="col-sm-3 colname"><input type="text" name="sister_name[]" class="form-control" /></div><label for="Phone No." class="col-sm-2 form-control-label edupading"><?php echo $this->translate('Sister Status') ?></label><div class="col-sm-3"><select class="form-control" name="sister_status[]"><option>Select</option><option>Alive</option><option>Passed Away</option></select></div></div><div class="form-group row"><label for="Alt. Mobile No." class="col-sm-2 form-control-label edupading"><?php echo $this->translate('Date of Birth');?></label><div class="col-sm-3"> <input type="text" name="sister_dob[]" class="form-control datepicker1" /></div><div id="mother_AliveInfoArea"><label for="Phone No." class="col-sm-2 form-control-label edupading"><?php  echo $this->translate('Sister Photo') ?></label><div class="col-sm-3"><a href="#" data-toggle="modal" data-target="#avatar-modal1" onclick="showcropbox(&quot;sister_photo&quot;,&quot;tbl_family_info&quot;)"><img src="<?php echo $this->basePath() ?>/gallery/thumb/gallery.jpg" height="30" width="30" />Upload Photo</a></div></div></div>');
+              $("#sisterDiv").append('<div class="form-group row"><label for="grand_fatherName" class="col-sm-2 form-control-label edupading"><?php echo $this->translate('Sister Name');?></label><div class="col-sm-3 coltilte" ><select class="form-control" name="name_title_sister[]" style="padding:0;"><option>Mrs</option><option>Miss</option><option>Dr.</option></select></div><div class="col-sm-3 colname"><input type="text" name="sister_name[]" class="form-control" /><input type="hidden" name="sister_id[]" class="form-control" /></div><label for="Phone No." class="col-sm-2 form-control-label edupading"><?php echo $this->translate('Sister Status') ?></label><div class="col-sm-3"><select class="form-control" name="sister_status[]"><option>Select</option><option>Alive</option><option>Passed Away</option></select></div></div><div class="form-group row"><label for="Alt. Mobile No." class="col-sm-2 form-control-label edupading"><?php echo $this->translate('Date of Birth');?></label><div class="col-sm-3"> <input type="text" name="sister_dob[]" class="form-control datepicker1" /></div><div id="mother_AliveInfoArea"><label for="Phone No." class="col-sm-2 form-control-label edupading"><?php  echo $this->translate('Sister Photo') ?></label><div class="col-sm-3"><a href="#" data-toggle="modal" data-target="#avatar-modal1" onclick="showcropbox(&quot;sister_photo&quot;,&quot;tbl_family_info&quot;)"><img src="<?php echo $this->basePath() ?>/gallery/thumb/gallery.jpg" height="30" width="30" />Upload Photo</a></div></div></div>');
             }
         }
         $( ".datepicker1" ).datepicker({  changeYear: true,dateFormat: "mm/dd/yy" });
+            var sisData=JSON.parse('<?php echo $this->sisDataJson?>');
+        var sisterName=document.getElementsByName("sister_name[]");
+        var sisterId=document.getElementsByName("sister_id[]");
+        var nameTitleSister=document.getElementsByName("name_title_sister[]");
+        var sisterStatus=document.getElementsByName("sister_status[]");
+        var sisterDob=document.getElementsByName("sister_dob[]");
+        for(var i =0;i<sisData.length;i++){
+            console.log(sisData[i]);
+            sisterName[i].value=sisData[i].sister_name;
+            sisterId[i].value=sisData[i].user_id;
+            nameTitleSister[i].value=sisData[i].name_title_user;
+            sisterStatus[i].value=sisData[i].live_status;
+            sisterDob[i].value=sisData[i].dob;
+      
+        }
 
     });
 	
@@ -1018,6 +1060,7 @@ $(document).ready(function() {
             }
         }
         $( ".datepicker1" ).datepicker({  changeYear: true,dateFormat: "mm/dd/yy" });
+        
     });	
 	
 	$("#noofSpsis").change(function() {		
@@ -1044,6 +1087,12 @@ $(".mrtlrd").on('click',function(){
 		$(".Family_Details_married").css('display','block');
 	}
 });
+
+if($('input[name="marital_status"]').is(':checked')){
+    //alert($('input[name="marital_status"]:checked').val());
+       $('input[name="marital_status"]:checked').trigger("click");
+}
+
 //***********************Hide Date of death aria on change status***********//
 $("#spouse_status").on('change',function(){
 	var status_live=$(this).val();
@@ -1152,4 +1201,44 @@ $("#spouse_motherStatus").on('change',function(){
 		}));
 		
 	});
+</script>
+
+<script>
+$(document).ready(function() {
+    
+ var event = new Event('change');
+document.getElementById('noofbro').dispatchEvent(event);
+document.getElementById('noofsis').dispatchEvent(event);
+
+    //var noofbro=$('#noofbro').val();
+    //var noofsis=$('#noofsis').val();
+    //$('#noofbro').change();
+//e.stopPropagation();
+   // $('#noofsis').change();
+   // $('#noofbro').change();
+   // $('#noofbro, #noofsis').trigger("change");
+ //alert(noofsis);
+//    if(noofbro>0){
+//        //alert('satya');
+//        $('#noofbro').trigger("change");
+//    }
+   
+    //$('#noofsis').val(1).trigger("change");
+    
+});
+
+
+</script>
+<script>
+//$(document).ready(function() {
+//  
+//    var noofsis=$('#noofsis').val();
+// 
+//    
+//        alert('satya');
+//        $('#noofsis').val(1).trigger("change");
+//   
+//});
+
+
 </script>
