@@ -4,10 +4,17 @@ namespace Application\Controller;
 
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
+use Zend\Session\Container;
+use Zend\Mail;  
+use Zend\Mime;  
+use Zend\Mime\Part as MimePart;  
+use Zend\Mime\Message as MimeMessage;
 
 ini_set("display_errors", 1);
 
 class IndexController extends AppController {
+    
+    protected $_contactTable;
 
     protected $indexService;
 
@@ -90,6 +97,7 @@ class IndexController extends AppController {
             $contactform->setData($request->getPost());
             $data = (array) $request->getPost();
             if ($contactform->isValid()) {
+               
                 $page->exchangeArray($data);
                 unset($page->inputFilter);
                 // print_r($page); exit;
@@ -115,17 +123,17 @@ class IndexController extends AppController {
 </tbody>
 </table>";
 
-
+ 
 
                 $this->mailsetup($content);
 
-
+                //exit;
                 $id = $this->getContactTable()->saveContact($page);
-                return $this->redirect()->toRoute('application/default', array(
-                            'action' => 'contact',
-                            'controller' => 'pages',
-                            "id" => 1
-                ));
+                 // Something works
+       $this->flashMessenger()->addMessage('Mail sent successfully . We will get back to you within 24 hrs. Thank you');
+
+                return $this->redirect()->toRoute('contact');
+                
             }
         }
 
@@ -168,6 +176,62 @@ class IndexController extends AppController {
             $filters_data[$key] = $adapter->query("select * from ".$table."", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
         }
         return $filters_data;
+    }
+    
+    public function mailsetup($content)
+    { 
+        //\Zend\Debug\Debug::dump($content);exit;
+
+        $options = new Mail\Transport\SmtpOptions(array(  
+            'name' => 'localhost',
+            'host' => 'smtp.gmail.com',  
+            'port'=> 587,
+            'connection_class' => 'login',
+            'connection_config' => array(  
+                'username' => 'funstartswithyou15@gmail.com',  
+                'password' => 'watchmyvideos',  
+                'ssl'=> 'tls',  
+            ),  
+        ));  
+        
+//        $options = new Mail\Transport\SmtpOptions();  
+//        $options->setHost('smtp.gmail.com')
+//            ->setConnectionClass('login')
+//            ->setName('smtp.gmail.com')
+//            ->setConnectionConfig(array(
+//                'username' => 'funstartswithyou15@gmail.com',
+//                'password' => 'watchmyvideos',
+//                'ssl' => 'tls',
+//            ));
+        
+
+        $html = new MimePart($content);  
+        $html->type = "text/html";  
+        $body = new MimeMessage();  
+        $body->setParts(array($html));  
+//        \Zend\Debug\Debug::dump($body);exit;
+  
+// instance mail   
+$mail = new Mail\Message();  
+$mail->setBody($body); // will generate our code html from template.phtml  
+$mail->setFrom('munanshu.madaank23@gmail.com','Sender Name');  
+$mail->setTo('amirraza278@gmail.com'); // php1@hello42cab.com
+$mail->setSubject("Rustagi Contact Mail");  
+  
+//\Zend\Debug\Debug::dump($mail);exit;
+$transport = new Mail\Transport\Smtp($options);  
+$status = $transport->send($mail);
+
+
+    }
+    
+    public function getContactTable() {
+
+        if (!$this->_contactTable) {
+            $sm = $this->getServiceLocator();
+            $this->_contactTable = $sm->get('Application\Model\ContactTable');
+        }
+        return $this->_contactTable;
     }
 
 }
