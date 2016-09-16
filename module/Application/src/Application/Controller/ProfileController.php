@@ -511,6 +511,10 @@ class ProfileController extends AppController {
     }
 
     public function mygalleryAction() {
+        //Debug::dump($this->options->getBasePath());
+       // $option=new \Zend\File\Transfer\Adapter\Http();
+        //$option->setDestination(dirname(__DIR__));
+       // Debug::dump($option->getDestination());
         $userSession = $this->getUser()->session();
         $user_id = $userSession->offsetGet('id');
         $ref_no = $userSession->offsetGet('ref_no');
@@ -520,7 +524,7 @@ class ProfileController extends AppController {
         $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
     
         $data = $adapter->query("select * from tbl_user_gallery where user_id='1' AND ref_no='PMR1' ORDER BY id DESC limit 6", Adapter::QUERY_MODE_EXECUTE)->toArray();
-        Debug::dump($data);
+       // Debug::dump($data);
 //        $metadata = new Metadata($adapter);
 //        $table = $metadata->getTable("tbl_family_info");
 //        $table->getColumns();
@@ -790,7 +794,9 @@ class ProfileController extends AppController {
 
     public function AjaxImgUploadGalleryAction() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-
+           
+            $session = new Container('user');
+            //print_r($_POST['cropenabled']);exit;
             if ($_POST['cropenabled'] != "Enable") {
                 // if($_POST['img_relation'] !='' && $_FILES['file_upload']['name'] !=''){
                 $img_relation = trim($_POST['img_relation']);
@@ -799,6 +805,7 @@ class ProfileController extends AppController {
                 $error = $_FILES['file_upload']['error'];
                 $size = $_FILES['file_upload']['size'];
                 $ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));
+               
                 switch ($error) {
                     case UPLOAD_ERR_OK:
                         $valid = true;
@@ -814,26 +821,33 @@ class ProfileController extends AppController {
                         }
                         //upload file
                         if ($valid) {
-                            $bashPath = ROOT_PATH;
+                            
+                            //$bashPath = ROOT_PATH;
                             $session = new Container('user');
                             $user_id = $session->offsetGet('id');
                             $ref_no = $session->offsetGet('ref_no');
-                            $user_name = $session->offsetGet('full_name');
+                            $userInfo=$this->userService->getUserInfoById($user_id, array('full_name'));
+                            $user_name = $userInfo->getFullName();
                             $user_folder = $user_id . "__" . $user_name;
                             $name = time() . $name;
-                            if (!file_exists($bashPath . "/uploads/$user_folder")) {
-                                mkdir($bashPath . "/uploads/$user_folder", 0777, true);
-                                $targetPath = $bashPath . "/uploads/$user_folder/" . $name;
+                   
+                            if (!file_exists("/uploads/$user_folder")) {
+                                mkdir( "/uploads/$user_folder", 0777, true);
+                                $targetPath = "/uploads/$user_folder/" . $name;
+                                
                                 $uploaded = move_uploaded_file($tmpName, $targetPath);
                             } else {
-                                $targetPath = $bashPath . "/uploads/$user_folder/" . $name;
+                                $targetPath = "/uploads/$user_folder/" . $name;
                                 $uploaded = move_uploaded_file($tmpName, $targetPath);
                             }
+                            
+                            
                             if ($uploaded) {
                                 $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
                                 //*********Insert in Gallery Table******
-                                $adapter->query("insert into tbl_user_gallery set user_id='$user_id',ref_no='$ref_no',image_path='/uploads/$user_folder/$name',
+                                $stmt=$adapter->query("insert into tbl_user_gallery set user_id='$user_id',ref_no='$ref_no',image_path='$user_folder/$name',
 							 img_relation='user'", Adapter::QUERY_MODE_EXECUTE);
+                               
                                 //*********Select Images to Render******
                                 $data = $adapter->query("select * from tbl_user_gallery where user_id='$user_id' AND ref_no='$ref_no' ORDER BY id DESC", Adapter::QUERY_MODE_EXECUTE);
                                 $response = 'File uploaded Successfully.';
@@ -876,9 +890,11 @@ class ProfileController extends AppController {
                 $session = new Container('user');
                 $user_id = $session->offsetGet('id');
                 $ref_no = $session->offsetGet('ref_no');
-
+               
                 // $ref_no=$session->offsetGet('ref_no');
-                $user_name = $session->offsetGet('full_name');
+                $userInfo=$this->userService->getUserInfoById($user_id, array('full_name'));
+                            
+                $user_name = $userInfo->getFullName();
                 $name = time() . $_FILES['file_upload']['name'];
                 $ext = strtolower(pathinfo($_FILES['file_upload']['name'], PATHINFO_EXTENSION));
 
@@ -886,17 +902,13 @@ class ProfileController extends AppController {
 
                 $user_folder = $user_id . "__" . $user_name . "/";
 
-                $new_image = ROOT_PATH . '/uploads/' . $user_folder . $name;
+                $new_image = '/uploads/' . $user_folder . $name;
 
                 $image_quality = '95';
 
 
 
-                if (!file_exists(ROOT_PATH . "/uploads/$user_folder")) {
-                    mkdir(ROOT_PATH . "/uploads/$user_folder", 0777, true);
-                    // $targetPath =  ROOT_PATH.'/uploads/'.$user_folder.$name;
-                    // $uploaded=move_uploaded_file($tmpName,$targetPath);
-                }
+               
 
 // Get dimensions of the original image
                 list( $current_width, $current_height ) = getimagesize($original_image);
@@ -925,11 +937,26 @@ class ProfileController extends AppController {
                 if (!in_array($ext, array('jpg', 'jpeg'))) {
                     return new JsonModel(array("Status" => 0, "message" => "only jpeg files are allowed"));
                 }
-
+                     //print_r($result);exit;
+                         
                 if ($result) {
+                    print_r('$result');exit;
+                     if (!file_exists("/uploads/$user_folder")) {
+                         mkdir(ROOT_PATH . "/uploads/$user_folder", 0777, true);
+                         $targetPath =  '/uploads/'.$user_folder.$name;
+                         //print_r($targetPath);
+                        // exit;
+                        $uploaded=move_uploaded_file($tmpName,$targetPath);
+                     }else{
+                          $targetPath = '/uploads/'.$user_folder.$name;
+                          //print_r($targetPath);
+                         //exit;
+                        $uploaded=move_uploaded_file($tmpName,$targetPath);
+                     }
+                    
                     $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
                     //*********Insert in Gallery Table******
-                    $adapter->query("insert into tbl_user_gallery set user_id='$user_id',ref_no='$ref_no',image_path='/uploads/$user_folder/$name',
+                    $adapter->query("insert into tbl_user_gallery set user_id='$user_id',ref_no='$ref_no',image_path='$user_folder/$name',
 							 img_relation='user'", Adapter::QUERY_MODE_EXECUTE);
                     //*********Select Images to Render******
                     $data = $adapter->query("select * from tbl_user_gallery where user_id='$user_id' AND ref_no='$ref_no' ORDER BY id DESC", Adapter::QUERY_MODE_EXECUTE);
@@ -1199,6 +1226,8 @@ class ProfileController extends AppController {
         //exit;
         return $message;
     }
+    
+    
 
 }
 

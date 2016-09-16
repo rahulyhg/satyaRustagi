@@ -483,18 +483,29 @@ class UserDbSqlMapper implements UserMapperInterface {
                 $result = $stmt->execute();
                 if ($result instanceof ResultInterface) {
 
-                    $familyInfoData["user_id"] = $userObject->getUserId();
-                    $familyInfoData["relation_id"] = (int) 1;
-                    $familyInfoData["title"] = $userObject->getNameTitleUser();
-                    $familyInfoData["name"] = $userObject->getFatherName();
-                    $familyInfoData['ip'] = $userObject->getIp();
-                    $familyInfoData['created_date'] = $userObject->getCreatedDate();
-                    $familyInfoData['modified_date'] = $userObject->getModifiedDate();
-
-                    $action = new Insert('tbl_family_relation_info');
-                    $action->values($familyInfoData);
+                    $selfRelationData['user_id'] = $userObject->getUserId();
+                    $selfRelationData['gender'] = $userObject->getGender();
+                    $action = new Insert('tbl_family_relation');
+                    $action->values($selfRelationData);
                     $stmt = $sql->prepareStatementForSqlObject($action);
                     $result = $stmt->execute();
+
+                    $profileId = $this->createFamilyProfile($userObject->getFatherName(), $userObject->getNameTitleUser(), 'Alive', '', '', 'Male');
+
+                    $this->saveRelation($userObject->getUserId(), $profileId, 'f');
+
+//                    $familyInfoData["user_id"] = $userObject->getUserId();
+//                    $familyInfoData["relation_id"] = (int) 1;
+//                    $familyInfoData["title"] = $userObject->getNameTitleUser();
+//                    $familyInfoData["name"] = $userObject->getFatherName();
+//                    $familyInfoData['ip'] = $userObject->getIp();
+//                    $familyInfoData['created_date'] = $userObject->getCreatedDate();
+//                    $familyInfoData['modified_date'] = $userObject->getModifiedDate();
+//
+//                    $action = new Insert('tbl_family_relation_info');
+//                    $action->values($familyInfoData);
+//                    $stmt = $sql->prepareStatementForSqlObject($action);
+//                    $result = $stmt->execute();
                 }
             }
             return $userObject;
@@ -852,7 +863,7 @@ class UserDbSqlMapper implements UserMapperInterface {
         //$resultSet = new HydratingResultSet($this->hydrator, $family);
 
         $resultSet = $this->resultSet->initialize($result);
-        $brotherData=$resultSet->toArray();
+        $brotherData = $resultSet->toArray();
         //Debug::dump($brotherData);
         $family->setNumbor($resultSet->count() > 0 ? $resultSet->count() : '');
 
@@ -868,7 +879,7 @@ class UserDbSqlMapper implements UserMapperInterface {
         $select->where(array('tfr.father_id = ?' => $userInfo['father_id']));
         $select->where(array('tui.user_id != ?' => $user_id), Predicate::OP_AND);
         $select->where(array('tui.gender = ?' => 'Female'), Predicate::OP_AND);
-        
+
         $stmt = $sql->prepareStatementForSqlObject($select);
         $result = $stmt->execute();
 
@@ -876,9 +887,9 @@ class UserDbSqlMapper implements UserMapperInterface {
 
         $resultSet = $this->resultSet->initialize($result);
         //Debug::dump($resultSet);
-        $sisterData=$resultSet->toArray();
-        
-         // Kids
+        $sisterData = $resultSet->toArray();
+
+        // Kids
 
         $sql = new Sql($this->dbAdapter);
         $select = $sql->select(array('tui' => 'tbl_user_info'));
@@ -888,7 +899,7 @@ class UserDbSqlMapper implements UserMapperInterface {
             'profile_photo', 'gender', 'family_values_status', 'user_id' => 'user_id',
         ));
         $select->where(array('tfr.father_id = ?' => $user_id));
-        
+
         $stmt = $sql->prepareStatementForSqlObject($select);
         $result = $stmt->execute();
 
@@ -896,10 +907,10 @@ class UserDbSqlMapper implements UserMapperInterface {
 
         $resultSet = $this->resultSet->initialize($result);
         //Debug::dump($resultSet);
-        $kidsData=$resultSet->toArray();
+        $kidsData = $resultSet->toArray();
         //Debug::dump($kidsData);
         //$family->setNumbor($brotherData->count() > 0 ? $brotherData->count() : '');
-   
+
 
         return (object) array('userInfo' => $userInfo,
                     'familyInfoObject' => $family,
@@ -1009,7 +1020,7 @@ class UserDbSqlMapper implements UserMapperInterface {
             //$relationIds = $this->getRelationIds($myFatherId);
             //Debug::dump($familyData);
             //exit;
-         
+
             $profileId = $this->createFamilyProfile($familyData['spouse_name'], $familyData['name_title_spouse'], $familyData['spouse_status'], '', '', 'Female');
             //exit;
             $this->saveRelation($user_id, $profileId, 'w');
@@ -1061,10 +1072,8 @@ class UserDbSqlMapper implements UserMapperInterface {
             //$bNum = count($familyData['brother_name']);
             //Debug::dump($bNum);
             //exit;
-
-   
         }
-        
+
         if ($familyData['numsis'] > '0') {
 
             for ($i = 0; $i < $familyData['numsis']; $i++) {
@@ -1111,11 +1120,9 @@ class UserDbSqlMapper implements UserMapperInterface {
             //$bNum = count($familyData['brother_name']);
             //Debug::dump($bNum);
             //exit;
-
-   
         }
-        
-         if ($familyData['numkid'] > '0') {
+
+        if ($familyData['numkid'] > '0') {
 
             for ($i = 0; $i < $familyData['numkid']; $i++) {
                 //Debug::dump($familyData['brother_name'][$i]);
@@ -1161,8 +1168,6 @@ class UserDbSqlMapper implements UserMapperInterface {
             //$bNum = count($familyData['brother_name']);
             //Debug::dump($bNum);
             //exit;
-
-   
         }
 
 
