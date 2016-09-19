@@ -17,7 +17,8 @@ if (php_sapi_name() === 'cli-server') {
     unset($path);
 }
 
-
+define('BASE_PATH', realpath(dirname(__DIR__)));
+define('PUBLIC_PATH', BASE_PATH.'/public');
 
 
 // Setup autoloading satya

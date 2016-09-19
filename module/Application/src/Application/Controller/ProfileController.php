@@ -343,6 +343,7 @@ class ProfileController extends AppController {
         $userSession = $this->getUser()->session();
         $user_id = $userSession->offsetGet('id');
         $ref_no = $userSession->offsetGet('ref_no');
+
         FamilyInfoForm::$Employment_status = $this->LiveStatus();
         FamilyInfoForm::$Family_Values = $this->FamilyValuesStatus();
         FamilyInfoForm::$Name_Title = $this->GetNameTitle();
@@ -350,7 +351,7 @@ class ProfileController extends AppController {
         // print_r($udata->mother_photo);die;
         $FamilyInfoForm = new FamilyInfoForm();
         $familyInfo = $this->userService->getFamilyInfoById($user_id);
-        $userInfo=$this->userService->getUserInfoById($user_id, array('marital_status'));
+        $userInfo = $this->userService->getUserInfoById($user_id, array('marital_status'));
         //Debug::dump($familyInfo->sisterData);
         //\Zend\Debug\Debug::dump($this->userService->getFamilyInfoById($user_id));
         //exit;
@@ -363,59 +364,56 @@ class ProfileController extends AppController {
         //\Zend\Debug\Debug::dump($familyInfo->familyInfoObject);
         $FamilyInfoForm->bind($familyInfo->familyInfoObject);
         $request = $this->getRequest();
-        
+
         if ($request->isPost()) {
             //$page = new Family();
-           $FamilyInfoForm->setInputFilter(new Family());
-           $FamilyInfoForm->setData($request->getPost());
-           if($FamilyInfoForm->isValid()){
+            $FamilyInfoForm->setInputFilter(new Family());
+            $FamilyInfoForm->setData($request->getPost());
+            if ($FamilyInfoForm->isValid()) {
                 $this->userService->saveFamilyInfo($user_id, $request->getPost());
-                 //Debug::dump();
-                 //exit;
-               
-           }elseif ( ! $FamilyInfoForm->isValid()) {
-            
+                //Debug::dump();
+                //exit;
+            } elseif (!$FamilyInfoForm->isValid()) {
+
                 $errors = $FamilyInfoForm->getMessages();
-                foreach($errors as $key=>$row)
-                {
+                foreach ($errors as $key => $row) {
                     if (!empty($row) && $key != 'submit') {
-                        foreach($row as $keyer => $rower)
-                        {
+                        foreach ($row as $keyer => $rower) {
                             //save error(s) per-element that
                             //needed by Javascript
-                            $messages[$key][] = $rower;    
+                            $messages[$key][] = $rower;
                         }
                     }
                 }
             }
-            
-           // Debug::dump($messages);
-           // exit;
-           
-           // \Zend\Debug\Debug::dump($request->getPost());
+
+            // Debug::dump($messages);
+            // exit;
+            // \Zend\Debug\Debug::dump($request->getPost());
         }
 
 
         $percentage = $this->userService->ProfileBar($user_id);
         $pro_per = array($percentage, $this->profileBarTemplate($percentage));
         //Debug::dump($pro_per);
-        
-        
-        $broDataJson=  \Zend\Json\Json::encode($familyInfo->brotherData);
-        $sisDataJson=  \Zend\Json\Json::encode($familyInfo->sisterData);
-        $kidsDataJson=  \Zend\Json\Json::encode($familyInfo->kidsData);
-        
+
+
+        $broDataJson = \Zend\Json\Json::encode($familyInfo->brotherData);
+        $sisDataJson = \Zend\Json\Json::encode($familyInfo->sisterData);
+        $kidsDataJson = \Zend\Json\Json::encode($familyInfo->kidsData);
+
 
         return new ViewModel(array("form" => $FamilyInfoForm,
-            'userInfo'=>$userInfo,
-            'familyInfoObject' => $familyInfo->familyInfoObject, 
-            'brotherData'=>$familyInfo->brotherData,
-            'sisterData'=>$familyInfo->sisterData,
-            'kidsData'=>$familyInfo->kidsData,
-            'broDataJson'=>$broDataJson,
-            'sisDataJson'=>$sisDataJson,
-            'kidsDataJson'=>$kidsDataJson,
-            'familyInfoArray'=>$familyInfo->familyInfoArray,
+            'userInfo' => $userInfo,
+            'familyInfoObject' => $familyInfo->familyInfoObject,
+            'brotherData' => $familyInfo->brotherData,
+            'sisterData' => $familyInfo->sisterData,
+            'kidsData' => $familyInfo->kidsData,
+            'broDataJson' => $broDataJson,
+            'sisDataJson' => $sisDataJson,
+            'kidsDataJson' => $kidsDataJson,
+            'familyInfoArray' => $familyInfo->familyInfoArray,
+            'GalleryInfo' => $familyInfo->GalleryInfo,
             'userSummary' => $this->userService->userSummaryById($user_id),
             "percent" => $pro_per));
     }
@@ -512,9 +510,7 @@ class ProfileController extends AppController {
 
     public function mygalleryAction() {
         //Debug::dump($this->options->getBasePath());
-       // $option=new \Zend\File\Transfer\Adapter\Http();
-        //$option->setDestination(dirname(__DIR__));
-       // Debug::dump($option->getDestination());
+        //\Zend\Debug\Debug::dump(PUBLIC_PATH);
         $userSession = $this->getUser()->session();
         $user_id = $userSession->offsetGet('id');
         $ref_no = $userSession->offsetGet('ref_no');
@@ -522,9 +518,9 @@ class ProfileController extends AppController {
 
 
         $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
-    
-        $data = $adapter->query("select * from tbl_user_gallery where user_id='1' AND ref_no='PMR1' ORDER BY id DESC limit 6", Adapter::QUERY_MODE_EXECUTE)->toArray();
-       // Debug::dump($data);
+
+        $data = $adapter->query("select * from tbl_user_gallery where user_id='$user_id' AND ref_no='$ref_no' ORDER BY id DESC limit 6", Adapter::QUERY_MODE_EXECUTE)->toArray();
+        // Debug::dump($data);
 //        $metadata = new Metadata($adapter);
 //        $table = $metadata->getTable("tbl_family_info");
 //        $table->getColumns();
@@ -794,7 +790,7 @@ class ProfileController extends AppController {
 
     public function AjaxImgUploadGalleryAction() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-           
+
             $session = new Container('user');
             //print_r($_POST['cropenabled']);exit;
             if ($_POST['cropenabled'] != "Enable") {
@@ -805,7 +801,7 @@ class ProfileController extends AppController {
                 $error = $_FILES['file_upload']['error'];
                 $size = $_FILES['file_upload']['size'];
                 $ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));
-               
+
                 switch ($error) {
                     case UPLOAD_ERR_OK:
                         $valid = true;
@@ -821,33 +817,35 @@ class ProfileController extends AppController {
                         }
                         //upload file
                         if ($valid) {
-                            
+
                             //$bashPath = ROOT_PATH;
                             $session = new Container('user');
                             $user_id = $session->offsetGet('id');
                             $ref_no = $session->offsetGet('ref_no');
-                            $userInfo=$this->userService->getUserInfoById($user_id, array('full_name'));
+                            $userInfo = $this->userService->getUserInfoById($user_id, array('full_name'));
                             $user_name = $userInfo->getFullName();
                             $user_folder = $user_id . "__" . $user_name;
                             $name = time() . $name;
-                   
-                            if (!file_exists("/uploads/$user_folder")) {
-                                mkdir( "/uploads/$user_folder", 0777, true);
-                                $targetPath = "/uploads/$user_folder/" . $name;
-                                
+                            //$upload=new \Zend\File\Transfer\Adapter\Http();
+                            //$upload->setDestination(PUBLIC_PATH.'/uploads');
+                            if (!file_exists(PUBLIC_PATH . "/uploads/$user_folder")) {
+                                mkdir(PUBLIC_PATH . "/uploads/$user_folder", 0777, true);
+                                $targetPath = PUBLIC_PATH . "/uploads/$user_folder/" . $name;
+
                                 $uploaded = move_uploaded_file($tmpName, $targetPath);
                             } else {
-                                $targetPath = "/uploads/$user_folder/" . $name;
+                                $targetPath = PUBLIC_PATH . "/uploads/$user_folder/" . $name;
+
                                 $uploaded = move_uploaded_file($tmpName, $targetPath);
                             }
-                            
-                            
+
+
                             if ($uploaded) {
                                 $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
                                 //*********Insert in Gallery Table******
-                                $stmt=$adapter->query("insert into tbl_user_gallery set user_id='$user_id',ref_no='$ref_no',image_path='$user_folder/$name',
+                                $stmt = $adapter->query("insert into tbl_user_gallery set user_id='$user_id',ref_no='$ref_no',image_path='$user_folder/$name',
 							 img_relation='user'", Adapter::QUERY_MODE_EXECUTE);
-                               
+
                                 //*********Select Images to Render******
                                 $data = $adapter->query("select * from tbl_user_gallery where user_id='$user_id' AND ref_no='$ref_no' ORDER BY id DESC", Adapter::QUERY_MODE_EXECUTE);
                                 $response = 'File uploaded Successfully.';
@@ -890,10 +888,10 @@ class ProfileController extends AppController {
                 $session = new Container('user');
                 $user_id = $session->offsetGet('id');
                 $ref_no = $session->offsetGet('ref_no');
-               
+
                 // $ref_no=$session->offsetGet('ref_no');
-                $userInfo=$this->userService->getUserInfoById($user_id, array('full_name'));
-                            
+                $userInfo = $this->userService->getUserInfoById($user_id, array('full_name'));
+
                 $user_name = $userInfo->getFullName();
                 $name = time() . $_FILES['file_upload']['name'];
                 $ext = strtolower(pathinfo($_FILES['file_upload']['name'], PATHINFO_EXTENSION));
@@ -908,7 +906,7 @@ class ProfileController extends AppController {
 
 
 
-               
+
 
 // Get dimensions of the original image
                 list( $current_width, $current_height ) = getimagesize($original_image);
@@ -937,23 +935,24 @@ class ProfileController extends AppController {
                 if (!in_array($ext, array('jpg', 'jpeg'))) {
                     return new JsonModel(array("Status" => 0, "message" => "only jpeg files are allowed"));
                 }
-                     //print_r($result);exit;
-                         
+                //print_r($result);exit;
+
                 if ($result) {
-                    print_r('$result');exit;
-                     if (!file_exists("/uploads/$user_folder")) {
-                         mkdir(ROOT_PATH . "/uploads/$user_folder", 0777, true);
-                         $targetPath =  '/uploads/'.$user_folder.$name;
-                         //print_r($targetPath);
+                    print_r('$result');
+                    exit;
+                    if (!file_exists("/uploads/$user_folder")) {
+                        mkdir(ROOT_PATH . "/uploads/$user_folder", 0777, true);
+                        $targetPath = '/uploads/' . $user_folder . $name;
+                        //print_r($targetPath);
                         // exit;
-                        $uploaded=move_uploaded_file($tmpName,$targetPath);
-                     }else{
-                          $targetPath = '/uploads/'.$user_folder.$name;
-                          //print_r($targetPath);
-                         //exit;
-                        $uploaded=move_uploaded_file($tmpName,$targetPath);
-                     }
-                    
+                        $uploaded = move_uploaded_file($tmpName, $targetPath);
+                    } else {
+                        $targetPath = '/uploads/' . $user_folder . $name;
+                        //print_r($targetPath);
+                        //exit;
+                        $uploaded = move_uploaded_file($tmpName, $targetPath);
+                    }
+
                     $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
                     //*********Insert in Gallery Table******
                     $adapter->query("insert into tbl_user_gallery set user_id='$user_id',ref_no='$ref_no',image_path='$user_folder/$name',
@@ -1076,32 +1075,38 @@ class ProfileController extends AppController {
 
     public function cropimageAction() {
 
-
+        //print_r($_POST);exit;
+        //print_r($ref_no);
+        //exit;
         if ($_POST['cropenabled'] == "Enable") {
 
-            $session = new Container('user');
-            $user_id = $session->offsetGet('id');
-            // $ref_no=$session->offsetGet('ref_no');
-            $user_name = $session->offsetGet('full_name');
+//            $session = new Container('user');
+//            $user_id = $session->offsetGet('id');
+//            $ref_no = $session->offsetGet('ref_no');
+//            $user_name = $session->offsetGet('full_name');
+
+            $user_id = $_POST['uid'];
+            $ref_no = $_POST['ref_no'];
+            $user_name = "Unknown";
             $name = time() . $_FILES['file']['name'];
             $original_image = $_FILES['file']['tmp_name'];
 
-            // $ext = pathinfo($original_image,PATHINFO_EXTENSION);
             $ext = strtolower(pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION));
 
-            if ($_POST['field_name'] == "profile_photo")
-                $disablefamily = "/";
-            else
-                $disablefamily = "/familyimages/";
+            $user_folder = $user_id . "__" . $user_name;
 
-            $user_folder = $user_id . "__" . $user_name . $disablefamily;
-
-            $new_image = ROOT_PATH . '/uploads/' . $user_folder . $name;
+            $new_image = PUBLIC_PATH . '/uploads/' . $user_folder . '/' . $name;
+            $new_image_thumb = PUBLIC_PATH . '/uploads/' . $user_folder . '/100x100/' . $name;
 
             $image_quality = '95';
 
-            if (!file_exists(ROOT_PATH . "/uploads/$user_folder")) {
-                mkdir(ROOT_PATH . "/uploads/$user_folder", 0777, true);
+            if (!file_exists(PUBLIC_PATH . "/uploads/$user_folder")) {
+                mkdir(PUBLIC_PATH . "/uploads/$user_folder", 0777, true);
+                // $targetPath =  ROOT_PATH.'/uploads/'.$user_folder.$name;
+                // $uploaded=move_uploaded_file($tmpName,$targetPath);
+            }
+            if (!file_exists(PUBLIC_PATH . "/uploads/$user_folder/100x100")) {
+                mkdir(PUBLIC_PATH . "/uploads/$user_folder/100x100", 0777, true);
                 // $targetPath =  ROOT_PATH.'/uploads/'.$user_folder.$name;
                 // $uploaded=move_uploaded_file($tmpName,$targetPath);
             }
@@ -1117,12 +1122,13 @@ class ProfileController extends AppController {
             $y2 = $_POST['y2'];
             $width = $_POST['width'];
             $height = $_POST['height'];
-// print_r( $_POST ); die;
+            //print_r( $_POST ); die;
 // Define the final size of the image here ( cropped image )
             $crop_width = 200;
             $crop_height = 200;
 // Create our small image
             $new = imagecreatetruecolor($crop_width, $crop_height);
+
 // Create original image
             $current_image = imagecreatefromjpeg($original_image);
 // resampling ( actual cropping )
@@ -1131,6 +1137,12 @@ class ProfileController extends AppController {
             $result = imagejpeg($new, $new_image, $image_quality);
 
 
+//thumb start
+            $crop_width = 30;
+            $crop_height = 30;
+            $thumbNew = imagecreatetruecolor($crop_width, $crop_height);
+            imagecopyresampled($thumbNew, $current_image, 0, 0, $x1, $y1, $crop_width, $crop_height, $width, $height);
+            $thumb = imagejpeg($thumbNew, $new_image_thumb, $image_quality);
 
             if (!in_array($ext, array('jpg', 'jpeg'))) {
                 return new JsonModel(array("Status" => 0, "message" => "only jpeg files are allowed"));
@@ -1145,32 +1157,178 @@ class ProfileController extends AppController {
                 // 		$adapter->query("insert into ".$_POST['table_name']."('user_id','".$_POST['field_name']."') values($user_id,'/uploads/$user_folder/$name')", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
                 // 	}	
                 // else 
-                $adapter->query("update " . $_POST['table_name'] . " set " . $_POST['field_name'] . "='/uploads/$user_folder/$name' where user_id=$user_id ", Adapter::QUERY_MODE_EXECUTE);
+                $statement = $adapter->query("INSERT INTO tbl_user_gallery (user_id, ref_no, image_path) 
+                        VALUES ('$user_id','$ref_no','$user_folder/$name')");
+
+
+                $res = $statement->execute();
+                $imgid = $res->getGeneratedValue();
+                //print_r($statement);
+                //exit;
                 //*********Select Images to Render******
                 // $data=$adapter->query("select ".$_POST['field_name']." from tbl_family_info where user_id='$user_id'", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
-                if ($_POST['field_name'] == "profile_photo") {
-                    $session = new Container('user');
-                    $prophoto = '/uploads/' . $user_folder . "/" . $name;
-                    $session->profile_photo = $prophoto;
-                }
+
 
                 $response = 'File uploaded Successfully.';
                 //for testing purpose
-                $imgidpath = "/rustagi/uploads/$user_folder/$name";
+                $imgidpath = "$user_folder/$name";
 
                 //for Live Purpose
                 // $imgidpath = "/uploads/$user_folder/$name";
 
-                return new JsonModel(array("Status" => 1, "data" => $imgidpath, "imgid" => $_POST['field_name']));
+                return new JsonModel(array("Status" => 1, "data" => $imgidpath, "imgid" => $imgid));
             } else {
                 return new JsonModel(array("Status" => 0, "message" => "couldn't crop image some error occured"));
             }
         } else {
-            $response = $this->familyimages($_POST, $_FILES);
-            return $response;
+            //$response = $this->familyimages($_POST, $_FILES);
+            $resp = $this->getResponse();
+            $resp->getHeaders()->addHeaderLine('Content-Type', 'application/json');
+
+            //$img_relation = trim($post['field_name']);
+            $name = $_FILES['file']['name'];
+            $tmpName = $_FILES['file']['tmp_name'];
+            $error = $_FILES['file']['error'];
+            $size = $_FILES['file']['size'];
+            $ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));
+            switch ($error) {
+                case UPLOAD_ERR_OK:
+                    $valid = true;
+                    //validate file extensions
+                    if (!in_array($ext, array('jpg'))) {
+                        $valid = false;
+                        $response = "Invalid file extension. Only( jpg ) are allowed";
+                    }
+                    //validate file size
+                    if ($size / 1024 / 1024 > 2) {
+                        $valid = false;
+                        $response = "File size is exceeding 2MB maximum allowed size.";
+                    }
+                    //upload file
+                    if ($valid) {
+
+                        // return $post;
+                        $bashPath = PUBLIC_PATH;
+                        $user_id = $_POST['uid'];
+                        $ref_no = $_POST['ref_no'];
+                        $user_name = "Unknown";
+
+                        $user_folder = $user_id . "__" . $user_name;
+                        $name = time() . $name;
+
+                        $new_image = PUBLIC_PATH . '/uploads/' . $user_folder . '/' . $name;
+                        $new_image_thumb = PUBLIC_PATH . '/uploads/' . $user_folder . '/100x100/' . $name;
+                        $image_quality = '95';
+
+
+
+                        if (!file_exists($bashPath . "/uploads/$user_folder")) {
+                            mkdir($bashPath . "/uploads/$user_folder", 0777, true);
+                            $targetPath = $bashPath . "/uploads/$user_folder/" . $name;
+                            //$uploaded = move_uploaded_file($tmpName, $targetPath);
+                        } else {
+                            $targetPath = $bashPath . "/uploads/$user_folder/" . $name;
+                            //$uploaded = move_uploaded_file($tmpName, $targetPath);
+                        }
+
+// Get dimensions of the original image
+                        list( $current_width, $current_height ) = getimagesize($tmpName);
+
+// Get coordinates x and y on the original image from where we
+// will start cropping the image, the data is taken from the hidden fields of form.
+                        $x1 = $_POST['x1'];
+                        $y1 = $_POST['y1'];
+                        $x2 = $_POST['x2'];
+                        $y2 = $_POST['y2'];
+                        $width = $_POST['width'];
+                        $height = $_POST['height'];
+//                        //print_r( $_POST ); die;
+// Define the final size of the image here ( cropped image )
+                        $crop_width = 200;
+                        $crop_height = 200;
+// Create our small image
+                        $new = imagecreatetruecolor($crop_width, $crop_height);
+
+// Create original image
+                        $current_image = imagecreatefromjpeg($tmpName);
+// resampling ( actual cropping )
+                        imagecopyresampled($new, $current_image, 0, 0, $x1, $y1, $crop_width, $crop_height, $width, $height);
+// this method is used to create our new image
+                        $result = imagejpeg($new, $new_image, $image_quality);
+
+
+//thumb start
+                        $crop_width = 30;
+                        $crop_height = 30;
+                        $thumbNew = imagecreatetruecolor($crop_width, $crop_height);
+                        $current_image = imagecreatefromjpeg($tmpName);
+                        imagecopyresampled($thumbNew, $current_image, 0, 0, $x1, $y1, $crop_width, $crop_height, $width, $height);
+                        $thumb = imagejpeg($thumbNew, $new_image_thumb, $image_quality);
+
+
+
+                        //exit;
+                        if ($uploaded) {
+
+
+                            $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
+                            //*********Insert in Gallery Table******
+                            $statement = $adapter->query("INSERT INTO tbl_user_gallery (user_id, ref_no, image_path) 
+                        VALUES ('$user_id','$ref_no','$user_folder/$name')");
+                            $res = $statement->execute();
+                            $imgid = $res->getGeneratedValue();
+                            //$adapter->query("update " . $post['table_name'] . " set " . $post['field_name'] . "='/uploads/$user_folder/$name' where user_id=$user_id ", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+                            //*********Select Images to Render******
+                            // $data=$adapter->query("select ".$post['field_name']." from tbl_family_info where user_id='$user_id'", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+                            $response = 'File uploaded Successfully.';
+                            // return $data;
+//for testing purpose		
+                            $imgidpath = "$user_folder/$name";
+                            $resp->setContent(json_encode(array("Status" => 1, "data" => $imgidpath, "imgid" => $imgid)));
+//for live purpose
+// $imgidpath = "/uploads/$user_folder/$name";
+                            //        $resp->setContent(json_encode(array("Status"=>1,"data"=>$imgidpath,"imgid"=>$post['field_name'])));
+
+                            return $resp;
+
+                            // return new JsonModel(array("Status"=>1,"data"=>$targetPath));
+                            // return new JsonModel(array("Status"=>"true","message"=>$response,"family_data"=>$data));							
+                        } else {
+                            $response = "Error! File Couldn't uploaded";
+                        }
+                    }
+                    break;
+                case UPLOAD_ERR_INI_SIZE:
+                    $response = 'The uploaded file exceeds the upload_max_filesize directive in php.ini.';
+                    break;
+                case UPLOAD_ERR_FORM_SIZE:
+                    $response = 'The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form.';
+                    break;
+                case UPLOAD_ERR_PARTIAL:
+                    $response = 'The uploaded file was only partially uploaded.';
+                    break;
+                case UPLOAD_ERR_NO_FILE:
+                    $response = 'No file was uploaded.';
+                    break;
+                case UPLOAD_ERR_NO_TMP_DIR:
+                    $response = 'Missing a temporary folder.';
+                    break;
+                case UPLOAD_ERR_CANT_WRITE:
+                    $response = 'Failed to write file to disk.';
+                    break;
+                case UPLOAD_ERR_EXTENSION:
+                    $response = 'File upload stopped by extension.';
+                    break;
+                default:
+                    $response = 'Unknown error';
+                    break;
+            }
+
+            $resp->setContent(json_encode(array("Status" => 0, "message" => $response)));
+            return $resp;
         }
 
-        exit;
+        //exit;
     }
 
     public function covertdateageAction() {
@@ -1226,8 +1384,6 @@ class ProfileController extends AppController {
         //exit;
         return $message;
     }
-    
-    
 
 }
 

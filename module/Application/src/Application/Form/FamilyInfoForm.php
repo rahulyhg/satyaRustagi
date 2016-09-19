@@ -87,9 +87,9 @@ class FamilyInfoForm extends Form {
             'name' => 'spouse_dob',
             'attributes' => array(
                 'type' => 'text',
-                'class' => 'form-control inputDate',
+                'class' => 'form-control datepicker1',
                 'id' => 'spouse_dob',
-                'readonly' => 'readonly'
+                //'readonly' => 'readonly'
             ),
             'options' => array(
                 'label' => NULL,
@@ -107,9 +107,9 @@ class FamilyInfoForm extends Form {
             'name' => 'spouse_died_on',
             'attributes' => array(
                 'type' => 'text',
-                'class' => 'form-control inputDate dod',
+                'class' => 'form-control datepicker1 dod',
                 'id' => 'spouse_died_on',
-                'readonly' => 'readonly'
+                //'readonly' => 'readonly'
             ),
             'options' => array(
                 'label' => NULL,
@@ -154,9 +154,9 @@ class FamilyInfoForm extends Form {
             'name' => 'father_dob',
             'attributes' => array(
                 'type' => 'text',
-                'class' => 'form-control inputDate',
+                'class' => 'form-control datepicker1',
                 'id' => 'father_dob',
-                'readonly' => 'readonly'
+                //'readonly' => 'readonly'
             ),
             'options' => array(
                 'label' => NULL,
@@ -174,9 +174,9 @@ class FamilyInfoForm extends Form {
             'name' => 'father_dod',
             'attributes' => array(
                 'type' => 'text',
-                'class' => 'form-control inputDate dod',
+                'class' => 'form-control datepicker1',
                 'id' => 'father_dod',
-                'readonly' => 'readonly'
+                //'readonly' => 'readonly'
             ),
             'options' => array(
                 'label' => NULL,
@@ -221,9 +221,9 @@ class FamilyInfoForm extends Form {
             'name' => 'mother_dob',
             'attributes' => array(
                 'type' => 'text',
-                'class' => 'form-control inputDate',
+                'class' => 'form-control datepicker1',
                 'id' => 'mother_dob',
-                'readonly' => 'readonly'
+                //'readonly' => 'readonly'
             ),
             'options' => array(
                 'label' => NULL,
@@ -241,9 +241,9 @@ class FamilyInfoForm extends Form {
             'name' => 'mother_dod',
             'attributes' => array(
                 'type' => 'text',
-                'class' => 'form-control inputDate dod',
+                'class' => 'form-control datepicker1 dod',
                 'id' => 'mother_dod',
-                'readonly' => 'readonly'
+                //'readonly' => 'readonly'
             ),
             'options' => array(
                 'label' => NULL,
@@ -276,8 +276,8 @@ class FamilyInfoForm extends Form {
             'type' => 'Zend\Form\Element\Select',
             'name' => 'grand_father_status',
             'attributes' => array(
-                'class' => 'form-control',
-                'id' => 'grand_father_status status_live'
+                'class' => 'form-control status_live',
+                'id' => 'grand_father_status'
             ),
             'options' => array(
                 'empty_option' => 'Select',
@@ -288,9 +288,9 @@ class FamilyInfoForm extends Form {
             'name' => 'grand_father_dob',
             'attributes' => array(
                 'type' => 'text',
-                'class' => 'form-control inputDate',
+                'class' => 'form-control datepicker1',
                 'id' => 'grand_father_dob',
-                'readonly' => 'readonly'
+                //'readonly' => 'readonly'
             ),
             'options' => array(
                 'label' => NULL,
@@ -308,9 +308,9 @@ class FamilyInfoForm extends Form {
             'name' => 'grand_father_dod',
             'attributes' => array(
                 'type' => 'text',
-                'class' => 'form-control inputDate dod',
+                'class' => 'form-control datepicker1 dod',
                 'id' => 'grand_father_dod',
-                'readonly' => 'readonly'
+                //'readonly' => 'readonly'
             ),
             'options' => array(
                 'label' => NULL,
@@ -345,7 +345,7 @@ class FamilyInfoForm extends Form {
             'name' => 'grand_mother_status',
             'attributes' => array(
                 'class' => 'form-control',
-                'id' => 'grand_mother_status status_live'
+                'id' => 'grand_mother_status'
             ),
             'options' => array(
                 'empty_option' => 'Select',
@@ -356,9 +356,9 @@ class FamilyInfoForm extends Form {
             'name' => 'grand_mother_dob',
             'attributes' => array(
                 'type' => 'text',
-                'class' => 'form-control inputDate',
+                'class' => 'form-control datepicker1',
                 'id' => 'grand_mother_dob',
-                'readonly' => 'readonly'
+                //'readonly' => 'readonly'
             ),
             'options' => array(
                 'label' => NULL,
@@ -376,9 +376,9 @@ class FamilyInfoForm extends Form {
             'name' => 'grand_mother_dod',
             'attributes' => array(
                 'type' => 'text',
-                'class' => 'form-control inputDate dod',
+                'class' => 'form-control datepicker1 dod',
                 'id' => 'grand_mother_dod',
-                'readonly' => 'readonly'
+                //'readonly' => 'readonly'
             ),
             'options' => array(
                 'label' => NULL,
@@ -413,7 +413,7 @@ class FamilyInfoForm extends Form {
             'name' => 'grand_grand_father_status',
             'attributes' => array(
                 'class' => 'form-control status_live',
-                'id' => 'g_grand_father_status'
+                'id' => 'grand_grand_father_status'
             ),
             'options' => array(
                 'empty_option' => 'Select',
@@ -424,9 +424,9 @@ class FamilyInfoForm extends Form {
             'name' => 'grand_grand_father_dob',
             'attributes' => array(
                 'type' => 'text',
-                'class' => 'form-control inputDate',
+                'class' => 'form-control datepicker1',
                 'id' => 'grand_grand_father_dob',
-                'readonly' => 'readonly'
+                //'readonly' => 'readonly'
             ),
             'options' => array(
                 'label' => NULL,
@@ -444,9 +444,9 @@ class FamilyInfoForm extends Form {
             'name' => 'grand_grand_father_dod',
             'attributes' => array(
                 'type' => 'text',
-                'class' => 'form-control inputDate dod',
+                'class' => 'form-control datepicker1 dod',
                 'id' => 'g_grand_father_dod',
-                'readonly' => 'readonly'
+                //'readonly' => 'readonly'
             ),
             'options' => array(
                 'label' => NULL,
@@ -481,7 +481,7 @@ class FamilyInfoForm extends Form {
             'name' => 'grand_grand_mother_status',
             'attributes' => array(
                 'class' => 'form-control status_live',
-                'id' => 'g_grand_mother_status'
+                'id' => 'grand_grand_mother_status'
             ),
             'options' => array(
                 'empty_option' => 'Select',
@@ -492,9 +492,9 @@ class FamilyInfoForm extends Form {
             'name' => 'grand_grand_mother_dob',
             'attributes' => array(
                 'type' => 'text',
-                'class' => 'form-control inputDate',
+                'class' => 'form-control datepicker1',
                 'id' => 'g_grand_mother_dob',
-                'readonly' => 'readonly'
+                //'readonly' => 'readonly'
             ),
             'options' => array(
                 'label' => NULL,
@@ -512,9 +512,9 @@ class FamilyInfoForm extends Form {
             'name' => 'grand_grand_mother_dod',
             'attributes' => array(
                 'type' => 'text',
-                'class' => 'form-control inputDate dod',
+                'class' => 'form-control datepicker1 dod',
                 'id' => 'g_grand_mother_dod',
-                'readonly' => 'readonly'
+                //'readonly' => 'readonly'
             ),
             'options' => array(
                 'label' => NULL,
@@ -560,9 +560,9 @@ class FamilyInfoForm extends Form {
             'name' => 'spouse_father_dob',
             'attributes' => array(
                 'type' => 'text',
-                'class' => 'form-control inputDate',
+                'class' => 'form-control datepicker1',
                 'id' => 'spouse_fatherDOB',
-                'readonly' => 'readonly'
+                //'readonly' => 'readonly'
             ),
             'options' => array(
                 'label' => NULL,
@@ -580,9 +580,9 @@ class FamilyInfoForm extends Form {
             'name' => 'spouse_father_died_on',
             'attributes' => array(
                 'type' => 'text',
-                'class' => 'form-control inputDate dod',
+                'class' => 'form-control datepicker1 dod',
                 'id' => 'spouse_fatherDiedOn',
-                'readonly' => 'readonly'
+                //'readonly' => 'readonly'
             ),
             'options' => array(
                 'label' => NULL,
@@ -627,9 +627,9 @@ class FamilyInfoForm extends Form {
             'name' => 'spouse_mother_dob',
             'attributes' => array(
                 'type' => 'text',
-                'class' => 'form-control inputDate',
+                'class' => 'form-control datepicker1',
                 'id' => 'spouse_motherDOB',
-                'readonly' => 'readonly'
+                //'readonly' => 'readonly'
             ),
             'options' => array(
                 'label' => NULL,
@@ -647,9 +647,9 @@ class FamilyInfoForm extends Form {
             'name' => 'spouse_mother_died_on',
             'attributes' => array(
                 'type' => 'text',
-                'class' => 'form-control inputDate dod',
+                'class' => 'form-control datepicker1 dod',
                 'id' => 'spouse_motherDiedOn',
-                'readonly' => 'readonly'
+                //'readonly' => 'readonly'
             ),
             'options' => array(
                 'label' => NULL,

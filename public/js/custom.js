@@ -874,7 +874,7 @@ var cropimageresults = function (data) {
     else
         alert(data.message);
 
-    location.reload();
+    //location.reload();
 //  console.log(data)	;
 }
 
@@ -911,12 +911,15 @@ function cropimage(action, callback) {
 
 
 
-function showcropbox(field, table) {
+function showcropbox(uid, ref_no, field, table) {
+    
 
     if (field != "profile_photo") {
         $("#forprofile").hide();
     }
-
+    
+    $("#uid").val(uid);
+    $("#ref_no").val(ref_no);
     $("#field_name").val(field);
     $("#table_name").val(table);
     $("#field_name1").val(field);

@@ -87,7 +87,9 @@ class UserController extends AppController {
                     foreach ($storage->read() as $u => $v) {
                         $userSession->offsetSet($u, $v);
                     }
-                    Debug::dump($storage->read());
+                    $userInfo=$this->userService->getUserInfoById($userSession->offsetGet('id'), array('full_name'));
+                    $userSession->offsetSet('full_name', $userInfo->getFullName());
+                    //Debug::dump($storage->read());
                     //exit;
                     $time = 1209600; // 14 days 1209600/3600 = 336 hours => 336/24 = 14 days
                     //if ($data['rememberme']) $storage->getSession()->getManager()->rememberMe($time); // no way to get the session
@@ -167,7 +169,9 @@ class UserController extends AppController {
                     foreach ($storage->read() as $u => $v) {
                         $userSession->offsetSet($u, $v);
                     }
-                    Debug::dump($storage->read());
+                     $userInfo=$this->userService->getUserInfoById($userSession->offsetGet('id'), array('full_name'));
+                    $userSession->offsetSet('full_name', $userInfo->getFullName());
+                    //Debug::dump($storage->read());
                     //exit;
                     $time = 1209600; // 14 days 1209600/3600 = 336 hours => 336/24 = 14 days
                     //if ($data['rememberme']) $storage->getSession()->getManager()->rememberMe($time); // no way to get the session

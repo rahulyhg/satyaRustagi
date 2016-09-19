@@ -1,6 +1,7 @@
 <?php
-  // \Zend\Debug\Debug::dump(count($this->kidsData));
-
+ \Zend\Debug\Debug::dump($this->GalleryInfo['father']['image_path']);
+$father_id=$this->familyInfoArray['father_id'];
+$ref_no=$this->familyInfoArray['ref_no'];
 ?>
 
 <style>
@@ -13,7 +14,7 @@
 </style>
   
 
-<div id="crop-vehicle" style="width:140px; margin:auto;"> 
+<div id="crop-vehicles" style="width:140px; margin:auto;"> 
                   
                   <!-- Current avatar -->
                   
@@ -196,8 +197,8 @@
 
         <input type="hidden" name="father_photo" value="<?=$family_data->father_photo;?>">
       <!-- <label style="width:80%;">
-       <?php  echo $this->formRow($form->get('father_photo'));?></label><br /> -->  
-       <a href="#" data-toggle="modal" data-target="#avatar-modal1" onclick="showcropbox('father_photo','tbl_family_info')">Upload Photo</a>     
+       <?php  //echo $this->formRow($form->get('father_photo'));?></label><br /> -->  
+       <a href="#" data-toggle="modal" data-target="#avatar-modal1" onclick="showcropbox('<?php echo $father_id?>','<?php echo $ref_no?>','','')">Upload Photo</a>     
         </div>		
 		</div>
 		
@@ -640,294 +641,7 @@ $(document).ready(function() {
 </script>
 <!---****************************************************************************
 **********************************************************************************-->
-<script>
-     var obj = new Date();
-     var curr_year = obj.getFullYear();
-	 var curr_month = obj.getMonth();
-	 var curr_date = obj.getDate();    
-    var picker = new Pikaday(
-    {
-        field: document.getElementById('spouse_dob'),
-        firstDay: 1,
-        minDate: new Date(1801, 0, 1),
-        maxDate: new Date(curr_year, curr_month, curr_date),
-        yearRange: [1801,curr_year],
-		format:'DD-MM-YYYY',
-		formatStrict: false
-    });
-      </script>
-	  <script>
-     var obj = new Date();
-     var curr_year = obj.getFullYear();
-	 var curr_month = obj.getMonth();
-	 var curr_date = obj.getDate();    
-    var picker = new Pikaday(
-    {
-        field: document.getElementById('spouse_died_on'),
-        firstDay: 1,
-        minDate: new Date(1801, 0, 1),
-        maxDate: new Date(curr_year, curr_month, curr_date),
-        yearRange: [1801,curr_year],
-		format:'DD-MM-YYYY',
-		formatStrict: false
-    });
-      </script>
-      <script>
-     var obj = new Date();
-     var curr_year = obj.getFullYear();
-	 var curr_month = obj.getMonth();
-	 var curr_date = obj.getDate();    
-    var picker = new Pikaday(
-    {
-        field: document.getElementById('father_dob'),
-        firstDay: 1,
-        minDate: new Date(1801, 0, 1),
-        maxDate: new Date(curr_year, curr_month, curr_date),
-        yearRange: [1801,curr_year],
-		format:'DD-MM-YYYY',
-		formatStrict: false
-    });
-      </script>
-	  <script>
-     var obj = new Date();
-     var curr_year = obj.getFullYear();
-	 var curr_month = obj.getMonth();
-	 var curr_date = obj.getDate();    
-    var picker = new Pikaday(
-    {
-        field: document.getElementById('father_dod'),
-        firstDay: 1,
-        minDate: new Date(1801, 0, 1),
-        maxDate: new Date(curr_year, curr_month, curr_date),
-        yearRange: [1801,curr_year],
-		format:'DD-MM-YYYY',
-		formatStrict: false
-    });
-      </script>
-	  <script>
-     var obj = new Date();
-     var curr_year = obj.getFullYear();
-	 var curr_month = obj.getMonth();
-	 var curr_date = obj.getDate();    
-    var picker = new Pikaday(
-    {
-        field: document.getElementById('mother_dob'),
-        firstDay: 1,
-        minDate: new Date(1801, 0, 1),
-        maxDate: new Date(curr_year, curr_month, curr_date),
-        yearRange: [1801,curr_year],
-		format:'DD-MM-YYYY',
-		formatStrict: false
-    });
-      </script>
-	  <script>
-     var obj = new Date();
-     var curr_year = obj.getFullYear();
-	 var curr_month = obj.getMonth();
-	 var curr_date = obj.getDate();    
-    var picker = new Pikaday(
-    {
-        field: document.getElementById('mother_dod'),
-        firstDay: 1,
-        minDate: new Date(1801, 0, 1),
-        maxDate: new Date(curr_year, curr_month, curr_date),
-        yearRange: [1801,curr_year],
-		format:'DD-MM-YYYY',
-		formatStrict: false
-    });
-      </script>
-	  <script>
-     var obj = new Date();
-     var curr_year = obj.getFullYear();
-	 var curr_month = obj.getMonth();
-	 var curr_date = obj.getDate();    
-    var picker = new Pikaday(
-    {
-        field: document.getElementById('grand_father_dob'),
-        firstDay: 1,
-        minDate: new Date(1701, 0, 1),
-        maxDate: new Date(curr_year, curr_month, curr_date),
-        yearRange: [1701,curr_year],
-		format:'DD-MM-YYYY',
-		formatStrict: false
-    });
-      </script>
-	  <script>
-     var obj = new Date();
-     var curr_year = obj.getFullYear();
-	 var curr_month = obj.getMonth();
-	 var curr_date = obj.getDate();    
-    var picker = new Pikaday(
-    {
-        field: document.getElementById('grand_mother_dob'),
-        firstDay: 1,
-        minDate: new Date(1701, 0, 1),
-        maxDate: new Date(curr_year, curr_month, curr_date),
-        yearRange: [1701,curr_year],
-		format:'DD-MM-YYYY',
-		formatStrict: false
-    });
-      </script>
-	  <script>
-     var obj = new Date();
-     var curr_year = obj.getFullYear();
-	 var curr_month = obj.getMonth();
-	 var curr_date = obj.getDate();    
-    var picker = new Pikaday(
-    {
-        field: document.getElementById('grand_grand_father_dob'),
-        firstDay: 1,
-        minDate: new Date(1601, 0, 1),
-        maxDate: new Date(curr_year, curr_month, curr_date),
-        yearRange: [1601,curr_year],
-		format:'DD-MM-YYYY',
-		formatStrict: false
-    });
-      </script>
-	  <script>
-     var obj = new Date();
-     var curr_year = obj.getFullYear();
-	 var curr_month = obj.getMonth();
-	 var curr_date = obj.getDate();    
-    var picker = new Pikaday(
-    {
-        field: document.getElementById('grand_grand_mother_dob'),
-        firstDay: 1,
-        minDate: new Date(1601, 0, 1),
-        maxDate: new Date(curr_year, curr_month, curr_date),
-        yearRange: [1601,curr_year],
-		format:'DD-MM-YYYY',
-		formatStrict: false
-    });
-      </script>
-	   <script>
-     var obj = new Date();
-     var curr_year = obj.getFullYear();
-	 var curr_month = obj.getMonth();
-	 var curr_date = obj.getDate();    
-    var picker = new Pikaday(
-    {
-        field: document.getElementById('grand_grand_mother_dod'),
-        firstDay: 1,
-        minDate: new Date(1601, 0, 1),
-        maxDate: new Date(curr_year, curr_month, curr_date),
-        yearRange: [1601,curr_year],
-		format:'DD-MM-YYYY',
-		formatStrict: false
-    });
-      </script>
-	  <script>
-     var obj = new Date();
-     var curr_year = obj.getFullYear();
-	 var curr_month = obj.getMonth();
-	 var curr_date = obj.getDate();    
-    var picker = new Pikaday(
-    {
-        field: document.getElementById('grand_father_dod'),
-        firstDay: 1,
-        minDate: new Date(1601, 0, 1),
-        maxDate: new Date(curr_year, curr_month, curr_date),
-        yearRange: [1601,curr_year],
-		format:'DD-MM-YYYY',
-		formatStrict: false
-    });
-      </script>
-	  <script>
-     var obj = new Date();
-     var curr_year = obj.getFullYear();
-	 var curr_month = obj.getMonth();
-	 var curr_date = obj.getDate();    
-    var picker = new Pikaday(
-    {
-        field: document.getElementById('grand_mother_dod'),
-        firstDay: 1,
-        minDate: new Date(1601, 0, 1),
-        maxDate: new Date(curr_year, curr_month, curr_date),
-        yearRange: [1601,curr_year],
-		format:'DD-MM-YYYY',
-		formatStrict: false
-    });
-      </script>
-	  <script>
-     var obj = new Date();
-     var curr_year = obj.getFullYear();
-	 var curr_month = obj.getMonth();
-	 var curr_date = obj.getDate();    
-    var picker = new Pikaday(
-    {
-        field: document.getElementById('grand_grand_father_dod'),
-        firstDay: 1,
-        minDate: new Date(1601, 0, 1),
-        maxDate: new Date(curr_year, curr_month, curr_date),
-        yearRange: [1601,curr_year],
-		format:'DD-MM-YYYY',
-		formatStrict: false
-    });
-      </script>
-	   <script>
-     var obj = new Date();
-     var curr_year = obj.getFullYear();
-	 var curr_month = obj.getMonth();
-	 var curr_date = obj.getDate();    
-    var picker = new Pikaday(
-    {
-        field: document.getElementById('spouse_fatherDOB'),
-        firstDay: 1,
-        minDate: new Date(1601, 0, 1),
-        maxDate: new Date(curr_year, curr_month, curr_date),
-        yearRange: [1601,curr_year],
-		format:'DD-MM-YYYY',
-		formatStrict: false
-    });
-      </script>
-	   <script>
-     var obj = new Date();
-     var curr_year = obj.getFullYear();
-	 var curr_month = obj.getMonth();
-	 var curr_date = obj.getDate();    
-    var picker = new Pikaday(
-    {
-        field: document.getElementById('spouse_fatherDiedOn'),
-        firstDay: 1,
-        minDate: new Date(1601, 0, 1),
-        maxDate: new Date(curr_year, curr_month, curr_date),
-        yearRange: [1601,curr_year],
-		format:'DD-MM-YYYY',
-		formatStrict: false
-    });
-      </script>
-	   <script>
-     var obj = new Date();
-     var curr_year = obj.getFullYear();
-	 var curr_month = obj.getMonth();
-	 var curr_date = obj.getDate();    
-    var picker = new Pikaday(
-    {
-        field: document.getElementById('spouse_motherDOB'),
-        firstDay: 1,
-        minDate: new Date(1601, 0, 1),
-        maxDate: new Date(curr_year, curr_month, curr_date),
-        yearRange: [1601,curr_year],
-		format:'DD-MM-YYYY',
-		formatStrict: false
-    });
-      </script>
-	   <script>
-     var obj = new Date();
-     var curr_year = obj.getFullYear();
-	 var curr_month = obj.getMonth();
-	 var curr_date = obj.getDate();    
-    var picker = new Pikaday(
-    {
-        field: document.getElementById('spouse_motherDiedOn'),
-        firstDay: 1,
-        minDate: new Date(1601, 0, 1),
-        maxDate: new Date(curr_year, curr_month, curr_date),
-        yearRange: [1601,curr_year],
-		format:'DD-MM-YYYY',
-		formatStrict: false
-    });
-      </script>
+
       
         <script type="text/javascript">
 
@@ -993,7 +707,12 @@ $(document).ready(function(){
 <script type="text/javascript">
 
 $(document).ready(function() {
-    
+     $( function() {
+              $( ".datepicker1" ).datepicker({ dateFormat: "dd-mm-yy", changeYear: true });
+              
+  
+
+        });
     $("#noofbro").change(function() {		
         var selVal = $(this).val();		
         $("#textboxDiv").html('');
@@ -1002,7 +721,8 @@ $(document).ready(function() {
               $("#textboxDiv").append('<div class="form-group row"><label for="grand_fatherName" class="col-sm-2 form-control-label edupading"><?php echo $this->translate('Brother Name');?></label><div class="col-sm-3 coltilte" ><select class="form-control" name="name_title_brother[]" style="padding:0;"><option>Mr.</option><option>Mrs</option><option>Miss</option><option>Dr.</option></select></div><div class="col-sm-3 colname"><input type="text" name="brother_name[]" class="form-control" /><input type="hidden" name="brother_id[]" class="form-control" /></div><label for="Phone No." class="col-sm-2 form-control-label edupading"><?php echo $this->translate('Brother Status') ?></label><div class="col-sm-3"><select class="form-control" name="brother_status[]"><option>Select</option><option>Alive</option><option>Passed Away</option></select></div></div><div class="form-group row"><label for="Alt. Mobile No." class="col-sm-2 form-control-label edupading"><?php echo $this->translate('Date of Birth');?></label><div class="col-sm-3"> <input type="text" name="brother_dob[]" class="form-control datepicker1" /></div><div id="mother_AliveInfoArea"><label for="Phone No." class="col-sm-2 form-control-label edupading"><?php  echo $this->translate('Brother Photo') ?></label><div class="col-sm-3"><label>  <a href="#" data-toggle="modal" data-target="#avatar-modal1" onclick="showcropbox(&quot;brother_photo&quot;,&quot;tbl_family_info&quot;)"><img src="<?php echo $this->basePath() ?>/gallery/thumb/gallery.jpg" height="30" width="30" />Upload Photo</a></label></div></div></div>');
             }
         }
-        $( ".datepicker1" ).datepicker({ changeYear: true,dateFormat: "mm/dd/yy" });
+       
+        //$( ".datepicker1" ).datepicker({ changeYear: true,dateFormat: "mm/dd/yy" });
         var broData=JSON.parse('<?php echo $this->broDataJson?>');
         var brotherName=document.getElementsByName("brother_name[]");
         var brotherId=document.getElementsByName("brother_id[]");
@@ -1031,7 +751,7 @@ $(document).ready(function() {
               $("#sisterDiv").append('<div class="form-group row"><label for="grand_fatherName" class="col-sm-2 form-control-label edupading"><?php echo $this->translate('Sister Name');?></label><div class="col-sm-3 coltilte" ><select class="form-control" name="name_title_sister[]" style="padding:0;"><option>Mrs</option><option>Miss</option><option>Dr.</option></select></div><div class="col-sm-3 colname"><input type="text" name="sister_name[]" class="form-control" /><input type="hidden" name="sister_id[]" class="form-control" /></div><label for="Phone No." class="col-sm-2 form-control-label edupading"><?php echo $this->translate('Sister Status') ?></label><div class="col-sm-3"><select class="form-control" name="sister_status[]"><option>Select</option><option>Alive</option><option>Passed Away</option></select></div></div><div class="form-group row"><label for="Alt. Mobile No." class="col-sm-2 form-control-label edupading"><?php echo $this->translate('Date of Birth');?></label><div class="col-sm-3"> <input type="text" name="sister_dob[]" class="form-control datepicker1" /></div><div id="mother_AliveInfoArea"><label for="Phone No." class="col-sm-2 form-control-label edupading"><?php  echo $this->translate('Sister Photo') ?></label><div class="col-sm-3"><a href="#" data-toggle="modal" data-target="#avatar-modal1" onclick="showcropbox(&quot;sister_photo&quot;,&quot;tbl_family_info&quot;)"><img src="<?php echo $this->basePath() ?>/gallery/thumb/gallery.jpg" height="30" width="30" />Upload Photo</a></div></div></div>');
             }
         }
-        $( ".datepicker1" ).datepicker({  changeYear: true,dateFormat: "mm/dd/yy" });
+        //$( ".datepicker1" ).datepicker({  changeYear: true,dateFormat: "mm/dd/yy" });
             var sisData=JSON.parse('<?php echo $this->sisDataJson?>');
         var sisterName=document.getElementsByName("sister_name[]");
         var sisterId=document.getElementsByName("sister_id[]");
@@ -1058,7 +778,7 @@ $(document).ready(function() {
               $("#kidDiv").append('<div class="form-group row"><label for="grand_fatherName" class="col-sm-2 form-control-label edupading "><?php echo $this->translate('Kid Name');?></label><div class="col-sm-3 coltilte" ><select class="form-control" name="name_title_kids[]" style="padding:0;"><option>Mr.</option><option>Mrs</option><option>Miss</option><option>Dr.</option></select></div><div class="col-sm-3 colname"><input type="text" name="kids_name[]" class="form-control" /><input type="hidden" name="kids_id[]" class="form-control" /></div><label for="Phone No." class="col-sm-2 form-control-label edupading"><?php echo $this->translate('Kid Status') ?></label><div class="col-sm-3"><select class="form-control" name="kids_status[]"><option>Select</option><option>Alive</option><option>Passed Away</option></select></div></div><div class="form-group row"><label for="Alt. Mobile No." class="col-sm-2 form-control-label edupading"><?php echo $this->translate('Date of Birth');?></label><div class="col-sm-3"> <input type="text" name="kids_dob[]" class="form-control datepicker1" /></div><div id="mother_AliveInfoArea"><label for="Phone No." class="col-sm-2 form-control-label edupading"><?php  echo $this->translate('Kid Photo') ?></label><div class="col-sm-3"><label>  <a href="#" data-toggle="modal" data-target="#avatar-modal1" onclick="showcropbox(&quot;kids_photo&quot;,&quot;tbl_family_info&quot;)"><img src="<?php echo $this->basePath() ?>/gallery/thumb/gallery.jpg" height="30" width="30" />Upload Photo</a></label></div></div></div>');
             }
         }
-        $( ".datepicker1" ).datepicker({  changeYear: true,dateFormat: "mm/dd/yy" });
+        //$( ".datepicker1" ).datepicker({  changeYear: true,dateFormat: "mm/dd/yy" });
             var kidsData=JSON.parse('<?php echo $this->kidsDataJson?>');
         var kidsName=document.getElementsByName("kids_name[]");
         var kidsId=document.getElementsByName("kids_id[]");
@@ -1085,7 +805,7 @@ $(document).ready(function() {
               $("#spouceSDiv").append('<div class="form-group row"><label for="grand_fatherName" class="col-sm-2 form-control-label edupading"><?php echo $this->translate('Spouse Sister Name');?></label><div class="col-sm-3 coltilte" ><select class="form-control" name="name_title_S_sister[]" style="padding:0;"><option>Mrs</option><option>Miss</option><option>Dr.</option></select></div><div class="col-sm-3 colname"><input type="text" name="S_sister_name[]" class="form-control" /></div><label for="Phone No." class="col-sm-2 form-control-label edupading"><?php echo $this->translate('Spouse Sister Status') ?></label><div class="col-sm-3"><select class="form-control" name="S_sister_status[]"><option>Select</option><option>Alive</option><option>Passed Away</option></select></div></div><div class="form-group row"><label for="Alt. Mobile No." class="col-sm-2 form-control-label edupading"><?php echo $this->translate('Date of Birth');?></label><div class="col-sm-3"> <input type="text" name="S_sister_dob[]" class="form-control datepicker1" /></div><div id="mother_AliveInfoArea"><label for="Phone No." class="col-sm-2 form-control-label edupading"><?php  echo $this->translate('Spouse Sister Photo') ?></label><div class="col-sm-3"><label>  <a href="#" data-toggle="modal" data-target="#avatar-modal1" onclick="showcropbox(&quot;S_sister_photo&quot;,&quot;tbl_family_info&quot;)"><img src="<?php echo $this->basePath() ?>/gallery/thumb/gallery.jpg" height="30" width="30" />Upload Photo</a></label></div></div></div>');
             }
         }
-        $( ".datepicker1" ).datepicker({  changeYear: true,dateFormat: "mm/dd/yy" });
+        //$( ".datepicker1" ).datepicker({  changeYear: true,dateFormat: "mm/dd/yy" });
 
     });	
 });

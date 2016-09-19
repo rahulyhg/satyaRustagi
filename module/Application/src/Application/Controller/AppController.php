@@ -344,7 +344,7 @@ class AppController extends AbstractActionController {
                 if ($valid) {
 
                     // return $post;
-                    $bashPath = ROOT_PATH;
+                    $bashPath = PUBLIC_PATH;
                     $session = new Container('user');
                     $user_id = $session->offsetGet('id');
                     // $ref_no=$session->offsetGet('ref_no');

@@ -1,10 +1,10 @@
 <?php 
-if($this->flashMessenger()->hasMessages()){
-  $disp = "display:block;";
+
+if ($this->flashMessenger()->hasMessages()) {
+    $disp = "display:block;";
+} else {
+    $disp = "display:none;";
 }
-else $disp = "display:none;";
-
-
 ?>
 
  <div class="alert alert-block alert-success" style="<?php echo $disp;?>">
