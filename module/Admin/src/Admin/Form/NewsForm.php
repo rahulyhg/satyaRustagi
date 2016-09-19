@@ -70,10 +70,10 @@ class NewsForm extends Form {
 
         $this->add(array(
         'type' => 'Zend\Form\Element\Select',
-        'name' => 'IsActive',
+        'name' => 'is_active',
         'attributes' => array(
                 'class' => 'form-control',
-                'id'=>'IsActive'
+                'id'=>'is_active'
         ),
         'options' => array(
             'label' => 'Status',

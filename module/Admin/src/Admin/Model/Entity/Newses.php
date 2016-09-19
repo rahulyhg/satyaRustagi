@@ -7,7 +7,7 @@ class Newses {
     public $id;
     public $title;
     public $description;
-    public $IsActive;
+    public $is_active;
     public $news_category_id;
     public $category_name;
     public $username;
@@ -25,7 +25,7 @@ class Newses {
 
         $this->description = (!empty($data['description'])) ? $data['description'] : null;
 
-        $this->IsActive = (!empty($data['IsActive'])) ? $data['IsActive'] : null;
+        $this->is_active = (!empty($data['is_active'])) ? $data['is_active'] : null;
 
         $this->news_category_id = (!empty($data['news_category_id'])) ? $data['news_category_id'] : null;
 
