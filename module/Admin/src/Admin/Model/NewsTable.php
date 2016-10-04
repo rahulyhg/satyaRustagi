@@ -86,7 +86,7 @@ class NewsTable {
                     $data = array(
                 'title' => $newsEntity->title,
                 'description' => $newsEntity->description,
-                'IsActive' => $newsEntity->IsActive,
+                'is_active' => $newsEntity->is_active,
                 'news_category_id' => $newsEntity->news_category_id,
                 'image_path' => $innerpath,
                 'created_date' => $newsEntity->created_date,

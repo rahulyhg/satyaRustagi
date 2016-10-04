@@ -12,6 +12,7 @@ use Admin\Service\AdminServiceInterface;
 use Common\Service\CommonServiceInterface;
 use Zend\View\Model\ViewModel;
 
+
 class NewsController extends AppController
 {
      protected $commonService;
@@ -21,6 +22,7 @@ class NewsController extends AppController
         $this->commonService = $commonService;
         $this->adminService=$adminService;
     }
+    
     
     public function indexnewsAction()
     {   
@@ -32,11 +34,25 @@ class NewsController extends AppController
     }
 
     public function addnewsAction()
-    {
-        $categoryNameList = $this->getNewscategoryTable()->customFields(array('id','category_name'));
-
+    {   
+        $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
+        //$categoryNameList = $this->getNewscategoryTable()->customFields(array('id','category_name'));
+        //$sql = "update tbl_religion set IsActive=" . $_POST['val'] . " where id IN (" . $_POST['ids'] . ")";
+        $sql = "select * from tbl_newscategory where 1";
+        $results = $adapter->query($sql, \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE)->toArray();
+//        echo  "<pre>";
+//        print_r($results);exit;
+        foreach ($results as $list) {
+            $categoryNameList[$list['id']] = $list['category_name'];
+        }
+        
+        
+//        \Zend\Debug\Debug::dump($categoryNameList);exit;
+//        echo  "<pre>";
+//        print_r($categoryNameList);exit;
+        
         NewsForm::$category_nameList = $categoryNameList;
-
+            
         // print_r($categoryNameList); die;
 
         $form = new NewsForm();
@@ -248,5 +264,7 @@ class NewsController extends AppController
 
         return new ViewModel(array('Info'=> $Info));
     }
+    
+    
    
 }
