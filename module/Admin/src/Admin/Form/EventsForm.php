@@ -1,10 +1,12 @@
 <?php
 namespace Admin\Form;
 
+use Admin\Model\Entity\Events;
 use Zend\Form\Form;
+use Zend\Stdlib\Hydrator\ClassMethods;
 
 class EventsForm extends Form {
-
+    
     public static $country_nameList = array();
     public static $city_nameList = array();
     public static $state_nameList = array();
@@ -14,6 +16,8 @@ class EventsForm extends Form {
         // we want to ignore the name passed
         parent::__construct('Events');
         $this->setAttribute('method', 'post');
+        $this->setHydrator(new ClassMethods());
+        $this->setObject(new Events());
         	
 		$this->add(array(
             'name' => 'id',
@@ -193,7 +197,7 @@ class EventsForm extends Form {
                 'id'=>'event_date'
             ),
             'options' => array(
-                'label' => 'Start Date',
+                'label' => 'Event Date',
             ),
         ));
 
@@ -259,10 +263,10 @@ class EventsForm extends Form {
 
         $this->add(array(
         'type' => 'Zend\Form\Element\Select',
-        'name' => 'IsActive',
+        'name' => 'is_active',
         'attributes' => array(
                 'class' => 'form-control',
-                'id'=>'IsActive'
+                'id'=>'is_active'
         ),
         'options' => array(
             'label' => 'Status',

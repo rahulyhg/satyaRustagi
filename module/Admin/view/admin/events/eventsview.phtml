@@ -1,135 +1,260 @@
-<div class="modal-dialog">
+<div id="myModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
     <div class="modal-content">
-<div class="row">
-  <div class="col-xs-12"> 
-    <!-- PAGE CONTENT BEGINS -->
-     
-    <h2><?=$Info->event_name?></h2>
-    <div class="row">
-      <div class="col-xs-12">
-        <p class="pull-left newsimg">
-
-          <img src="<?=$this->basepath().$Info->image?>" width="127"  height="126" alt=""></p>
-          <p style="padding-left:20px"><?=$Info->event_desc?> </p>
-         
-          
-         
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Modal Header</h4>
       </div>
-    </div>
-    <div class="clearfix"></div>
-    <div class="col-lg-12 ">
-      <div class="row">
-    
+      <div class="modal-body">
       
       
-      
-      
-      
-      
-        <div class="col-lg-2 profile-picture" >
-        
-        
-        
-        <img src="<?=$this->basepath().$Info->sponser_photo?>" alt="Alex's Avatar" class="editable img-responsive editable-click " id="avatar"></img>
-        
-        <div class="widget-body">
-        <div class="widget-main">
-          <dl id="dt-list-1">
-            <dt><?=$Info->sponser_name?></dt>
-            <dd>Mobile No:<?=$Info->sponser_contact?></dd>
-            
-          
-                          
-          </dl>
-        </div>
-      </div>
-        
-        
-        
-        </div>
-        
-        
-        
-        <div class="col-lg-2 profile-picture"  style="margin-left:10px;" >
-        <img src="<?=$this->basepath().$Info->organiser_photo?>"  alt="Alex's Avatar" class="editable img-responsive editable-click " id="avatar"></img>
-        
-        <div class="widget-body">
-        <div class="widget-main">
-          <dl id="dt-list-1">
-            <dt><?=$Info->event_organiser?></dt>
-             <dd>Mobile No:<?=$Info->organiser_contact?></dd>
-           
-          
-                          
-          </dl>
-        </div>
-      </div>
-        
-        
-        
-        </div>
-        
-        
-        
-        
-        
-        <div class="col-lg-2 profile-picture" style="margin-left:10px;"  >
-  
-        
-         
-            <strong> <img width="38" height="36"  alt="" src="assets/images/rustagi-logo.png"><span style="margin-left:4px;">RUSTAGI SAMAJ</span></strong>
-            <address>
-                <strong>Address</strong><br>
-                <?=$Info->venue?><br>
-              
-                <abbr title="Phone">
-                 
-            </address>
-          <!--  <address>
-                <strong>Full Name</strong><br>
-                <a href="mailto:#">first.last@example.com</a>
-            </address>-->
-            
-        
-        
-        
-        </div>
-        
-        
-        
-        <div class="col-lg-2 profile-picture" style="margin-left:10px;"  >
- 
-           <div class="widget-body">
-        <div class="widget-main">
-          <dl id="dt-list-1">
-            <dt>Start Date:<?=$Info->event_date?></dt>
-             <dt>End  Date:<?=$Info->end_date?></dt>
-              <dt>Country- <?=$Info->country_name?></dt>
-                <dt>State -<?=$Info->state_name?></dt>
-                  <dt>City - <?=$Info->city_name?></dt>
-                  <dt>Start Time:<?=$Info->start_time?></dt>
-             <dt>End  Time:<?=$Info->end_time?></dt>
+          <tr class="dontshow" id="indview<?=$i?>" aria-expanded="true">
+                     
+                  <td colspan="7">
+                    <div aria-expanded="true" class="panel-body accordion-body packageDetails1 collapse in" id="accordion1">
                
-           
-          
+                          <div class="tab-content" id="myTabContent">
+        
+              <div class="col-sm-col-sm-offset-1" style="margin: 10px auto 0px !important;padding: 0 10px;">
+                <div class="row">
+                   <div class="form-group clearfix margintopbottom20 col-sm-12">
+                           <label id="flight_nos" class="col-sm-2 control-label labelalign ">
+                            <?= $this->translate('Event Title'); ?>
+                           </label>
+                                                  <div class="col-sm-3">
+                                                     <?php 
+//                                                     \Zend\Debug\Debug::dump($info);exit;
+                                                     echo $info->eventName;
+                                                     ?>                                    
+                                                  </div>
+                                                  <label id="flight_nos" class="col-sm-2 control-label labelalign ">
+                            <?= $this->translate('Upload Event Image'); ?>
+                           </label>
+                                                  <div class="col-sm-3">
+                                                     <p class="pull-left newsimg">
+
+          <img src="<?php //echo $this->basepath().$info->image; ?>" width="127"  height="126" alt=""></p>                                 
+                                                  </div>
+                           
+                                                 </div>
+                                             </div>
+                                             
+                                             <div class="row">
+                                                <div class="form-group clearfix margintopbottom20 col-sm-12">
+                        <label id="flight_nos" class="col-sm-2 control-label labelalign ">
+                            <?= $this->translate('Event Description'); ?>
+                           </label>
+                                                  <div class="col-sm-3">
+                                                     <?php                                                      
+                                                     echo $info->eventDesc;
+                                                     ?>                                    
+                                                  </div>
+                                                 
+                            <label id="flight_nos" class="col-sm-2 control-label labelalign ">
+                            <?= $this->translate('Sponser Photo'); ?>
+                           </label>
+                                                  <div class="col-sm-3">
+                                                     <img src="<?php //echo $this->basepath().$info->sponserPhoto; ?>" alt="Alex's Avatar" class="editable img-responsive editable-click " id="avatar"></img>                           
+                                                  </div>
+                                                 </div>
+                                             </div>
+
+                                          <div class="row">
+                                                <div class="form-group clearfix margintopbottom20 col-sm-12">
                           
-          </dl>
-        </div>
+                                                 
+                            <label id="flight_nos" class="col-sm-2 control-label labelalign ">
+                            <?= $this->translate('Sponser Name'); ?>
+                           </label>
+                                                  <div class="col-sm-3">
+                                                     <?php 
+                                                     echo $info->sponserName;
+                                                     ?>                                    
+                                                  </div>
+                                                  <label id="flight_nos" class="col-sm-2 control-label labelalign ">
+                            <?= $this->translate('Sponser Contact'); ?>
+                           </label>
+                                                  <div class="col-sm-3">
+                                                     <?php 
+                                                     echo $info->sponserContact;
+                                                     ?>                                    
+                                                  </div>
+                                                 </div>
+                                             </div>  
+
+
+                                             <div class="row">
+                                                <div class="form-group clearfix margintopbottom20 col-sm-12">
+                          
+                                                 
+                            <label id="flight_nos" class="col-sm-2 control-label labelalign ">
+                            <?= $this->translate('Organiser Photo'); ?>
+                           </label>
+                                                  <div class="col-sm-3">
+                                                     <img src="<?php //echo $this->basepath().$info->organiserPhoto; ?>"  alt="Alex's Avatar" class="editable img-responsive editable-click " id="avatar"></img>                                   
+                                                  </div>
+                                                  <label id="flight_nos" class="col-sm-2 control-label labelalign ">
+                            <?= $this->translate('Organiser Name'); ?>
+                           </label>
+                                                  <div class="col-sm-3">
+                                                     <?php 
+                                                     echo $info->eventOrganiser;
+                                                     ?>                                    
+                                                  </div>
+                                                 </div>
+                                             </div> 
+
+                                             <div class="row">
+                                                <div class="form-group clearfix margintopbottom20 col-sm-12">
+                          
+                                                 
+                            <label id="flight_nos" class="col-sm-2 control-label labelalign ">
+                            <?= $this->translate('Organiser Contact'); ?>
+                           </label>
+                                                  <div class="col-sm-3">   
+                                                    <?php                                     
+                                                     echo $info->organiserContact;
+                                                     ?>                         
+                                                  </div>
+                                                  <label id="flight_nos" class="col-sm-2 control-label labelalign ">
+                            <?= $this->translate('venue'); ?>
+                           </label>
+                                                  <div class="col-sm-3">
+                                                     <?php 
+                                                     echo $info->venue;
+                                                     ?>                                    
+                                                  </div>
+                                                 </div>
+                                             </div> 
+
+                                             <div class="row">
+                                                <div class="form-group clearfix margintopbottom20 col-sm-12">
+                          
+                                                 
+                            <label id="flight_nos" class="col-sm-2 control-label labelalign ">
+                            <?= $this->translate('Event Date'); ?>
+                           </label>
+                                                  <div class="col-sm-3">   
+                                                    <?php                                     
+                                                     echo $info->eventDate;
+                                                     ?>                         
+                                                  </div>
+                                                  <label id="flight_nos" class="col-sm-2 control-label labelalign ">
+                            <?= $this->translate('End Date'); ?>
+                           </label>
+                                                  <div class="col-sm-3">
+                                                     <?php 
+                                                     echo $info->endDate;
+                                                     ?>                                    
+                                                  </div>
+                                                 </div>
+                                             </div>
+
+                                             <div class="row">
+                                                <div class="form-group clearfix margintopbottom20 col-sm-12">
+                          
+                                                 
+                            <label id="flight_nos" class="col-sm-2 control-label labelalign ">
+                            <?= $this->translate('Country Name'); ?>
+                           </label>
+                                                  <div class="col-sm-3">   
+                                                    <?php                                     
+                                                     echo $info->countryName;
+                                                     ?>                         
+                                                  </div>
+                                                  <label id="flight_nos" class="col-sm-2 control-label labelalign ">
+                            <?= $this->translate('State Name'); ?>
+                           </label>
+                                                  <div class="col-sm-3">
+                                                     <?php 
+                                                     echo $info->stateName;
+                                                     ?>                                    
+                                                  </div>
+                                                 </div>
+                                             </div>
+
+                                             <div class="row">
+                                                <div class="form-group clearfix margintopbottom20 col-sm-12">
+                          
+                                                 
+                            <label id="flight_nos" class="col-sm-2 control-label labelalign ">
+                            <?= $this->translate('City Name'); ?>
+                           </label>
+                                                  <div class="col-sm-3">   
+                                                    <?php                                     
+                                                     echo $info->cityName;
+                                                     ?>                         
+                                                  </div>
+                                                  <label id="flight_nos" class="col-sm-2 control-label labelalign ">
+                            <?= $this->translate('Start Time'); ?>
+                           </label>
+                                                  <div class="col-sm-3">
+                                                     <?php 
+                                                     echo $info->startTime;
+                                                     ?>                                    
+                                                  </div>
+                                                 </div>
+                                             </div>
+
+                                             <div class="row">
+                                                <div class="form-group clearfix margintopbottom20 col-sm-12">
+                          
+                                                 
+                            <label id="flight_nos" class="col-sm-2 control-label labelalign ">
+                            <?= $this->translate('End Time'); ?>
+                           </label>
+                                                  <div class="col-sm-3">   
+                                                    <?php                                     
+                                                     echo $info->endTime;
+                                                     ?>                         
+                                                  </div>
+                                                  <label id="flight_nos" class="col-sm-2 control-label labelalign ">
+                            <?php //echo  $this->translate('Start Time'); ?>
+                           </label>
+                                                  <div class="col-sm-3">
+                                                     <?php 
+                                                     //echo $info->username;
+                                                     ?>                                    
+                                                  </div>
+                                                 </div>
+                                             </div>
+
+                                             <div class="row">
+                                                <div class="form-group clearfix margintopbottom20 col-sm-12">
+                          
+                                                 
+                            <label id="flight_nos" class="col-sm-2 control-label labelalign ">
+                            <?= $this->translate('Created Date'); ?>
+                           </label>
+                                                  <div class="col-sm-3">   
+                                                    <?php                                     
+                                                     echo $info->createdDate;
+                                                     ?>                         
+                                                  </div>
+                                                  <label id="flight_nos" class="col-sm-2 control-label labelalign ">
+                            <?php echo  $this->translate('venue'); ?>
+                           </label>
+                                                  <div class="col-sm-3">
+                                                     <?php 
+                                                     echo $info->venue;
+                                                     ?>                                    
+                                                  </div>
+                                                 </div>
+                                             </div>
+                                             
+              </div>
+           
+          </div>
       </div>
-        
-        
-        
-        </div>
-         <div style="margin-left:10px;">
-                <strong>Posted By : <?= $Info->username?> | </strong>
-                <strong>Posted Date : <?= $Info->created_date?> | </strong>
-                <?=$Info->venue?><br>
-        </div>
-         <?php
-         print_r($Info);
-         ?>
+                    
+                                             
+                       </td>
+                    </tr>   
+      </div>
+      <div class="modal-footer">
+        <button type="button"data-dismiss="modal">Close</button>
+      </div>
     </div>
   </div>
-   </div>
-  </div></div></div></div>
-<!-- /.main-container --> 
+</div>
+         

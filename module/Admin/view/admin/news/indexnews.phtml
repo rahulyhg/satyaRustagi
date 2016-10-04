@@ -15,9 +15,9 @@
                         <th>News Title </th>
                         <th>Description</th>
                         <th>News Picture</th>
-                        <th>News Category</th>
-                        <th class="hidden-480">Modified Date</th>
+                        <th>News Category</th>                        
                         <th class="hidden-480">Created Date</th>
+                        <th class="hidden-480">Modified Date</th>
                         <th class="hidden-480">Status</th>
                         <th class="hidden-480">Modified By</th>
                         <th><b>Actions</b></th>
@@ -26,6 +26,7 @@
                     <tbody>
                       <?php 
                       $i=1;
+//                      echo  "<pre>";print_r($newses);exit;
                       foreach ($newses as $news) {
                       
                       ?>
@@ -33,16 +34,16 @@
                          
                         <td><?= $i?></td>
                         <td><?= $news->title?></td>
-                        <td class="shorttext"><?= $news->description?></td>
-                        <td><?php $imagePath = (empty($news->image_path))? '/images/new-big.jpg' : $news->image_path;?>
+                        <td class="shorttext"><?= substr($news->description, 0, 100)."..."?></td>
+                        <td><?php $imagePath = (empty($news->imagePath))? '/images/new-big.jpg' : $news->imagePath;?>
                         <img src="<?= $this->basepath().$imagePath;?>" width="43" height="37" alt="">
                       </td>                       
-                        <td class="hidden-480"><?= $news->category_name?></td>
-                        <td class="hidden-480"><?= date('l d-m-y',strtotime($news->created_date))?></td>
-                        <td class="hidden-480"><?= date('l d-m-y',strtotime($news->modified_date))?></td>
-                        <td class="hidden-480"><?php echo ($news->IsActive==1)? 'Active': '<span class="label label-sm label-warning">In-Active</span>'; ?></td>
-                        <td class="hidden-480"><?php echo ($news->modified_by==1)? 'Admin': 'NotByAdmin'; ?></td>
-                        <td><div class="hidden-sm hidden-xs action-buttons"> <a class="blue" href="<?php echo $this->url('admin',array('controller'=>'news','action'=>'viewnews','id'=>$news->id)); ?>"> <i class="ace-icon fa fa-search-plus bigger-130"></i> </a> <a class="green" href="<?php echo $this->url('admin',array('controller'=>'news','action'=>'editnews','id'=>$news->id)); ?>" > <i class="ace-icon fa fa-pencil bigger-130"></i> </a> <a class="red" href="<?php echo $this->url('admin',array('controller'=>'news','action'=>'deletenews','id'=>$news->id)); ?>" onclick="return confirm('are you sure you want to delete');"> <i class="ace-icon fa fa-trash-o bigger-130"></i> </a> </div>
+                        <td class="hidden-480"><?= $news->categoryName?></td>
+                        <td class="hidden-480"><?= $news->createdDate;?></td>
+                        <td class="hidden-480"><?= $news->modifiedDate?></td>
+                        <td class="hidden-480"><?php echo ($news->isActive==1)? 'Active': '<span class="label label-sm label-warning">In-Active</span>'; ?></td>
+                        <td class="hidden-480"><?php echo ($news->modifiedBy==1)? 'Admin': 'NotByAdmin'; ?></td>
+                        <td><div class="hidden-sm hidden-xs action-buttons"> <a class="blue" href="<?php echo $this->url('admin/news',array('action'=>'viewnews','id'=>$news->id)); ?>"> <i class="ace-icon fa fa-search-plus bigger-130"></i> </a> <a class="green" href="<?php echo $this->url('admin/news',array('action'=>'editnews','id'=>$news->id)); ?>" > <i class="ace-icon fa fa-pencil bigger-130"></i> </a> <a class="red" href="<?php echo $this->url('admin/news',array('action'=>'deletenews','id'=>$news->id)); ?>" onclick="return confirm('are you sure you want to delete');"> <i class="ace-icon fa fa-trash-o bigger-130"></i> </a> </div>
                           </td>
                       </tr>
                       <?php 

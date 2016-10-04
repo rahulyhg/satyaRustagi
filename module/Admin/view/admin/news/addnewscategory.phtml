@@ -13,7 +13,8 @@
                 $form->prepare();
 
 
-        $form->setAttribute('action',$this->url('admin',array('controller'=>'news','action'=>'addnewscategory')));
+//        $form->setAttribute('action',$this->url('admin',array('controller'=>'news','action'=>'addnewscategory')));
+        $form->setAttribute('action', $this->url('admin/news', array('action' => 'addnewscategory')));
         $form->setAttribute('method','post');
 
         echo $this->form()->openTag($form);
@@ -37,11 +38,11 @@
                                                      ?>                                    
                                                   </div>
                                                    <label id="flight_nos" class="col-sm-2 control-label labelalign ">
-                            <?= $this->translate($form->get('IsActive')->getLabel()) ?>
+                            <?= $this->translate($form->get('is_active')->getLabel()) ?>
                            </label>
                                                   <div class="col-sm-3">
                                                      <?php 
-                                                     echo $this->formElement($form->get('IsActive'));
+                                                     echo $this->formElement($form->get('is_active'));
                                                      ?>                                    
                                                   </div>
                          

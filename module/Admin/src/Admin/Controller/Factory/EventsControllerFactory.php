@@ -12,8 +12,10 @@ class EventsControllerFactory implements FactoryInterface {
         $realServiceLocator = $serviceLocator->getServiceLocator();
         $commonService = $realServiceLocator->get('Common\Service\CommonServiceInterface');
         $adminService = $realServiceLocator->get('Admin\Service\AdminServiceInterface');
+        //$adminService = $realServiceLocator->get('Admin\Service\AdminServiceInterface');
+        $eventsService = $realServiceLocator->get('Admin\Service\EventsServiceInterface');
 
-        return new EventsController($commonService, $adminService);
+        return new EventsController($commonService, $adminService, $eventsService);
     }
 
 }

@@ -1,17 +1,21 @@
- 
-  
-<div class="modal-dialog">
-    <div class="modal-content">
-      Developement mode ahead
-           <?php 
-/*
+<div >
+            <p>
+              <a href="<?= $this->url('admin/events',array('action'=>'eventsindex'));?>"><button class="btn btn-warning btn-xlg">Go Back</button></a>
+            </p>
+          </div>
+
+<div class="panel-body">
+
+      <?php 
+
                 $form=$this->form; 
                 $form->prepare();
 
 
-        $form->setAttribute('action',$this->url('admin',array('controller'=>'events','action'=>'eventsedit')));
+//        $form->setAttribute('action',$this->url('admin',array('controller'=>'events','action'=>'eventsadd')));
+        $form->setAttribute('action', $this->url('admin/events', array('action' => 'eventsedit', 'id' => $id)));
         $form->setAttribute('id','EventsEditForm');
-        $form->setAttribute('onsubmit','return SubmitEventsForm($(this).attr("id"));');
+        $form->setAttribute('onsubmit','return SubmitEventsForm();');
         $form->setAttribute('method','post');
         $form->setAttribute('enctype','multipart/form-data');
 
@@ -33,8 +37,7 @@
                                                      <?php 
                                                      echo $this->formHidden($form->get('id'));
                                                      echo $this->formElement($form->get('event_name'));
-                                                     ?>
-                                                     <span class="showerror"></span>                                    
+                                                     ?>                                    
                                                   </div>
                                                  
                             <label id="flight_nos" class="col-sm-2 control-label labelalign ">
@@ -43,8 +46,7 @@
                                                   <div class="col-sm-3">
                                                      <?php 
                                                      echo $this->formElement($form->get('sponser_name'));
-                                                     ?> 
-                                                     <span class="showerror"></span>                                   
+                                                     ?>                                    
                                                   </div>
                                                  </div>
                                              </div>
@@ -57,8 +59,7 @@
                                                   <div class="col-sm-3">
                                                      <?php 
                                                      echo $this->formElement($form->get('event_organiser'));
-                                                     ?>   
-                                                     <span class="showerror"></span>                                 
+                                                     ?>                                    
                                                   </div>
                                                  
                             <label id="flight_nos" class="col-sm-2 control-label labelalign ">
@@ -67,8 +68,7 @@
                                                   <div class="col-sm-3">
                                                      <?php 
                                                      echo $this->formElement($form->get('sponser_photo'));
-                                                     ?>
-                                                     <span class="showerror"></span>                                    
+                                                     ?>                                    
                                                   </div>
                                                  </div>
                                              </div>
@@ -80,9 +80,7 @@
                                                   <div class="col-sm-3">
                                                      <?php 
                                                      echo $this->formElement($form->get('organiser_photo'));
-                                                     ?>sadadas
-                                                     <!-- <input type="hidden" name="organiser_photo" value="<?=$form->get('organiser_photo'?>"> -->
-                                                     <span class="showerror"></span>                                    
+                                                     ?>                                    
                                                   </div>
 
                                                   <label id="flight_nos" class="col-sm-2 control-label labelalign ">
@@ -91,8 +89,7 @@
                                                   <div class="col-sm-3">
                                                      <?php 
                                                      echo $this->formElement($form->get('organiser_contact'));
-                                                     ?>
-                                                     <span class="showerror"></span>                                    
+                                                     ?>                                    
                                                   </div>
                            
                                                  
@@ -111,18 +108,16 @@
                                                   <div class="col-sm-3">
                                                      <?php 
                                                      echo $this->formElement($form->get('sponser_contact'));
-                                                     ?> 
-                                                     <span class="showerror"></span>                                   
+                                                     ?>                                    
                                                   </div>
 
                                                   <label id="flight_nos" class="col-sm-2 control-label labelalign ">
-                            <?= $this->translate($form->get('IsActive')->getLabel()) ?>
+                            <?= $this->translate($form->get('is_active')->getLabel()) ?>
                            </label>
                                                   <div class="col-sm-3">
                                                      <?php 
-                                                     echo $this->formElement($form->get('IsActive'));
-                                                     ?> 
-                                                     <span class="showerror"></span>                                   
+                                                     echo $this->formElement($form->get('is_active'));
+                                                     ?>                                    
                                                   </div>
                            
                                                  
@@ -151,10 +146,16 @@
                  <label id="flight_nos" class="col-sm-2 control-label labelalign ">
                             <?= $this->translate($form->get('event_desc')->getLabel()) ?>
                            </label>
-                <div class="wysiwyg-editor" id="editor1"></div>
+                <!--<div class="wysiwyg-editor" id="editor1"></div>-->
+
+                <div class="col-xs-12">
+                
+                <div class="wysiwyg-editor" id="editor1"><?= $form->get('event_desc')->getValue();?></div>
+                 
+              </div>
                   
-              </div><!-- /.col -->
-            </div><!-- /.row --> 
+              </div>
+            </div>
                                              <div class="row">
                                                 <div class="form-group clearfix margintopbottom20">
                            <label id="flight_nos" class="col-sm-2 control-label labelalign ">
@@ -164,10 +165,12 @@
                                                      <?php 
                                                       echo $this->formElement($form->get('event_desc'));
                                                      echo $this->formElement($form->get('image'));
-                                                     ?>
-                                                     <span class="showerror"></span>                                    
+                                                     ?>                                    
                                                   </div>
                                                  
+                               
+                                                                                        
+                                                   
                                                  </div>
                                              </div>
                        
@@ -187,8 +190,7 @@
                                                   <div class="col-sm-3">
                                                      <?php 
                                                      echo $this->formElement($form->get('country_id'));
-                                                     ?> 
-                                                     <span class="showerror"></span>                                   
+                                                     ?>                                    
                                                   </div>
                                                  
                             <label id="flight_nos" class="col-sm-2 control-label labelalign ">
@@ -197,8 +199,7 @@
                                                   <div class="col-sm-3">
                                                      <?php 
                                                      echo $this->formElement($form->get('city_id'));
-                                                     ?>
-                                                     <span class="showerror"></span>                                    
+                                                     ?>                                    
                                                   </div>
                                                  </div>
                                              </div>
@@ -211,8 +212,7 @@
                                                   <div class="col-sm-3">
                                                      <?php 
                                                      echo $this->formElement($form->get('state_id'));
-                                                     ?>
-                                                     <span class="showerror"></span>                                    
+                                                     ?>                                    
                                                   </div>
                                                  
                              
@@ -234,16 +234,18 @@
                     <div class="row">
                                                 <div class="form-group clearfix margintopbottom20">
                            <label id="flight_nos" class="col-sm-2 control-label labelalign ">
-                            <?= $this->translate($form->get('event_date')->getLabel()) ?>
+                            <?php echo $this->translate($form->get('event_date')->getLabel()) ?>
                            </label>
                                                   <div class="col-sm-3">
                                                      <div class="input-group">
-                                   <?php 
+																	 <?php 
                                                      echo $this->formElement($form->get('event_date'));
-                                                     ?><span class="showerror"></span>
-                                  
-                                  
-                                </div> 
+                                                     ?><span class="input-group-addon">
+																		<i class="fa fa-calendar bigger-110"></i>
+																	</span>
+																	
+																	
+																</div> 
                                                      
                                                                                         
                                                   </div>
@@ -254,8 +256,7 @@
                                                   <div class="col-sm-3">
                                                      <?php 
                                                      echo $this->formElement($form->get('end_date'));
-                                                     ?> 
-                                                     <span class="showerror"></span>                                   
+                                                     ?>                                    
                                                   </div>
                                                  </div>
                                              </div>
@@ -268,8 +269,7 @@
                                                   <div class="col-sm-3">
                                                      <?php 
                                                      echo $this->formElement($form->get('start_time'));
-                                                     ?> 
-                                                     <span class="showerror"></span>                                   
+                                                     ?>                                    
                                                   </div>
                                                   <label id="flight_nos" class="col-sm-2 control-label labelalign ">
                             <?= $this->translate($form->get('end_time')->getLabel()) ?>
@@ -277,8 +277,7 @@
                                                   <div class="col-sm-3">
                                                      <?php 
                                                      echo $this->formElement($form->get('end_time'));
-                                                     ?>
-                                                     <span class="showerror"></span>                                    
+                                                     ?>                                    
                                                   </div>
                                                  
                              
@@ -294,8 +293,7 @@
                                                   <div class="col-sm-3">
                                                      <?php 
                                                      echo $this->formElement($form->get('venue'));
-                                                     ?>
-                                                     <span class="showerror"></span>                                    
+                                                     ?>                                    
                                                   </div>
                                                    
                              
@@ -319,8 +317,7 @@
                                                   <div class="col-sm-3">
                                                      <?php 
                                                      echo $this->formElement($form->get('event_cost'));
-                                                     ?> 
-                                                     <span class="showerror"></span>                                   
+                                                     ?>                                    
                                                   </div>
                                                  
                             <label id="flight_nos" class="col-sm-2 control-label labelalign ">
@@ -329,8 +326,7 @@
                                                   <div class="col-sm-3">
                                                      <?php 
                                                      echo $this->formElement($form->get('event_members'));
-                                                     ?> 
-                                                     <span class="showerror"></span>                                   
+                                                     ?>                                    
                                                   </div>
                                                  </div>
                                              </div>
@@ -340,7 +336,7 @@
                                     <?php   
                                     echo $this->formElement($form->get('submit'));
 echo $this->form()->closeTag();
-*/
-        ?>       
-</div>
-</div>
+
+        ?>
+
+              </div>
