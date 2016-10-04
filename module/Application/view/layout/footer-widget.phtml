@@ -38,7 +38,7 @@ $CurrNews = $this->MyHelper()->CurrNews();
         foreach ($PopPosts as $key => $value) {
 
 
-            $imgpath = (empty($value['image'])) ? "'images/onside.jpg'" : "PostsImages/" . $value['image'];
+            $imgpath = (empty($value['image'])) ? "'images/onside.jpg'" : "/PostsImages/" . $value['image'];
 
             $date = date("d-m-y", strtotime($value['created_date']));
             ?>
@@ -62,7 +62,7 @@ $CurrNews = $this->MyHelper()->CurrNews();
         <?php
         $imgpath = (empty($Obituary['image'])) ? "'images/onside.jpg'" : $Obituary['image'];
         ?>
-        <div class="pull-left thumbnail"><img src="<?php echo $this->basePath() . $imgpath ?>"  class="no-border footerthumb" /></div>
+        <div class="pull-left thumbnail"><img src="<?php echo $this->basePath('PostsImages/') . $imgpath ?>"  class="no-border footerthumb" /></div>
         <p class="lead"><?= substr($Obituary['title'], 0, 20); ?></p>
 
         <p class="txt"><?= substr($Obituary['description'], 0, 50); ?></p>
@@ -87,9 +87,9 @@ $CurrNews = $this->MyHelper()->CurrNews();
                 <?php
             }
         } else
-            echo "<p class='txt'> <a href='" . $this->basePath() . "/pages/postview/" . $Obituary['id'] . "'>Be the first one to comment </a></p>";
+            echo "<p class='txt'> <a href='" . $this->basePath() . "/postview/" . $Obituary['id'] . "'>Be the first one to comment </a></p>";
         ?>
-        <a href="<?php echo $this->basePath() ?>/pages/postcat/2" class="btn btn-info">more.</a>
+        <a href="<?php echo $this->basePath() ?>/postcat/2" class="btn btn-info">more.</a>
         <div class="clearfix"></div>
     </div>
 </div>
@@ -102,10 +102,10 @@ $CurrNews = $this->MyHelper()->CurrNews();
         <?php
         $imgpath = (empty($JustBorn['image'])) ? "'images/onside.jpg'" : $JustBorn['image'];
         ?>
-        <div class="pull-left thumbnail"><img src="<?php echo $this->basePath() . $imgpath ?>" class="no-border footerthumb" /></div>
+        <div class="pull-left thumbnail"><img src="<?php echo $this->basePath('PostsImages/') . $imgpath ?>" class="no-border footerthumb" /></div>
         <p class="lead"><?= substr($JustBorn['title'], 0, 20); ?></p>
         <p class="txt"><?= substr($JustBorn['description'], 0, 50); ?></p>
-        <p class="txt"><a href="<?php echo $this->basePath() ?>/pages/postview/<?= $JustBorn['id'] ?>">Read More..</a></p>
+        <p class="txt"><a href="<?php echo $this->basePath() ?>/postview/<?= $JustBorn['id'] ?>">Read More..</a></p>
         <div class="clearfix"></div>
         <div class="status">
         <!-- <span>Likes: 75</span> -->
@@ -128,9 +128,9 @@ if (count($JustBorn['CommentDesc']) > 0) {
                 <?php
             }
         } else
-            echo "<span> <a href='" . $this->basePath() . "'/pages/postview/'" . $JustBorn['id'] . "'Be the first one to comment </a></span>";
+            echo "<span> <a href='" . $this->basePath() . "'/postview/'" . $JustBorn['id'] . "'Be the first one to comment </a></span>";
         ?>
-        <a href="<?php echo $this->basePath() ?>/pages/postcat/1" class="btn btn-info">more.</a>
+        <a href="<?php echo $this->basePath() ?>/postcat/1" class="btn btn-info">more.</a>
         <div class="clearfix"></div>
     </div>
 </div>

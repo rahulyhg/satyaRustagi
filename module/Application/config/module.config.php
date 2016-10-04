@@ -156,7 +156,7 @@ return array(
             'profile' => array(
                 'type' => 'Segment',
                 'options' => array(
-                    'route' => '/my-rustagi[/:action[/:id]]',
+                    'route' => '/my-rustagi[/:action[/:slug][/:id]]',
                     'constraints' => array(
                         'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
                         'action' => '[a-zA-Z][a-zA-Z0-9_-]*',

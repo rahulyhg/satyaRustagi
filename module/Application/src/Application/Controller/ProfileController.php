@@ -17,8 +17,8 @@ use Application\Model\Entity\Matrimoni;
 use Application\Service\ProfileServiceInterface;
 use Application\Service\UserServiceInterface;
 use Common\Service\CommonServiceInterface;
+use Zend\Authentication\AuthenticationService;
 use Zend\Db\Adapter\Adapter;
-use Zend\Db\Metadata\Metadata;
 use Zend\Debug\Debug;
 use Zend\Mvc\MvcEvent;
 use Zend\Session\Container;
@@ -66,6 +66,8 @@ class ProfileController extends AppController {
     public function postDispatch(MvcEvent $e) {
         
     }
+    
+    
 
     public function __construct(ProfileServiceInterface $accountService, CommonServiceInterface $commonService, UserServiceInterface $userService) {
         $this->accountService = $accountService;
@@ -74,7 +76,28 @@ class ProfileController extends AppController {
     }
 
     public function indexAction() {
-        echo 'satya';
+        $auth = new AuthenticationService();
+        if (!$auth->hasIdentity() && !in_array($auth->getIdentity()->role, array('user'))) {
+            return $this->redirect()->toRoute('user',array('action'=>'login'));
+            //return $this->toRoute('user',array('action'=>'login'));
+        } 
+        
+        $userSession = $this->getUser()->session();
+        $user_id = $userSession->offsetGet('id');
+        $ref_no = $userSession->offsetGet('ref_no');
+        
+        $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
+
+        $data = $adapter->query("select * from tbl_post ORDER BY id DESC limit 6", Adapter::QUERY_MODE_EXECUTE)->toArray();
+        
+        
+        
+         return new ViewModel(array("form" => $MemberbasicForm,
+            'userSummary' => $this->userService->userSummaryById($user_id),
+            'url'=>'personal-profile',
+            'post'=>$data,
+            "percent" => $pro_per));
+        
     }
 
     public function profileAction() {
@@ -132,6 +155,7 @@ class ProfileController extends AppController {
         //Debug::dump($this->userService->userSummaryById($user_id));
         return new ViewModel(array("form" => $MemberbasicForm,
             'userSummary' => $this->userService->userSummaryById($user_id),
+            'url'=>'personal-profile',
             "percent" => $pro_per));
     }
 
@@ -223,6 +247,7 @@ class ProfileController extends AppController {
 
         return new ViewModel(array("form" => $form,
             'userSummary' => $this->userService->userSummaryById($user_id),
+            'url'=>'education-and-career',
             "percent" => $pro_per));
     }
 
@@ -371,6 +396,9 @@ class ProfileController extends AppController {
             $FamilyInfoForm->setData($request->getPost());
             if ($FamilyInfoForm->isValid()) {
                 $this->userService->saveFamilyInfo($user_id, $request->getPost());
+                $this->redirect()->toRoute("profile", array(
+                    "action" => "family-detail",
+                ));
                 //Debug::dump();
                 //exit;
             } elseif (!$FamilyInfoForm->isValid()) {
@@ -415,6 +443,7 @@ class ProfileController extends AppController {
             'familyInfoArray' => $familyInfo->familyInfoArray,
             'GalleryInfo' => $familyInfo->GalleryInfo,
             'userSummary' => $this->userService->userSummaryById($user_id),
+            'url'=>'family-detail',
             "percent" => $pro_per));
     }
 
@@ -505,6 +534,7 @@ class ProfileController extends AppController {
 
         return new ViewModel(array("form" => $form,
             'userSummary' => $this->userService->userSummaryById($user_id),
+            'url'=>'about',
             "percent" => $pro_per));
     }
 
@@ -514,8 +544,7 @@ class ProfileController extends AppController {
         $userSession = $this->getUser()->session();
         $user_id = $userSession->offsetGet('id');
         $ref_no = $userSession->offsetGet('ref_no');
-
-
+        $familyInfo = $this->userService->getFamilyInfoById($user_id);
 
         $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
 
@@ -549,8 +578,29 @@ class ProfileController extends AppController {
                     $Pphotos[] = $value;
             }
         }
+//        Family data 
+        foreach ($familyInfo->brotherData as $brothres) {
 
-        //shuffle($Fphotos);
+            $ids[] = $brothres['user_id'];
+        }
+
+        foreach ($familyInfo->sisterData as $sisters) {
+
+            $ids[] = $sisters['user_id'];
+        }
+
+        $ids[] = $familyInfo->familyInfoArray['father_id'];
+        $ids[] = $familyInfo->familyInfoArray['mother_id'];
+        $Fdata = $adapter->query("select * from tbl_user_gallery where user_id IN (" . implode(',', $ids) . ") ORDER BY id DESC", Adapter::QUERY_MODE_EXECUTE);
+        foreach ($Fdata as $F_data) {
+            $Fphotos[] = $F_data['image_path'];
+            //echo '<pre>';
+            //print_r($F_data['image_path']);
+        }
+
+        //echo '<pre>';
+        //print_r($Fphotos);
+        shuffle($Fphotos);
         shuffle($Pphotos);
         $data_gallery = $adapter->query("select * from tbl_user_gallery where user_id='$user_id' AND ref_no='$ref_no' ORDER BY id DESC", Adapter::QUERY_MODE_EXECUTE);
 
@@ -565,17 +615,32 @@ class ProfileController extends AppController {
             "F_photos" => $Fphotos,
             "gallery_data" => $data_gallery,
             'userSummary' => $this->userService->userSummaryById($user_id),
+            'url'=>'mygallery',
             "percent" => $pro_per));
     }
 
     public function showallimagesAction() {
+
         $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
         $session = new Container('user');
         $user_id = $session->offsetGet('id');
         $ref_no = $session->offsetGet('ref_no');
+        $familyInfo = $this->userService->getFamilyInfoById($user_id);
 
+
+
+
+
+
+        //print_r($ids);
+        //$ids['sister'] = $brothres['user_id'];
+//        foreach ($familyInfo->brotherData as $brothres) {
+//            print_r($brothres);
+//            $ids['father'] = $brothres['user_id'];
+//        }
+        //exit;
         if ($_POST['type'] == "Personal") {
-            $data = $adapter->query("select * from tbl_user_gallery where user_id='$user_id' AND ref_no='$ref_no' ORDER BY id DESC", Adapter::QUERY_MODE_EXECUTE)->toArray();
+            $data = $adapter->query("select * from tbl_user_gallery where user_id='$user_id' OR ref_no='$ref_no' ORDER BY id DESC", Adapter::QUERY_MODE_EXECUTE)->toArray();
             foreach ($data as $P_data) {
                 foreach ($P_data as $key => $value) {
 
@@ -587,35 +652,21 @@ class ProfileController extends AppController {
 //for testing purpose
 //    		$action = $server_url = $this->getRequest()->getUri()->getScheme() . '://' . $this->getRequest()->getUri()->getHost()."/rustagi/account/delselected";
 //for live purpose
-            $action = $server_url = $this->getRequest()->getUri()->getScheme() . '://' . $this->getRequest()->getUri()->getHost() . "/account/delselected";
-
+            //$action = $server_url = $this->getRequest()->getUri()->getScheme() . '://' . $this->getRequest()->getUri()->getHost() . "/account/delselected";
+            $action = $this->url()->fromRoute('profile', array('action' => 'delselected'));
             $output[] = "<input class='btn btn-default' type='button' style='float:right;' onclick='delselected(&quot;showallimages&quot;,&quot;$action&quot;,delselectedresults)' value='delete selected'><br><br>";
 
             foreach ($photos as $key => $value) {
                 $title = (!(int) $value[1]) ? ucwords(str_replace("_", " ", $value[1])) : "";
-                $output[] = //for testing purpose
-                        /* '<div class="col-sm-3"><img src="/rustagi/'.$value[0].'" onmouseover="showchck(this)" onmouseout="hidechck(this)" onclick="selectchk(this)" class="moreimgthambdeleat imghover"/>
+                //echo '<pre>';
+                //print_r($value);
 
-
-
-
-                          <div class="deleteimg">
-                          <input type="checkbox" name="delimages&#91;&#93;" value="'.$value[1].'" />
-                          <input type="hidden" name="id_field" value="'.$value[1].'" />
-                          </div>
-                          <div class="familytitles">'.$title.'</div>
-                          </div>'; */
-
-//for live purpose
-
-                        '<div class="col-sm-3"><img src="/' . $value[0] . '" onmouseover="showchck(this)" onmouseout="hidechck(this)" onclick="selectchk(this)" class="moreimgthambdeleat imghover"/>
-
-
-
+                $output[] = '<div class="col-sm-3"><img src="/uploads/' . $value[0] . '" onmouseover="showchck(this)" onmouseout="hidechck(this)" onclick="selectchk(this)" class="moreimgthambdeleat imghover"/>
 
     <div class="deleteimg"> 
     	<input type="checkbox" name="delimages&#91;&#93;" value="' . $value[1] . '" />
     	<input type="hidden" name="id_field" value="' . $value[1] . '" />
+        <input type="hidden" name="path" value="' . $value[0] . '" />
     </div>
     <div class="familytitles">' . $title . '</div>
     </div>';
@@ -624,60 +675,85 @@ class ProfileController extends AppController {
             // echo join("",$output);
         } else {
 
-
-            $metadata = new Metadata($adapter);
-            $table = $metadata->getTable("tbl_family_info");
-            $table->getColumns();
-
-            foreach ($table->getColumns() as $column) {
-                if (strpos($column->getName(), "photo") || strpos($column->getName(), "_name")) {
-                    $columns[] = $column->getName();
-                }
-            }
-            // foreach ($columns as $key => $value) {
-            $Fdata = $adapter->query("select * from tbl_family_info where user_id='$user_id' ORDER BY id DESC", Adapter::QUERY_MODE_EXECUTE);
-            // }
-            foreach ($Fdata as $F_data) {
-                foreach ($columns as $key => $value) {
-                    if (strpos($value, "photo")) {
-                        if (empty($F_data->$value))
-                            continue;
-                        else
-                            $photos[] = array(array($F_data->$value, $value), array($F_data->$columns[$key - 1], $columns[$key - 1]));
-                    }
-                }
-            }
-//for testing purpose
-//    		$action = $server_url = $this->getRequest()->getUri()->getScheme() . '://' . $this->getRequest()->getUri()->getHost()."/rustagi/account/delselected";
-//for live purpose
-            $action = $server_url = $this->getRequest()->getUri()->getScheme() . '://' . $this->getRequest()->getUri()->getHost() . "/account/delselected";
-
+//print_r(implode(',', $ids));
+            //exit;
+            //$action = $server_url = $this->getRequest()->getUri()->getScheme() . '://' . $this->getRequest()->getUri()->getHost() . "/account/delselected";
+            $action = $this->url()->fromRoute('profile', array('action' => 'delselected'));
+            //echo $action;
+            //$action='dcvdvfdb';
             $output[] = "<input class='btn btn-default' type='button' style='float:right;' onclick='delselected(&quot;showallimages&quot;,&quot;$action&quot;,delselectedresults)' value='delete selected'><br><br>";
+            foreach ($familyInfo->brotherData as $brothres) {
 
-            foreach ($photos as $key => $value) {
-                $title = (!(int) $value[0][1]) ? ucwords(str_replace("_", " ", $value[0][1])) : "";
-                $Name = (!(int) $value[1][0]) ? ucwords(str_replace("_", " ", $value[1][0])) : "";
-                $output[] = //for testing purpose
-                        /*
-                          '<div class="col-sm-3"><img src="/rustagi/'.$value[0][0].'" onmouseover="showchck(this)" onmouseout="hidechck(this)" onclick="selectchk(this)" class="moreimgthambdeleat imghover"/>
-                          <div class="deleteimg">
-                          <input type="checkbox" name="delimages&#91;&#93;" value="'.$value[0][1].'" />
-                          <input type="hidden" name="id_field" value="'.$value[0][1].'" />
-                          </div>
-                          <div class="familytitles">'.$title.'</div>
-                          <div class="familytitles">'.$Name.'</div>
-                          </div>';
-                         */
-//for Live Purpose
-                        '<div class="col-sm-3"><img src="/' . $value[0][0] . '" onmouseover="showchck(this)" onmouseout="hidechck(this)" onclick="selectchk(this)" class="moreimgthambdeleat imghover"/>
-    <div class="deleteimg"> 
-    	<input type="checkbox" name="delimages&#91;&#93;" value="' . $value[0][1] . '" />
-    	<input type="hidden" name="id_field" value="' . $value[0][1] . '" />
-    </div>
-    <div class="familytitles">' . $title . '</div>
-    <div class="familytitles">' . $Name . '</div>
-    </div>';
+                $idsBrothers[] = $brothres['user_id'];
             }
+            $Fdata = $adapter->query("select * from tbl_user_gallery where user_id IN (" . implode(',', $idsBrothers) . ") ORDER BY id DESC", Adapter::QUERY_MODE_EXECUTE);
+            foreach ($Fdata as $F_data) {
+                //print_r($F_data);
+                $title = 'Brother photo';
+                $Name = '';
+
+                $output[] = '<div class="col-sm-3"><img src="/uploads/' . $F_data['image_path'] . '" onmouseover="showchck(this)" onmouseout="hidechck(this)" onclick="selectchk(this)" class="moreimgthambdeleat imghover"/>
+                                <div class="deleteimg"> 
+    	                           <input type="checkbox" name="delimages&#91;&#93;" value="' . $F_data['id'] . '" />
+    	                           <input type="hidden" name="id_field" value="' . $F_data['user_id'] . '" />
+                                       
+                                </div>
+                                <div class="familytitles">' . $title . '</div>
+                                <div class="familytitles">' . $Name . '</div>
+                            </div>';
+            }
+            foreach ($familyInfo->sisterData as $sisters) {
+
+                $idsSisters[] = $sisters['user_id'];
+            }
+            $Fdata = $adapter->query("select * from tbl_user_gallery where user_id IN (" . implode(',', $idsSisters) . ") ORDER BY id DESC", Adapter::QUERY_MODE_EXECUTE);
+            foreach ($Fdata as $F_data) {
+                //print_r($F_data);
+                $title = 'Sister photo';
+                $Name = '';
+
+                $output[] = '<div class="col-sm-3"><img src="/uploads/' . $F_data['image_path'] . '" onmouseover="showchck(this)" onmouseout="hidechck(this)" onclick="selectchk(this)" class="moreimgthambdeleat imghover"/>
+                                <div class="deleteimg"> 
+    	                           <input type="checkbox" name="delimages&#91;&#93;" value="' . $F_data['id'] . '" />
+    	                           <input type="hidden" name="id_field" value="' . $F_data['user_id'] . '" />
+                                </div>
+                                <div class="familytitles">' . $title . '</div>
+                                <div class="familytitles">' . $Name . '</div>
+                            </div>';
+            }
+            $father_id = $familyInfo->familyInfoArray['father_id'];
+            $Fdata = $adapter->query("select * from tbl_user_gallery where user_id='$father_id' ORDER BY id DESC", Adapter::QUERY_MODE_EXECUTE);
+            foreach ($Fdata as $F_data) {
+                //print_r($F_data);
+                $title = 'Father photo';
+                $Name = '';
+
+                $output[] = '<div class="col-sm-3"><img src="/uploads/' . $F_data['image_path'] . '" onmouseover="showchck(this)" onmouseout="hidechck(this)" onclick="selectchk(this)" class="moreimgthambdeleat imghover"/>
+                                <div class="deleteimg"> 
+    	                           <input type="checkbox" name="delimages&#91;&#93;" value="' . $F_data['id'] . '" />
+    	                           <input type="hidden" name="id_field" value="' . $F_data['user_id'] . '" />
+                                </div>
+                                <div class="familytitles">' . $title . '</div>
+                                <div class="familytitles">' . $Name . '</div>
+                            </div>';
+            }
+            $mother_id = $familyInfo->familyInfoArray['mother_id'];
+            $Fdata = $adapter->query("select * from tbl_user_gallery where user_id='$mother_id' ORDER BY id DESC", Adapter::QUERY_MODE_EXECUTE);
+            foreach ($Fdata as $F_data) {
+                //print_r($F_data);
+                $title = 'Mother photo';
+                $Name = '';
+
+                $output[] = '<div class="col-sm-3"><img src="/uploads/' . $F_data['image_path'] . '" onmouseover="showchck(this)" onmouseout="hidechck(this)" onclick="selectchk(this)" class="moreimgthambdeleat imghover"/>
+                                <div class="deleteimg"> 
+    	                           <input type="checkbox" name="delimages&#91;&#93;" value="' . $F_data['id'] . '" />
+    	                           <input type="hidden" name="id_field" value="' . $F_data['user_id'] . '" />
+                                </div>
+                                <div class="familytitles">' . $title . '</div>
+                                <div class="familytitles">' . $Name . '</div>
+                            </div>';
+            }
+
 
 
             $output[] = "<input type='hidden' name='type' value='" . $_POST['type'] . "'><input type='hidden' name='uid' value='" . $user_id . "'>";
@@ -691,19 +767,26 @@ class ProfileController extends AppController {
 
     public function delselectedAction() {
         $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
-
-        if ($_POST['Itype'] == "Personal") {
+        //echo '<pre>';
+        //print_r($_POST);
+        //exit;
+        $sqlData = $adapter->query("SELECT * FROM tbl_user_gallery WHERE id IN(" . $_POST['idfield'] . ")");
+        $res = $sqlData->execute();
+        if ($_POST['Itype'] == "Personal") {         
+            foreach ($res as $result) {
+                unlink(PUBLIC_PATH . '/uploads/' . $result['image_path']);
+                unlink(PUBLIC_PATH . '/uploads/thumb/100x100/' . $result['image_path']);
+            }
             $sql = "delete from tbl_user_gallery where id IN(" . $_POST['idfield'] . ")";
-        } else {
-            $var = str_replace(",", "='',", $_POST['idfield']);
-            $var = "" . $var . "=''";
-            $sql = "update tbl_family_info set $var where user_id='" . $_POST['user_id'] . "'";
+        } else if ($_POST['Itype'] == "Family") {         
+            foreach ($res as $result) {
+                unlink(PUBLIC_PATH . '/uploads/' . $result['image_path']);
+                unlink(PUBLIC_PATH . '/uploads/thumb/100x100/' . $result['image_path']);
+            }
+            $sql = "delete from tbl_user_gallery where id IN(" . $_POST['idfield'] . ")";
         }
-
         $result = $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
-
         echo ($result) ? "deleted Successfully" : "Couldn't perform your request";
-        // echo $sql;
         die;
     }
 
@@ -733,7 +816,8 @@ class ProfileController extends AppController {
                         $session = new Container('user');
                         $user_id = $session->offsetGet('id');
                         $ref_no = $session->offsetGet('ref_no');
-                        $user_name = $session->offsetGet('full_name');
+                        //$user_name = $session->offsetGet('full_name');
+                        $user_name = "Unknown";
                         $user_folder = $user_id . "__" . $user_name;
                         $name = time() . $name;
                         if (!file_exists($bashPath . "/uploads/$user_folder")) {
@@ -823,7 +907,8 @@ class ProfileController extends AppController {
                             $user_id = $session->offsetGet('id');
                             $ref_no = $session->offsetGet('ref_no');
                             $userInfo = $this->userService->getUserInfoById($user_id, array('full_name'));
-                            $user_name = $userInfo->getFullName();
+                            //$user_name = $userInfo->getFullName();
+                            $user_name = "Unknown";
                             $user_folder = $user_id . "__" . $user_name;
                             $name = time() . $name;
                             //$upload=new \Zend\File\Transfer\Adapter\Http();
@@ -843,7 +928,10 @@ class ProfileController extends AppController {
                             if ($uploaded) {
                                 $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
                                 //*********Insert in Gallery Table******
-                                $stmt = $adapter->query("insert into tbl_user_gallery set user_id='$user_id',ref_no='$ref_no',image_path='$user_folder/$name',
+                                $imagePath = $user_folder . '/' . $name;
+                                //echo $imagePath;
+                                //exit;
+                                $stmt = $adapter->query("insert into tbl_user_gallery set user_id='$user_id',ref_no='$ref_no',image_path='$imagePath',
 							 img_relation='user'", Adapter::QUERY_MODE_EXECUTE);
 
                                 //*********Select Images to Render******
@@ -892,15 +980,16 @@ class ProfileController extends AppController {
                 // $ref_no=$session->offsetGet('ref_no');
                 $userInfo = $this->userService->getUserInfoById($user_id, array('full_name'));
 
-                $user_name = $userInfo->getFullName();
+                //$user_name = $userInfo->getFullName();
+                $user_name = "Unknown";
                 $name = time() . $_FILES['file_upload']['name'];
                 $ext = strtolower(pathinfo($_FILES['file_upload']['name'], PATHINFO_EXTENSION));
 
                 $original_image = $_FILES['file_upload']['tmp_name'];
 
-                $user_folder = $user_id . "__" . $user_name . "/";
+                $user_folder = $user_id . "__" . $user_name;
 
-                $new_image = '/uploads/' . $user_folder . $name;
+                $new_image = PUBLIC_PATH . '/uploads/' . $user_folder . '/' . $name;
 
                 $image_quality = '95';
 
@@ -935,27 +1024,17 @@ class ProfileController extends AppController {
                 if (!in_array($ext, array('jpg', 'jpeg'))) {
                     return new JsonModel(array("Status" => 0, "message" => "only jpeg files are allowed"));
                 }
-                //print_r($result);exit;
+
 
                 if ($result) {
-                    print_r('$result');
-                    exit;
-                    if (!file_exists("/uploads/$user_folder")) {
-                        mkdir(ROOT_PATH . "/uploads/$user_folder", 0777, true);
-                        $targetPath = '/uploads/' . $user_folder . $name;
-                        //print_r($targetPath);
-                        // exit;
-                        $uploaded = move_uploaded_file($tmpName, $targetPath);
-                    } else {
-                        $targetPath = '/uploads/' . $user_folder . $name;
-                        //print_r($targetPath);
-                        //exit;
-                        $uploaded = move_uploaded_file($tmpName, $targetPath);
-                    }
+
 
                     $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
                     //*********Insert in Gallery Table******
-                    $adapter->query("insert into tbl_user_gallery set user_id='$user_id',ref_no='$ref_no',image_path='$user_folder/$name',
+                    $imagePath = $user_folder . '/' . $name;
+                    //echo $imagePath;
+                    //exit;
+                    $adapter->query("insert into tbl_user_gallery set user_id='$user_id',ref_no='$ref_no',image_path='$imagePath',
 							 img_relation='user'", Adapter::QUERY_MODE_EXECUTE);
                     //*********Select Images to Render******
                     $data = $adapter->query("select * from tbl_user_gallery where user_id='$user_id' AND ref_no='$ref_no' ORDER BY id DESC", Adapter::QUERY_MODE_EXECUTE);
@@ -991,7 +1070,8 @@ class ProfileController extends AppController {
     }
 
     public function postAction() {
-
+        
+        $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
         $userSession = $this->getUser()->session();
         $user_id = $userSession->offsetGet('id');
         $ref_no = $userSession->offsetGet('ref_no');
@@ -1001,34 +1081,45 @@ class ProfileController extends AppController {
         // print_r($postcategories);die;
 
         $form = new PostForm($this->commonService);
-        $info = $this->userService->getUserPostById($user_id);
+        //$action=$this->params()->fromRoute('slug');
+        $id=$this->params()->fromRoute('id');
+        //var_dump($id);
+        if($id){
+             $info = $this->userService->getUserPostById($id);
         //Debug::dump($info);
-        $form->bind($info);
+           $form->bind($info);
+        }else{
+            
+        }
+       
 
         $request = $this->getRequest();
         if ($request->isPost()) {
             $form->setData($request->getPost());
-
+            
 //            $page = new Posts();
 //            $form->setInputFilter($page->getInputFilter());
 //
 //            $mergedata = array_merge(
 //                    $this->getRequest()->getPost()->toArray(), $this->getRequest()->getFiles()->toArray()
 //            );
-//            // print_r($mergedata);die;
+            // print_r($mergedata);die;
 //
 //            $form->setData($mergedata);
             // $data = (array) $request->getPost();
             if ($form->isValid()) {
-
-                //Debug::dump($form->getData());
-                // exit;
+                $mergedata = array_merge(
+                        $this->getRequest()->getPost()->toArray(), $this->getRequest()->getFiles()->toArray()
+                );
+                $mergedata['user_id']=$user_id;
+                //Debug::dump($mergedata);
+                 //exit;
                 //$entity = $page->exchangeArray($postform->getData());
                 //unset($page->inputFilter);
                 // $session = new Container('user');
                 // $user_id=$session->offsetGet('id');
                 // 		echo $user_id;
-                $this->userService->saveUserPost($info);
+                $this->userService->saveUserPost($mergedata);
 //                return $this->redirect()->toRoute('application/default', array(
 //                            'action' => 'post',
 //                            'controller' => 'account',
@@ -1039,9 +1130,14 @@ class ProfileController extends AppController {
 
         $percentage = $this->userService->ProfileBar($user_id);
         $pro_per = array($percentage, $this->profileBarTemplate($percentage));
+        
+
+        $data = $adapter->query("select * from tbl_post WHERE user_id='$user_id' ORDER BY id DESC limit 6", Adapter::QUERY_MODE_EXECUTE)->toArray();
 
         return new ViewModel(array("form" => $form,
             'userSummary' => $this->userService->userSummaryById($user_id),
+            'url'=>'post',
+            'post'=>$data,
             "percent" => $pro_per));
     }
 
@@ -1078,6 +1174,11 @@ class ProfileController extends AppController {
         //print_r($_POST);exit;
         //print_r($ref_no);
         //exit;
+        if($_POST['profile_photo_flag']=='1'){
+            $profile_pic=$_POST['profile_photo_flag'];
+        }else{
+            $profile_pic='0';
+        }
         if ($_POST['cropenabled'] == "Enable") {
 
 //            $session = new Container('user');
@@ -1096,8 +1197,8 @@ class ProfileController extends AppController {
             $user_folder = $user_id . "__" . $user_name;
 
             $new_image = PUBLIC_PATH . '/uploads/' . $user_folder . '/' . $name;
-            $new_image_thumb = PUBLIC_PATH . '/uploads/' . $user_folder . '/100x100/' . $name;
-
+            $new_image_thumb = PUBLIC_PATH . '/uploads/thumb/100x100/' . $user_folder . '/' . $name;
+// TODO: satya
             $image_quality = '95';
 
             if (!file_exists(PUBLIC_PATH . "/uploads/$user_folder")) {
@@ -1105,8 +1206,8 @@ class ProfileController extends AppController {
                 // $targetPath =  ROOT_PATH.'/uploads/'.$user_folder.$name;
                 // $uploaded=move_uploaded_file($tmpName,$targetPath);
             }
-            if (!file_exists(PUBLIC_PATH . "/uploads/$user_folder/100x100")) {
-                mkdir(PUBLIC_PATH . "/uploads/$user_folder/100x100", 0777, true);
+            if (!file_exists(PUBLIC_PATH . "/uploads/thumb/100x100/$user_folder")) {
+                mkdir(PUBLIC_PATH . "/uploads/thumb/100x100/$user_folder", 0777, true);
                 // $targetPath =  ROOT_PATH.'/uploads/'.$user_folder.$name;
                 // $uploaded=move_uploaded_file($tmpName,$targetPath);
             }
@@ -1157,8 +1258,8 @@ class ProfileController extends AppController {
                 // 		$adapter->query("insert into ".$_POST['table_name']."('user_id','".$_POST['field_name']."') values($user_id,'/uploads/$user_folder/$name')", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
                 // 	}	
                 // else 
-                $statement = $adapter->query("INSERT INTO tbl_user_gallery (user_id, ref_no, image_path) 
-                        VALUES ('$user_id','$ref_no','$user_folder/$name')");
+                $statement = $adapter->query("INSERT INTO tbl_user_gallery (user_id, ref_no, image_path, profile_pic) 
+                        VALUES ('$user_id','$ref_no','$user_folder/$name', '$profile_pic')");
 
 
                 $res = $statement->execute();
@@ -1216,8 +1317,10 @@ class ProfileController extends AppController {
                         $user_folder = $user_id . "__" . $user_name;
                         $name = time() . $name;
 
+
+
                         $new_image = PUBLIC_PATH . '/uploads/' . $user_folder . '/' . $name;
-                        $new_image_thumb = PUBLIC_PATH . '/uploads/' . $user_folder . '/100x100/' . $name;
+                        $new_image_thumb = PUBLIC_PATH . '/uploads/thumb/100x100/' . $user_folder . '/' . $name;
                         $image_quality = '95';
 
 
@@ -1226,9 +1329,12 @@ class ProfileController extends AppController {
                             mkdir($bashPath . "/uploads/$user_folder", 0777, true);
                             $targetPath = $bashPath . "/uploads/$user_folder/" . $name;
                             //$uploaded = move_uploaded_file($tmpName, $targetPath);
-                        } else {
-                            $targetPath = $bashPath . "/uploads/$user_folder/" . $name;
-                            //$uploaded = move_uploaded_file($tmpName, $targetPath);
+                        }
+
+                        if (!file_exists(PUBLIC_PATH . "/uploads/thumb/100x100/$user_folder")) {
+                            mkdir(PUBLIC_PATH . "/uploads/thumb/100x100/$user_folder", 0777, true);
+                            // $targetPath =  ROOT_PATH.'/uploads/'.$user_folder.$name;
+                            // $uploaded=move_uploaded_file($tmpName,$targetPath);
                         }
 
 // Get dimensions of the original image
@@ -1268,13 +1374,13 @@ class ProfileController extends AppController {
 
 
                         //exit;
-                        if ($uploaded) {
+                        if ($result) {
 
 
                             $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
                             //*********Insert in Gallery Table******
-                            $statement = $adapter->query("INSERT INTO tbl_user_gallery (user_id, ref_no, image_path) 
-                        VALUES ('$user_id','$ref_no','$user_folder/$name')");
+                            $statement = $adapter->query("INSERT INTO tbl_user_gallery (user_id, ref_no, image_path, profile_pic) 
+                        VALUES ('$user_id','$ref_no','$user_folder/$name', '$profile_pic')");
                             $res = $statement->execute();
                             $imgid = $res->getGeneratedValue();
                             //$adapter->query("update " . $post['table_name'] . " set " . $post['field_name'] . "='/uploads/$user_folder/$name' where user_id=$user_id ", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);

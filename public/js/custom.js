@@ -864,17 +864,17 @@ function confirmotp(id, action, callback, is_reg) {
 }
 
 var cropimageresults = function (data) {
-    // alert(data.Status);
+     //alert(data.Status);
     if (data.Status == 1) {
-        // alert(data.data);
+         //alert(data.data);
         $("#" + data.imgid).attr("src", data.data);
         $("input[name=" + data.imgid + "]").val(data.data);
         // alert(data.imgid);
-    }
-    else
+    }else{
+    
         alert(data.message);
-
-    //location.reload();
+    }
+    location.reload();
 //  console.log(data)	;
 }
 
@@ -885,6 +885,7 @@ function cropimage(action, callback) {
     var filedata = false;
 
     filedata = new FormData($("#cropform")[0]);
+    
 
 
     $.ajax({
@@ -913,6 +914,9 @@ function cropimage(action, callback) {
 
 function showcropbox(uid, ref_no, field, table) {
     
+   
+    
+    //console.log(uid);
 
     if (field != "profile_photo") {
         $("#forprofile").hide();
@@ -920,6 +924,8 @@ function showcropbox(uid, ref_no, field, table) {
     
     $("#uid").val(uid);
     $("#ref_no").val(ref_no);
+    $("#profile_photo").val(field);
+    $("#profile_photo_flag").val(field);
     $("#field_name").val(field);
     $("#table_name").val(table);
     $("#field_name1").val(field);
@@ -1006,7 +1012,8 @@ function delselected(id, action, callback) {
     }).get();
     var type = $("#showallimages").find("input[name=type]").val();
     var uid = $("#showallimages").find("input[name=uid]").val();
-    var queryString = "idfield=" + chkdata + "&Itype=" + type + "&user_id=" + uid;
+    var path = $("#showallimages").find("input[name=path]").val();
+    var queryString = "idfield=" + chkdata + "&Itype=" + type + "&user_id=" + uid+ "&path=" + path;
     ajax_call_simple(queryString, action, callback);
 }
 

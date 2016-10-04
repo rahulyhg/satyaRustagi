@@ -88,8 +88,16 @@ class UserDbSqlMapper implements UserMapperInterface {
             $userInfo = $this->hydrator->hydrate($result->current(), new UserInfo());
             $user = $this->hydrator->hydrate($result->current(), new User());
             //$c = (object)array_merge((array)$userInfo, (array)$user);
-            return (object) array('userInfo' => $userInfo, 'user' => $user);
+            return (object) array('userInfo' => $userInfo, 'user' => $user, 'profilePic' => $this->getProfilePic($id));
         }
+    }
+
+    public function getProfilePic($id) {
+        $statement = $this->dbAdapter->query("SELECT * FROM tbl_user_gallery 
+               WHERE user_id=$id AND profile_pic=1 ORDER BY id DESC");
+
+        $result = $statement->execute();
+        return $result->current();
     }
 
     public function getUserAboutById($id) {
@@ -641,9 +649,9 @@ class UserDbSqlMapper implements UserMapperInterface {
 
     public function getUserPostById($user_id) {
 
-        $statement = $this->dbAdapter->query("SELECT * FROM tbl_post WHERE user_id=:user_id");
+        $statement = $this->dbAdapter->query("SELECT * FROM tbl_post WHERE id=:id");
         $parameters = array(
-            'user_id' => $user_id
+            'id' => $user_id
         );
         $result = $statement->execute($parameters);
 
@@ -654,21 +662,54 @@ class UserDbSqlMapper implements UserMapperInterface {
     }
 
     public function saveUserPost($userPostData) {
-        $postData = $this->hydrator->extract($userPostData);
-        $postData = array_filter((array) $postData, function ($val) {
-            return !is_null($val);
-        });
-
+        //$postDataArray = $this->hydrator->extract($userPostData);
+//        $postDataArray = array_filter((array) $postDataArray, function ($val) {
+//            return !is_null($val);
+//        });
 //        $userData['about_yourself_partner_family']=$userData['about_me'];
         //unset($userData['about_me']);
-        Debug::dump($postData);
-        exit;
-        $sql = new Sql($this->dbAdapter);
-        $action = new Update('tbl_user_info');
-        $action->set($userData);
-        $action->where(array('id = ?' => $postData['id']));
-        $stmt = $sql->prepareStatementForSqlObject($action);
-        $result = $stmt->execute();
+        //Debug::dump($userPostData);
+        //exit;
+        if ($userPostData['id']) {
+            $postData = array();
+
+            $postData['post_category'] = $userPostData['post_category'];
+            $postData['title'] = $userPostData['title'];
+            $postData['description'] = $userPostData['description'];
+            if (!empty($userPostData['image']['name'])) {
+                $postData['image'] = $userPostData['image']['name'];
+            }
+            //$postData['modified_date'] = $userPostData['modified_date'];
+            //Debug::dump($userPostData);
+            //exit;
+
+
+            $action = new Update('tbl_post');
+            $action->set($postData);
+            $action->where(array('id = ?' => $userPostData['id']));
+            $sql = new Sql($this->dbAdapter);
+            $stmt = $sql->prepareStatementForSqlObject($action);
+            $result = $stmt->execute();
+        } else {
+            $postData = array();
+            $postData['user_id'] = $userPostData['user_id'];
+            $postData['post_category'] = $userPostData['post_category'];
+            $postData['title'] = $userPostData['title'];
+            $postData['description'] = $userPostData['description'];
+            if (!empty($userPostData['image']['name'])) {
+                $postData['image'] = $userPostData['image']['name'];
+            }
+          
+            //Debug::dump($userPostData);
+            //exit;
+
+            $action = new Insert('tbl_post');
+            $action->values($postData);
+
+            $sql = new Sql($this->dbAdapter);
+            $stmt = $sql->prepareStatementForSqlObject($action);
+            $result = $stmt->execute();
+        }
     }
 
     function my_array_search($array, $key, $value) {
@@ -723,14 +764,14 @@ class UserDbSqlMapper implements UserMapperInterface {
         $family->setUserId($userInfo['user_id']);
         $family->setFamilyValues($userInfo['family_values_status']);
 
-
+// father
         $parameters = array(
             'user_id' => $userInfo['father_id']
         );
         $result = $statement->execute($parameters);
         $fatherInfo = $result->current();
         $familyInfo['father_id'] = $fatherInfo['user_id'];
-        $familyInfo['ref_no'] = $fatherInfo['ref_no'];
+        $familyInfo['father_ref_no'] = $fatherInfo['ref_no'];
         $familyInfo['name_title_father'] = $fatherInfo['name_title_user'];
         $familyInfo['father_name'] = $fatherInfo['full_name'];
         $familyInfo['father_dob'] = $fatherInfo['dob'];
@@ -745,29 +786,41 @@ class UserDbSqlMapper implements UserMapperInterface {
         $family->setFatherId($fatherInfo['user_id']);
         $family->setNameTitleFather($fatherInfo['name_title_user']);
         $family->setFatherName($fatherInfo['full_name']);
-        $family->setFatherDob(date('d-m-Y',  strtotime($fatherInfo['dob'])));
-        $family->setFatherDod(date('d-m-Y',  strtotime($fatherInfo['dod'])));
+        $family->setFatherDob(date('d-m-Y', strtotime($fatherInfo['dob'])));
+        $family->setFatherDod(date('d-m-Y', strtotime($fatherInfo['dod'])));
         $family->setFatherStatus($fatherInfo['live_status']);
         $family->setFatherPhoto($fatherInfo['profile_photo']);
 
 
-
+// mother
         $parameters = array(
             'user_id' => $userInfo['mother_id']
         );
         $result = $statement->execute($parameters);
         $motherInfo = $result->current();
         $familyInfo['mother_id'] = $motherInfo['user_id'];
+        $familyInfo['mother_ref_no'] = $motherInfo['ref_no'];
+        $familyInfo['name_title_mother'] = $motherInfo['name_title_user'];
+        $familyInfo['mother_name'] = $motherInfo['full_name'];
+        $familyInfo['mother_dob'] = $motherInfo['dob'];
+        $familyInfo['mother_status'] = $motherInfo['live_status'];
+        $familyInfo['mother_photo'] = $motherInfo['profile_photo'];
+        $parametersGallery = array(
+            'user_id' => $motherInfo['user_id']
+        );
+        $resultGallery = $statementGallery->execute($parametersGallery);
+        $GalleryInfo['mother'] = $resultGallery->current();
+
         $family->setMotherId($motherInfo['user_id']);
         $family->setNameTitleMother($motherInfo['name_title_user']);
         $family->setMotherName($motherInfo['full_name']);
-        $family->setMotherDob(date('d-m-Y',  strtotime($motherInfo['dob'])));
-        $family->setMotherDod(date('d-m-Y',  strtotime($motherInfo['dod'])));
+        $family->setMotherDob(date('d-m-Y', strtotime($motherInfo['dob'])));
+        $family->setMotherDod(date('d-m-Y', strtotime($motherInfo['dod'])));
         $family->setMotherStatus($motherInfo['live_status']);
         $family->setMotherPhoto($motherInfo['profile_photo']);
 
 
-
+// spouse wife
         if ($userInfo['gender'] === "Male") {
             $parameters = array(
                 'user_id' => $userInfo['wife_id']
@@ -775,15 +828,27 @@ class UserDbSqlMapper implements UserMapperInterface {
             $result = $statement->execute($parameters);
             $wifeInfo = $result->current();
             $familyInfo['spouse_id'] = $wifeInfo['user_id'];
+            $familyInfo['spouse_ref_no'] = $wifeInfo['ref_no'];
+            $familyInfo['name_title_spouse'] = $wifeInfo['name_title_user'];
+            $familyInfo['spouse_name'] = $wifeInfo['full_name'];
+            $familyInfo['spouse_dob'] = $wifeInfo['dob'];
+            $familyInfo['spouse_status'] = $wifeInfo['live_status'];
+            $familyInfo['spouse_photo'] = $wifeInfo['profile_photo'];
+            $parametersGallery = array(
+                'user_id' => $wifeInfo['user_id']
+            );
+            $resultGallery = $statementGallery->execute($parametersGallery);
+            $GalleryInfo['spouse'] = $resultGallery->current();
+
             $family->setSpouseId($wifeInfo['user_id']);
             $family->setNameTitleSpouse($wifeInfo['name_title_user']);
             $family->setSpouseName($wifeInfo['full_name']);
-            $family->setSpouseDob(date('d-m-Y',  strtotime($wifeInfo['dob'])));
-            $family->setSpouseDiedOn(date('d-m-Y',  strtotime($wifeInfo['dod'])));
+            $family->setSpouseDob(date('d-m-Y', strtotime($wifeInfo['dob'])));
+            $family->setSpouseDiedOn(date('d-m-Y', strtotime($wifeInfo['dod'])));
             $family->setSpouseStatus($wifeInfo['live_status']);
             $family->setSpousePhoto($wifeInfo['profile_photo']);
         }
-
+// spouse husband
         if ($userInfo['gender'] === "Female") {
             $parameters = array(
                 'user_id' => $userInfo['husband_id']
@@ -791,86 +856,151 @@ class UserDbSqlMapper implements UserMapperInterface {
             $result = $statement->execute($parameters);
             $husbandInfo = $result->current();
             $familyInfo['spouse_id'] = $husbandInfo['user_id'];
+            $familyInfo['spouse_ref_no'] = $husbandInfo['ref_no'];
+            $familyInfo['name_title_spouse'] = $husbandInfo['name_title_user'];
+            $familyInfo['spouse_name'] = $husbandInfo['full_name'];
+            $familyInfo['spouse_dob'] = $husbandInfo['dob'];
+            $familyInfo['spouse_status'] = $husbandInfo['live_status'];
+            $familyInfo['spouse_photo'] = $husbandInfo['profile_photo'];
+            $parametersGallery = array(
+                'user_id' => $husbandInfo['user_id']
+            );
+            $resultGallery = $statementGallery->execute($parametersGallery);
+            $GalleryInfo['spouse'] = $resultGallery->current();
+
             $family->setSpouseId($husbandInfo['user_id']);
             $family->setNameTitleSpouse($husbandInfo['name_title_user']);
             $family->setSpouseName($husbandInfo['full_name']);
-            $family->setSpouseDob(date('d-m-Y',  strtotime($husbandInfo['dob'])));
-            $family->setSpouseDiedOn(date('d-m-Y',  strtotime($wifeInfo['dod'])));
+            $family->setSpouseDob(date('d-m-Y', strtotime($husbandInfo['dob'])));
+            $family->setSpouseDiedOn(date('d-m-Y', strtotime($wifeInfo['dod'])));
             $family->setSpouseStatus($husbandInfo['live_status']);
             $family->setSpousePhoto($husbandInfo['profile_photo']);
         }
 
-
+// grand father
         $parameters = array(
             'user_id' => $fatherInfo['father_id']
         );
         $result = $statement->execute($parameters);
         $grandFatherInfo = $result->current();
         $familyInfo['grand_father_id'] = $grandFatherInfo['user_id'];
+        $familyInfo['grand_father_ref_no'] = $grandFatherInfo['ref_no'];
+        $familyInfo['name_title_grand_father'] = $grandFatherInfo['name_title_user'];
+        $familyInfo['grand_father_name'] = $grandFatherInfo['full_name'];
+        $familyInfo['grand_father_dob'] = $grandFatherInfo['dob'];
+        $familyInfo['grand_father_status'] = $grandFatherInfo['live_status'];
+        $familyInfo['grand_father_photo'] = $grandFatherInfo['profile_photo'];
+        $parametersGallery = array(
+            'user_id' => $grandFatherInfo['user_id']
+        );
+        $resultGallery = $statementGallery->execute($parametersGallery);
+        $GalleryInfo['grand_father'] = $resultGallery->current();
 
         $family->setGrandFatherId($grandFatherInfo['user_id']);
         $family->setNameTitleGrandFather($grandFatherInfo['name_title_user']);
         $family->setGrandFatherName($grandFatherInfo['full_name']);
-        $family->setGrandFatherDob(date('d-m-Y',  strtotime($grandFatherInfo['dob'])));
-        $family->setGrandFatherDod(date('d-m-Y',  strtotime($grandFatherInfo['dod'])));
+        $family->setGrandFatherDob(date('d-m-Y', strtotime($grandFatherInfo['dob'])));
+        $family->setGrandFatherDod(date('d-m-Y', strtotime($grandFatherInfo['dod'])));
         $family->setGrandFatherStatus($grandFatherInfo['live_status']);
         $family->setGrandFatherPhoto($grandFatherInfo['profile_photo']);
 
 
-
+// grand mother
         $parameters = array(
             'user_id' => $fatherInfo['mother_id']
         );
         $result = $statement->execute($parameters);
         $grandMotherInfo = $result->current();
         $familyInfo['grand_mother_id'] = $grandMotherInfo['user_id'];
+        $familyInfo['grand_mother_ref_no'] = $grandMotherInfo['ref_no'];
+        $familyInfo['name_title_grand_mother'] = $grandMotherInfo['name_title_user'];
+        $familyInfo['grand_mother_name'] = $grandMotherInfo['full_name'];
+        $familyInfo['grand_mother_dob'] = $grandMotherInfo['dob'];
+        $familyInfo['grand_mother_status'] = $grandMotherInfo['live_status'];
+        $familyInfo['grand_mother_photo'] = $grandMotherInfo['profile_photo'];
+
+        $parametersGallery = array(
+            'user_id' => $grandMotherInfo['user_id']
+        );
+        $resultGallery = $statementGallery->execute($parametersGallery);
+        $GalleryInfo['grand_mother'] = $resultGallery->current();
+
         $family->setGrandMotherId($grandMotherInfo['user_id']);
         $family->setNameTitleGrandMother($grandMotherInfo['name_title_user']);
         $family->setGrandMotherName($grandMotherInfo['full_name']);
-        $family->setGrandMotherDob(date('d-m-Y',  strtotime($grandMotherInfo['dob'])));
-        $family->setGrandMotherDod(date('d-m-Y',  strtotime($grandMotherInfo['dod'])));
+        $family->setGrandMotherDob(date('d-m-Y', strtotime($grandMotherInfo['dob'])));
+        $family->setGrandMotherDod(date('d-m-Y', strtotime($grandMotherInfo['dod'])));
         $family->setGrandMotherStatus($grandMotherInfo['live_status']);
         $family->setGrandMotherPhoto($grandMotherInfo['profile_photo']);
 
-
+// grand grand mother
         $parameters = array(
             'user_id' => $grandFatherInfo['mother_id']
         );
         $result = $statement->execute($parameters);
         $grandGrandMotherInfo = $result->current();
         $familyInfo['grand_grand_mother_id'] = $grandGrandMotherInfo['user_id'];
+        $familyInfo['grand_grand_mother_ref_no'] = $grandGrandMotherInfo['ref_no'];
+        $familyInfo['name_title_grand_grand_mother'] = $grandGrandMotherInfo['name_title_user'];
+        $familyInfo['grand_grand_mother_name'] = $grandGrandMotherInfo['full_name'];
+        $familyInfo['grand_grand_mother_dob'] = $grandGrandMotherInfo['dob'];
+        $familyInfo['grand_grand_mother_status'] = $grandGrandMotherInfo['live_status'];
+        $familyInfo['grand_grand_mother_photo'] = $grandGrandMotherInfo['profile_photo'];
+
+        $parametersGallery = array(
+            'user_id' => $grandGrandMotherInfo['user_id']
+        );
+        $resultGallery = $statementGallery->execute($parametersGallery);
+        $GalleryInfo['grand_grand_mother'] = $resultGallery->current();
+
+
         $family->setGrandGrandMotherId($grandGrandMotherInfo['user_id']);
         $family->setNameTitleGrandGrandMother($grandGrandMotherInfo['name_title_user']);
         $family->setGrandGrandMotherName($grandGrandMotherInfo['full_name']);
-        $family->setGrandGrandMotherDob(date('d-m-Y',  strtotime($grandGrandMotherInfo['dob'])));
-        $family->setGrandGrandMotherDod(date('d-m-Y',  strtotime($grandGrandMotherInfo['dod'])));
+        $family->setGrandGrandMotherDob(date('d-m-Y', strtotime($grandGrandMotherInfo['dob'])));
+        $family->setGrandGrandMotherDod(date('d-m-Y', strtotime($grandGrandMotherInfo['dod'])));
         $family->setGrandGrandMotherStatus($grandGrandMotherInfo['live_status']);
         $family->setGrandGrandMotherPhoto($grandGrandMotherInfo['profile_photo']);
 
-        //Debug::dump($familyInfo);
 
+// grand grand father
         $parameters = array(
             'user_id' => $grandFatherInfo['father_id']
         );
         $result = $statement->execute($parameters);
         $grandGrandFatherInfo = $result->current();
         $familyInfo['grand_grand_father_id'] = $grandGrandFatherInfo['user_id'];
+        $familyInfo['grand_grand_father_ref_no'] = $grandGrandFatherInfo['ref_no'];
+        $familyInfo['name_title_grand_grand_father'] = $grandGrandFatherInfo['name_title_user'];
+        $familyInfo['grand_grand_father_name'] = $grandGrandFatherInfo['full_name'];
+        $familyInfo['grand_grand_father_dob'] = $grandGrandFatherInfo['dob'];
+        $familyInfo['grand_grand_father_status'] = $grandGrandFatherInfo['live_status'];
+        $familyInfo['grand_grand_father_photo'] = $grandGrandFatherInfo['profile_photo'];
+
+        $parametersGallery = array(
+            'user_id' => $grandGrandFatherInfo['user_id']
+        );
+        $resultGallery = $statementGallery->execute($parametersGallery);
+        $GalleryInfo['grand_grand_father'] = $resultGallery->current();
+
+
         $family->setGrandGrandFatherId($grandGrandFatherInfo['user_id']);
         $family->setNameTitleGrandGrandFather($grandGrandFatherInfo['name_title_user']);
         $family->setGrandGrandFatherName($grandGrandFatherInfo['full_name']);
-        $family->setGrandGrandFatherDob(date('d-m-Y',  strtotime($grandGrandFatherInfo['dob'])));
-        $family->setGrandGrandFatherDod(date('d-m-Y',  strtotime($grandGrandFatherInfo['dod'])));
+        $family->setGrandGrandFatherDob(date('d-m-Y', strtotime($grandGrandFatherInfo['dob'])));
+        $family->setGrandGrandFatherDod(date('d-m-Y', strtotime($grandGrandFatherInfo['dod'])));
         $family->setGrandGrandFatherStatus($grandGrandFatherInfo['live_status']);
         $family->setGrandGrandFatherPhoto($grandGrandFatherInfo['profile_photo']);
 
-        // brother
+// brother
 
         $sql = new Sql($this->dbAdapter);
         $select = $sql->select(array('tui' => 'tbl_user_info'));
         $select->join(array('tfr' => 'tbl_family_relation'), 'tui.user_id=tfr.user_id', array('user_id_rel' => 'user_id', 'father_id'), $select::JOIN_LEFT);
+        $select->join(array('tug' => 'tbl_user_gallery'), 'tui.user_id=tug.user_id', array('image_path'), $select::JOIN_LEFT);
         $select->columns(array('name_title_user', 'brother_name' => 'full_name',
             'dob', 'live_status',
-            'profile_photo', 'gender', 'family_values_status', 'user_id' => 'user_id',
+            'profile_photo', 'gender', 'family_values_status', 'ref_no', 'user_id' => 'user_id',
         ));
         $select->where(array('tfr.father_id = ?' => $userInfo['father_id']));
         $select->where(array('tui.user_id != ?' => $user_id), Predicate::OP_AND);
@@ -882,14 +1012,22 @@ class UserDbSqlMapper implements UserMapperInterface {
 
         $resultSet = $this->resultSet->initialize($result);
         $brotherData = $resultSet->toArray();
+//        foreach ($brotherData as $brotherDatas) {
+//            $parametersGallery = array(
+//                'user_id' => $grandGrandFatherInfo['user_id']
+//            );
+//            $resultGallery = $statementGallery->execute($parametersGallery);
+//            $GalleryInfo['brother'] = $resultGallery->current();
+//        }
         //Debug::dump($brotherData);
         $family->setNumbor($resultSet->count() > 0 ? $resultSet->count() : '');
 
-        // Sister
+// Sister
 
         $sql = new Sql($this->dbAdapter);
         $select = $sql->select(array('tui' => 'tbl_user_info'));
         $select->join(array('tfr' => 'tbl_family_relation'), 'tui.user_id=tfr.user_id', array('user_id_rel' => 'user_id', 'father_id'), $select::JOIN_LEFT);
+        $select->join(array('tug' => 'tbl_user_gallery'), 'tui.user_id=tug.user_id', array('image_path'), $select::JOIN_LEFT);
         $select->columns(array('name_title_user', 'sister_name' => 'full_name',
             'dob', 'live_status',
             'profile_photo', 'gender', 'family_values_status', 'user_id' => 'user_id',
@@ -907,11 +1045,12 @@ class UserDbSqlMapper implements UserMapperInterface {
         //Debug::dump($resultSet);
         $sisterData = $resultSet->toArray();
 
-        // Kids
+// Kids
 
         $sql = new Sql($this->dbAdapter);
         $select = $sql->select(array('tui' => 'tbl_user_info'));
         $select->join(array('tfr' => 'tbl_family_relation'), 'tui.user_id=tfr.user_id', array('user_id_rel' => 'user_id', 'father_id'), $select::JOIN_LEFT);
+        $select->join(array('tug' => 'tbl_user_gallery'), 'tui.user_id=tug.user_id', array('image_path'), $select::JOIN_LEFT);
         $select->columns(array('name_title_user', 'kids_name' => 'full_name',
             'dob', 'live_status',
             'profile_photo', 'gender', 'family_values_status', 'user_id' => 'user_id',
@@ -936,7 +1075,7 @@ class UserDbSqlMapper implements UserMapperInterface {
                     'sisterData' => $sisterData,
                     'kidsData' => $kidsData,
                     'familyInfoArray' => $familyInfo,
-            'GalleryInfo'=>$GalleryInfo);
+                    'GalleryInfo' => $GalleryInfo);
         //return $family;
         //Debug::dump($fatherInfo);
         //exit;
@@ -960,7 +1099,16 @@ class UserDbSqlMapper implements UserMapperInterface {
         //exit;
         $sql = new Sql($this->dbAdapter);
 
-
+        if ($familyData['marital_status']) {
+            $userDataMerital['marital_status'] = $familyData['marital_status'];
+            $action = new Update('tbl_user_info');
+            $action->set($userDataMerital);
+            $action->where(array('user_id = ?' => $user_id));
+            $stmt = $sql->prepareStatementForSqlObject($action);
+            //Debug::dump($stmt);
+            //exit;
+            $result = $stmt->execute();
+        }
 
         if ($family_id['father_id']) {
 
@@ -1007,8 +1155,8 @@ class UserDbSqlMapper implements UserMapperInterface {
             //$relationIds = $this->getRelationIds($myFatherId);
             //Debug::dump($familyData);
             //exit;
-            $dob=date('Y-m-d', strtotime($familyData['mother_dob']));
-            $dod=date('Y-m-d', strtotime($familyData['mother_dod']));
+            $dob = date('Y-m-d', strtotime($familyData['mother_dob']));
+            $dod = date('Y-m-d', strtotime($familyData['mother_dod']));
             $profileId = $this->createFamilyProfile($familyData['mother_name'], $familyData['name_title_mother'], $familyData['mother_status'], $dob, $dod, 'Female');
             //exit;
             $this->saveRelation($user_id, $profileId, 'm');
@@ -1040,8 +1188,8 @@ class UserDbSqlMapper implements UserMapperInterface {
             //$relationIds = $this->getRelationIds($myFatherId);
             //Debug::dump($familyData);
             //exit;
-            $dob=date('Y-m-d', strtotime($familyData['spouse_dob']));
-            $dod=date('Y-m-d', strtotime($familyData['spouse_died_on']));
+            $dob = date('Y-m-d', strtotime($familyData['spouse_dob']));
+            $dod = date('Y-m-d', strtotime($familyData['spouse_died_on']));
             $profileId = $this->createFamilyProfile($familyData['spouse_name'], $familyData['name_title_spouse'], $familyData['spouse_status'], $dob, $dod, 'Female');
             //exit;
             $this->saveRelation($user_id, $profileId, 'w');
@@ -1054,7 +1202,7 @@ class UserDbSqlMapper implements UserMapperInterface {
                 //exit;
 
                 if (!empty($familyData['brother_id'][$i])) {
-                   // Debug::dump($familyData);
+                    // Debug::dump($familyData);
                     //exit;
                     $bNum = count($familyData['brother_id']);
 
@@ -1071,7 +1219,7 @@ class UserDbSqlMapper implements UserMapperInterface {
                     $actionb->set($brotherData);
                     $actionb->where(array('user_id = ?' => $brotherData['user_id']));
                     $stmt = $sql->prepareStatementForSqlObject($actionb);
-                   
+
                     $result = $stmt->execute();
 //                     Debug::dump($result);
 //                    exit;
@@ -1082,8 +1230,8 @@ class UserDbSqlMapper implements UserMapperInterface {
                     $myFatherId = $allParent[0];
                     //Debug::dump($familyData);
                     //exit;
-                    $dob=date('Y-m-d', strtotime($familyData['brother_dob'][$i]));
-                    $dod=date('Y-m-d', strtotime($familyData['brother_dod'][$i]));
+                    $dob = date('Y-m-d', strtotime($familyData['brother_dob'][$i]));
+                    $dod = date('Y-m-d', strtotime($familyData['brother_dod'][$i]));
                     $profileId = $this->createFamilyProfile($familyData['brother_name'][$i], $familyData['name_title_brother'][$i], $familyData['brother_status'][$i], $dob, $dod, 'Male');
                     //Debug::dump($myFatherId);
                     //Debug::dump($profileId);
@@ -1132,8 +1280,8 @@ class UserDbSqlMapper implements UserMapperInterface {
                     $myFatherId = $allParent[0];
                     //Debug::dump($familyData);
                     //exit;
-                    $dob=date('Y-m-d', strtotime($familyData['sister_dob'][$i]));
-                    $dod=date('Y-m-d', strtotime($familyData['sister_dod'][$i]));
+                    $dob = date('Y-m-d', strtotime($familyData['sister_dob'][$i]));
+                    $dod = date('Y-m-d', strtotime($familyData['sister_dod'][$i]));
                     $profileId = $this->createFamilyProfile($familyData['sister_name'][$i], $familyData['name_title_sister'][$i], $familyData['sister_status'][$i], $dob, $dod, 'Female');
                     //Debug::dump($myFatherId);
                     //Debug::dump($profileId);
@@ -1182,8 +1330,8 @@ class UserDbSqlMapper implements UserMapperInterface {
                     $myFatherId = $allParent[0];
                     //Debug::dump($familyData);
                     //exit;
-                    $dob=date('Y-m-d', strtotime($familyData['kids_dob'][$i]));
-                    $dod=date('Y-m-d', strtotime($familyData['kids_dod'][$i]));
+                    $dob = date('Y-m-d', strtotime($familyData['kids_dob'][$i]));
+                    $dod = date('Y-m-d', strtotime($familyData['kids_dod'][$i]));
                     $profileId = $this->createFamilyProfile($familyData['kids_name'][$i], $familyData['name_title_kids'][$i], $familyData['kids_status'][$i], $dob, $dod, 'Male');
                     //Debug::dump($myFatherId);
                     //Debug::dump($profileId);
@@ -1228,8 +1376,8 @@ class UserDbSqlMapper implements UserMapperInterface {
             //$relationIds = $this->getRelationIds($myFatherId);
             //Debug::dump($familyData);
             //exit;
-            $dob=date('Y-m-d', strtotime($familyData['grand_father_dob']));
-            $dod=date('Y-m-d', strtotime($familyData['grand_father_dod']));
+            $dob = date('Y-m-d', strtotime($familyData['grand_father_dob']));
+            $dod = date('Y-m-d', strtotime($familyData['grand_father_dod']));
             $profileId = $this->createFamilyProfile($familyData['grand_father_name'], $familyData['name_title_grand_father'], $familyData['grand_father_status'], $dob, $dod, 'Male');
             //exit;
             $this->saveRelation($myFatherId, $profileId, 'f');
@@ -1269,8 +1417,8 @@ class UserDbSqlMapper implements UserMapperInterface {
             }
             $allParent = $this->getFirstParent($user_id);
             $myGrandFatherId = $allParent[1];
-            $dob=date('Y-m-d', strtotime($familyData['grand_grand_father_dob']));
-            $dod=date('Y-m-d', strtotime($familyData['grand_grand_father_dod']));
+            $dob = date('Y-m-d', strtotime($familyData['grand_grand_father_dob']));
+            $dod = date('Y-m-d', strtotime($familyData['grand_grand_father_dod']));
             $profileId = $this->createFamilyProfile($familyData['grand_grand_father_name'], $familyData['name_title_grand_grand_father'], $familyData['grand_grand_father_status'], $dob, $dod, 'Male');
             //exit;
             $this->saveRelation($myGrandFatherId, $profileId, 'f');
@@ -1302,8 +1450,8 @@ class UserDbSqlMapper implements UserMapperInterface {
             //$relationIds = $this->getRelationIds($myFatherId);
             // Debug::dump($familyData);
             // exit;
-            $dob=date('Y-m-d', strtotime($familyData['grand_mother_dob']));
-            $dod=date('Y-m-d', strtotime($familyData['grand_mother_dod']));
+            $dob = date('Y-m-d', strtotime($familyData['grand_mother_dob']));
+            $dod = date('Y-m-d', strtotime($familyData['grand_mother_dod']));
             $profileId = $this->createFamilyProfile($familyData['grand_mother_name'], $familyData['name_title_grand_mother'], $familyData['grand_mother_status'], $dob, $dod, 'Female');
             //exit;
             $this->saveRelation($myFatherId, $profileId, 'm');
@@ -1337,8 +1485,8 @@ class UserDbSqlMapper implements UserMapperInterface {
             //$relationIds = $this->getRelationIds($myFatherId);
             // Debug::dump($familyData);
             // exit;
-            $dob=date('Y-m-d', strtotime($familyData['grand_grand_mother_dob']));
-            $dod=date('Y-m-d', strtotime($familyData['grand_grand_mother_dod']));
+            $dob = date('Y-m-d', strtotime($familyData['grand_grand_mother_dob']));
+            $dod = date('Y-m-d', strtotime($familyData['grand_grand_mother_dod']));
             $profileId = $this->createFamilyProfile($familyData['grand_grand_mother_name'], $familyData['name_title_grand_grand_mother'], $familyData['grand_grand_mother_status'], $dob, $dod, 'Female');
             //exit;
             $this->saveRelation($myGrandFatherId, $profileId, 'm');

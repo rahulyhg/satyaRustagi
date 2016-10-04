@@ -72,4 +72,12 @@ interface UserServiceInterface {
     public function getFamilyInfoById($user_id);
     
     public function saveFamilyInfo($user_id, $familyData);
+    
+    public function getFirstParent($user_id);
+    
+    public function getAllChild($id);
+    
+    public function getMyChild($id);
+    
+    public function getRelationIds($id);
 }

@@ -114,8 +114,8 @@ class UserController extends AppController {
 
                 //\Zend\Debug\Debug::dump($userSession->offsetGet('id'));
                 // exit;
-
-                return $this->redirect()->toUrl($this->getRequest()->getHeader('Referer')->getUri());
+                return $this->redirect()->toRoute('profile');
+                //return $this->redirect()->toUrl($this->getRequest()->getHeader('Referer')->getUri());
             }
         }
     }
@@ -193,7 +193,7 @@ class UserController extends AppController {
 
             if ($auth->hasIdentity() && in_array($auth->getIdentity()->role, array('user'))) {
 
-                return $this->redirect()->toRoute('profile', array('action' => 'personal-profile'));
+                return $this->redirect()->toRoute('profile');
             }
         }
     }
