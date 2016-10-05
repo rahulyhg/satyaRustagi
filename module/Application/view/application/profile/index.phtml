@@ -1,11 +1,12 @@
+
 <div class="container orange-panelbg">
     <div class="col-sm-3 col-sm-3-new width20per">
         <div id="tour_step1" data-step="1">
             <div id="profile_info_widget" class="profile_info" style="display:block">
 
                 <div id="" class="my_rustagi_profile_info">
-                    <div class="my_rustagi_thumbnail"> <a href="$"> 
-                            <img src="images/bride.jpg" height="" width="100%"></a></div>
+                    <div class="my_rustagi_thumbnail"> <a href="#"> 
+                            <img src="<?php echo $this->basePath('/uploads/').$userSummary->profilePic['image_path']?>" height="" width="100%"></a></div>
                     <div class="manage_links_wrap">
                         <a href="<?php echo $this->url('profile', array('action'=>'personal-profile')) ?>" class="light_blue">Edit Profile</a>
                         <a href="<?php echo $this->url('profile', array('action'=>'mygallery')) ?>" class="light_blue">Manage Photos</a>
@@ -94,8 +95,7 @@
             <ul>
 
                 <li>
-                    <span class="ms_ln_heading">Inbox</span><span class="act_full_text">(Activity Factor</span>
-                    <span class="act_full_percentage">100%)</span>
+                    <span class="ms_ln_heading">Inbox</span>
                 </li>  
                 <li class="default">
 
@@ -105,19 +105,21 @@
                     <div class="inner_folders">
 
                         <a href="#">
-                            <span class="span_bold">3</span>                <span>Invitations</span>
-                            <span class="arrow_wrap"><span class="myshaadi_left_arrow"></span><span class="unread">2 New</span></span>            </a>
+                            <span class="span_bold"><?php echo $this->invitation['invitation']; ?></span>                <span>Invitations</span>
+                            <span class="arrow_wrap"><span class="myshaadi_left_arrow"></span></span>            </a>
                     </div>
                 </li>
 
                 <li>
                     <span class="accepted_icon"></span>
                     <span class="ms_ln_heading">Accepted</span>
+                    
                 </li>
                 <li class="inner_list">
                     <div class="inner_folders">
                         <a href="#">
                             <span>Members</span>
+                            <span class=" num"><?php echo $this->accepted['accepted']; ?></span>
                         </a>
                     </div>
                 </li>
@@ -129,280 +131,19 @@
                 <li class="inner_list">
                     <div class="inner_folders">
 
-                        <a href="http://www.shaadi.com/inbox/sent/interests">
+                        <a href="<?php echo $this->url('profile', array('action'=>'sent','slug'=>'interests'));?>">
                             <span>Invitations </span>
-                            <span class=" num"></span>                </a>
+                            <span class=" num"><?php echo $this->sent['sent']; ?></span></a>
                     </div>
                 </li>
             </ul>
         </div>
 
-        <div class="mid_box" id="my_feeds_content_div">
-            <div class="mid_box_header">
-                <p>Recently Updated</p>
-            </div>
-            <div class="recent_updated_wrap over_y_s">
-                <div class="profile_compact_view profile_compact_viewn">
-                    <span class="thumbnail thumbnailnew"><a href="#" target="_blank"><img src="images/beby.jpg" alt="My Matches" title="My Matches" ondragstart="return false;" ondragenter="return false;" ondragover="return false;" ondrop="return false;" onmousedown="return false;" oncontextmenu="return false;" height="27" width="27"></a>
-                    </span>
-                    <div class="user_info">
-                        <span>
-                            <a id="feeds_mini_profile" href="#" onmouseover="#" class="light_blue">Suhani Bansal</a>
-                        </span>
-                        <span>
-                            added a Photo to her profile.</span>
-
-                        <span class="last_updated">few hours ago</span>
-                    </div><!--end of user_info-->
-                </div><!--end of profile_compact_view-->
-
-                <div class="profile_compact_view profile_compact_viewn">
-                    <span class="thumbnail thumbnailnew"><a href="#" target="_blank"><img src="images/beby.jpg" alt="My Matches" title="My Matches" ondragstart="return false;" ondragenter="return false;" ondragover="return false;" ondrop="return false;" onmousedown="return false;" oncontextmenu="return false;" height="27" width="27"></a>
-                    </span>
-                    <div class="user_info">
-                        <span>
-                            <a id="feeds_mini_profile" href="#" onmouseover="#" class="light_blue">Suhani Bansal</a>
-                        </span>
-                        <span>
-                            added a Photo to her profile.</span>
-
-                        <span class="last_updated">few hours ago</span>
-                    </div><!--end of user_info-->
-                </div><!--end of profile_compact_view-->
-
-                <div class="profile_compact_view profile_compact_viewn">
-                    <span class="thumbnail thumbnailnew"><a href="#" target="_blank"><img src="images/beby.jpg" alt="My Matches" title="My Matches" ondragstart="return false;" ondragenter="return false;" ondragover="return false;" ondrop="return false;" onmousedown="return false;" oncontextmenu="return false;" height="27" width="27"></a>
-                    </span>
-                    <div class="user_info">
-                        <span>
-                            <a id="feeds_mini_profile" href="#" onmouseover="#" class="light_blue">Suhani Bansal</a>
-                        </span>
-                        <span>
-                            added a Photo to her profile.</span>
-
-                        <span class="last_updated">few hours ago</span>
-                    </div><!--end of user_info-->
-                </div><!--end of profile_compact_view-->
-
-                <div class="profile_compact_view profile_compact_viewn">
-                    <span class="thumbnail thumbnailnew"><a href="#" target="_blank"><img src="images/beby.jpg" alt="My Matches" title="My Matches" ondragstart="return false;" ondragenter="return false;" ondragover="return false;" ondrop="return false;" onmousedown="return false;" oncontextmenu="return false;" height="27" width="27"></a>
-                    </span>
-                    <div class="user_info">
-                        <span>
-                            <a id="feeds_mini_profile" href="#" onmouseover="#" class="light_blue">Suhani Bansal</a>
-                        </span>
-                        <span>
-                            added a Photo to her profile.</span>
-
-                        <span class="last_updated">few hours ago</span>
-                    </div><!--end of user_info-->
-                </div><!--end of profile_compact_view-->
-
-                <div class="profile_compact_view profile_compact_viewn">
-                    <span class="thumbnail thumbnailnew"><a href="#" target="_blank"><img src="images/beby.jpg" alt="My Matches" title="My Matches" ondragstart="return false;" ondragenter="return false;" ondragover="return false;" ondrop="return false;" onmousedown="return false;" oncontextmenu="return false;" height="27" width="27"></a>
-                    </span>
-                    <div class="user_info">
-                        <span>
-                            <a id="feeds_mini_profile" href="#" onmouseover="#" class="light_blue">Suhani Bansal</a>
-                        </span>
-                        <span>
-                            added a Photo to her profile.</span>
-
-                        <span class="last_updated">few hours ago</span>
-                    </div><!--end of user_info-->
-                </div><!--end of profile_compact_view-->
 
 
-            </div><!--end recent_updated_wrap--><p class="mid_box_footer">
-                <a href="#" class="light_link_blue" target="">View all</a>
-            </p></div><!--end mid_box-->
 
 
-        <div class="mid_box">
-            <div class="mid_box_header">
-                <p>Explore</p>
-            </div>
-            <div class="explore_links">
-                <p>
-                    <span><a href="http://www.shaadi.com/profile/viewed-profiles" class="explore" target="_blank">
-                            Viewed Profiles (1)</a>
-                    </span>
-                </p>
-                <p>
-                    <span><a href="http://www.shaadi.com/profile/ignored-members" class="explore" target="_blank">
-                            Ignored Members (1)</a>
-                    </span>
-                </p>
-                <p>
-                    <span><a href="http://www.shaadi.com/inbox/archived/interests" class="explore" target="_blank">
-                            Declined / Cancelled (1)</a>
-                    </span>
-                </p>
-                <p>
-                    <span><a href="http://www.shaadi.com/profile/blocked-members" class="explore" target="_blank">
-                            Blocked Members</a>
-                    </span>
-                </p>
-            </div><!--end explore_links-->
-        </div>
-
-        <div class="panel-group" id="accordion">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h4 class="panel-title">
-                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
-                            <span class="pull-right glyphicon glyphicon-plus"></span>Select Country</a>
-                    </h4>
-                </div>
-                <div id="collapseOne" class="panel-collapse collapse">
-                    <div class="panel-body">
-                        <ul>
-                            <li><input type="checkbox"><label>India</label></li>
-                            <li><input type="checkbox"><label>USA</label></li>
-                            <li><input type="checkbox"><label>UK</label></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h4 class="panel-title">
-                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
-                            <span class="pull-right glyphicon glyphicon-plus"></span>Select State</a>
-                    </h4>
-                </div>
-                <div id="collapseTwo" class="panel-collapse collapse">
-                    <div class="panel-body">
-                        <ul>
-                            <li><input type="checkbox"><label>Delhi</label></li>
-                            <li><input type="checkbox"><label>Haryana</label></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h4 class="panel-title">
-                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseThree">
-                            <span class="pull-right glyphicon glyphicon-plus"></span>Select City</a>
-                    </h4>
-                </div>
-                <div id="collapseThree" class="panel-collapse collapse">
-                    <div class="panel-body">
-                        <ul>
-                            <li><input type="checkbox"><label>India</label></li>
-                            <li><input type="checkbox"><label>USA</label></li>
-                            <li><input type="checkbox"><label>UK</label></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h4 class="panel-title">
-                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseFour">
-                            <span class="pull-right glyphicon glyphicon-minus"></span>Marital Status</a>
-                    </h4>
-                </div>
-                <div id="collapseFour" class="panel-collapse collapse in">
-                    <div class="panel-body">
-                        <ul>
-                            <li><input type="checkbox"><label>Married</label></li>
-                            <li><input type="checkbox"><label>Un Married</label></li>
-                            <li><input type="checkbox"><label>Divorced</label></li>
-                            <li><input type="checkbox"><label>Annulled</label></li>
-                            <li><input type="checkbox"><label>Widowed</label></li>
-                            <li><input type="checkbox"><label>Awaiting Divorced</label></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h4 class="panel-title">
-                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseFive"><span class="pull-right glyphicon glyphicon-plus"></span>Select Profession</a>
-                    </h4>
-                </div>
-                <div id="collapseFive" class="panel-collapse collapse">
-                    <div class="panel-body">
-                        <ul>
-                            <li><input type="checkbox"><label>India</label></li>
-                            <li><input type="checkbox"><label>USA</label></li>
-                            <li><input type="checkbox"><label>UK</label></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h4 class="panel-title">
-                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseFive"><span class="pull-right glyphicon glyphicon-plus"></span>Select Community</a>
-                    </h4>
-                </div>
-                <div id="collapseFive" class="panel-collapse collapse">
-                    <div class="panel-body">
-                        <ul>
-                            <li><input type="checkbox"><label>India</label></li>
-                            <li><input type="checkbox"><label>USA</label></li>
-                            <li><input type="checkbox"><label>UK</label></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h4 class="panel-title">
-                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseFive"><span class="pull-right glyphicon glyphicon-plus"></span>Select Religion</a>
-                    </h4>
-                </div>
-                <div id="collapseFive" class="panel-collapse collapse">
-                    <div class="panel-body">
-                        <ul>
-                            <li><input type="checkbox"><label>India</label></li>
-                            <li><input type="checkbox"><label>USA</label></li>
-                            <li><input type="checkbox"><label>UK</label></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h4 class="panel-title">
-                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseFive"><span class="pull-right glyphicon glyphicon-plus"></span>Select Mother Tounge</a>
-                    </h4>
-                </div>
-                <div id="collapseFive" class="panel-collapse collapse">
-                    <div class="panel-body">
-                        <ul>
-                            <li><input type="checkbox"><label>India</label></li>
-                            <li><input type="checkbox"><label>USA</label></li>
-                            <li><input type="checkbox"><label>UK</label></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h4 class="panel-title">
-                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseFive"><span class="pull-right glyphicon glyphicon-plus"></span>Select Manglik</a>
-                    </h4>
-                </div>
-                <div id="collapseFive" class="panel-collapse collapse">
-                    <div class="panel-body">
-                        <ul>
-                            <li><input type="checkbox"><label>India</label></li>
-                            <li><input type="checkbox"><label>USA</label></li>
-                            <li><input type="checkbox"><label>UK</label></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
+    
 
     </div>
     <div class="col-sm-9 width80per">
@@ -471,7 +212,7 @@
                     </div>
                 </div>
                 <?php } ?>
-                <div id="pin_interest" style="display: block;">    
+<!--                <div id="pin_interest" style="display: block;">    
                     <div class="pinned_wrap">
                         <div class="pinned_shadow">
 
@@ -516,14 +257,14 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div>-->
 
                 <!-- recently joined render -->
-                <div id="recently_joined" style="display: block;">
+<!--                <div id="recently_joined" style="display: block;">
                     <div class="mid_box">
                         <div class="mid_box_header">
                             <p>New Matches <span class="recently_joined_count"> (58) </span></p>
-                                    <!--<p class="view_all"><a href="#" class="light_link_blue" target="_blank">View all</a></p>-->
+                                    <p class="view_all"><a href="#" class="light_link_blue" target="_blank">View all</a></p>
 
                         </div>
                         <div id="recently_joined_profiles" class="pos_rel">
@@ -558,7 +299,7 @@
 
                         </div>
                     </div>
-                </div>
+                </div>-->
                 <!-- recently joined render -->
 
 
@@ -572,7 +313,7 @@
         <div id="my_rustagi_right" class="col-sm-3 col-sm-3new pull-right">
             <div class="mid_box">
                 <div id="myshaadi-banner">
-                    <a href="#" target=""><img src="images/slide1.jpg" alt="" title="" border="0" height="100%" width="100%"></a>
+                    <?php echo $this->partial('layout/sidebar-slider') ?>
                 </div>
 
             </div>
@@ -582,81 +323,32 @@
                     <p>Accepted</p>
                 </div>
                 <div class="recent_updated_wrap over_y_s">
+                    <?php foreach($this->acceptedMember as $acceptedMembers){ ?>
                     <div class="profile_compact_view profile_compact_viewn">
-                        <span class="thumbnail thumbnailnew"><a href="#" target="_blank"><img src="images/beby.jpg" alt="My Matches" title="My Matches" ondragstart="return false;" ondragenter="return false;" ondragover="return false;" ondrop="return false;" onmousedown="return false;" oncontextmenu="return false;" height="27" width="27"></a>
+                        <?php
+                        if(!empty($acceptedMembers['image_path'])){
+                        $imagepath='uploads/'.$acceptedMembers['image_path'];
+                        }else{
+                            $imagepath='images/beby.jpg';
+                        }
+                        ?>
+                        <span class="thumbnail thumbnailnew"><a href="#" target="_blank"><img src="<?php echo $imagepath?>"  alt="" title="" ondragstart="return false;" ondragenter="return false;" ondragover="return false;" ondrop="return false;" onmousedown="return false;" oncontextmenu="return false;" height="27" width="27"></a>
                         </span>
                         <div class="user_info user_infon">
                             <span>
-                                <a id="feeds_mini_profile" href="#" onmouseover="#" class="light_blue">Suhani Bansal</a>
+                                <a id="feeds_mini_profile" href="#" onmouseover="#" class="light_blue"><?php echo $acceptedMembers['full_name'];?></a>
                             </span>
-                            <span>
-                                added a Photo to her profile.</span>
-
-                            <span class="last_updated">few hours ago</span>
-
-
                         </div><!--end of user_info-->
 
 
                     </div>
+                    <?php } ?>
 
 
 
-                    <div class="profile_compact_view profile_compact_viewn">
-                        <span class="thumbnail thumbnailnew"><a href="#" target="_blank"><img src="images/beby.jpg" alt="My Matches" title="My Matches" ondragstart="return false;" ondragenter="return false;" ondragover="return false;" ondrop="return false;" onmousedown="return false;" oncontextmenu="return false;" height="27" width="27"></a>
-                        </span>
-                        <div class="user_info user_infon">
-                            <span>
-                                <a id="feeds_mini_profile" href="#" onmouseover="#" class="light_blue">Suhani Bansal</a>
-                            </span>
-                            <span>
-                                added a Photo to her profile.</span>
+                    
 
-                            <span class="last_updated">few hours ago</span>
-                        </div><!--end of user_info-->
-                    </div><!--end of profile_compact_view-->
-
-                    <div class="profile_compact_view profile_compact_viewn">
-                        <span class="thumbnail thumbnailnew"><a href="#" target="_blank"><img src="images/beby.jpg" alt="My Matches" title="My Matches" ondragstart="return false;" ondragenter="return false;" ondragover="return false;" ondrop="return false;" onmousedown="return false;" oncontextmenu="return false;" height="27" width="27"></a>
-                        </span>
-                        <div class="user_info user_infon">
-                            <span>
-                                <a id="feeds_mini_profile" href="#" onmouseover="#" class="light_blue">Suhani Bansal</a>
-                            </span>
-                            <span>
-                                added a Photo to her profile.</span>
-
-                            <span class="last_updated">few hours ago</span>
-                        </div><!--end of user_info-->
-                    </div><!--end of profile_compact_view-->
-
-                    <div class="profile_compact_view profile_compact_viewn">
-                        <span class="thumbnail thumbnailnew"><a href="#" target="_blank"><img src="images/beby.jpg" alt="My Matches" title="My Matches" ondragstart="return false;" ondragenter="return false;" ondragover="return false;" ondrop="return false;" onmousedown="return false;" oncontextmenu="return false;" height="27" width="27"></a>
-                        </span>
-                        <div class="user_info user_infon">
-                            <span>
-                                <a id="feeds_mini_profile" href="#" onmouseover="#" class="light_blue">Suhani Bansal</a>
-                            </span>
-                            <span>
-                                added a Photo to her profile.</span>
-
-                            <span class="last_updated">few hours ago</span>
-                        </div><!--end of user_info-->
-                    </div><!--end of profile_compact_view-->
-
-                    <div class="profile_compact_view profile_compact_viewn">
-                        <span class="thumbnail thumbnailnew"><a href="#" target="_blank"><img src="images/beby.jpg" alt="My Matches" title="My Matches" ondragstart="return false;" ondragenter="return false;" ondragover="return false;" ondrop="return false;" onmousedown="return false;" oncontextmenu="return false;" height="27" width="27"></a>
-                        </span>
-                        <div class="user_info user_infon">
-                            <span>
-                                <a id="feeds_mini_profile" href="#" onmouseover="#" class="light_blue">Suhani Bansal</a>
-                            </span>
-                            <span>
-                                added a Photo to her profile.</span>
-
-                            <span class="last_updated">few hours ago</span>
-                        </div><!--end of user_info-->
-                    </div><!--end of profile_compact_view-->
+                   
 
 
                 </div><!--end recent_updated_wrap--><p class="mid_box_footer">

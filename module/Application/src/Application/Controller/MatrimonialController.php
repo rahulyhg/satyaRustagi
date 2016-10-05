@@ -2,13 +2,9 @@
 
 namespace Application\Controller;
 
-use Zend\Mvc\Controller\AbstractActionController;
-use Zend\View\Model\ViewModel;
+use Zend\Db\Adapter\Adapter;
 use Zend\View\Model\JsonModel;
-use Zend\Session\Container;
-use Zend\Db\TableGateway\AbstractTableGateway;
-use Zend\Db\Sql\Select;
-use Application\Controller\AccountController;
+use Zend\View\Model\ViewModel;
 
 class MatrimonialController extends AppController {
     
@@ -35,7 +31,7 @@ class MatrimonialController extends AppController {
 		 LEFT JOIN tbl_education_field on tbl_user_info.education_field=tbl_education_field.id
 		LEFT JOIN tbl_profession on tbl_user_info.profession=tbl_profession.id
 		 LEFT JOIN tbl_user_roles on tbl_user_info.user_id=tbl_user_roles.user_id
-		 where tbl_user_info.gender='Male' AND tbl_user_roles.IsMatrimonial='1'  ORDER BY tbl_user.id DESC LIMIT 0,4", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+		 where tbl_user_info.gender='Male' AND tbl_user_roles.IsMatrimonial='1'  ORDER BY tbl_user.id DESC LIMIT 0,4", Adapter::QUERY_MODE_EXECUTE);
 
         // print_r($GroomData);
 
@@ -51,7 +47,7 @@ class MatrimonialController extends AppController {
 		LEFT JOIN tbl_education_level on tbl_user_info.education_level=tbl_education_level.id
 		LEFT JOIN tbl_profession on tbl_user_info.profession=tbl_profession.id
 		LEFT JOIN tbl_user_roles on tbl_user_info.user_id=tbl_user_roles.user_id
-		 where tbl_user_info.gender='Female' AND tbl_user_roles.IsMatrimonial='1'  ORDER BY tbl_user.id DESC LIMIT 0,4", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+		 where tbl_user_info.gender='Female' AND tbl_user_roles.IsMatrimonial='1'  ORDER BY tbl_user.id DESC LIMIT 0,4", Adapter::QUERY_MODE_EXECUTE);
         /*         * ****Return to View Model******** */
         $filters_data = $this->sidebarFilters();
 
@@ -86,7 +82,7 @@ class MatrimonialController extends AppController {
 		LEFT JOIN tbl_religion on tbl_user_info.religion=tbl_religion.id
 		LEFT JOIN tbl_gothra_gothram on tbl_user_info.gothra_gothram=tbl_gothra_gothram.id
 		inner join tbl_user_roles on tbl_user_info.user_id=tbl_user_roles.user_id 
-		where tbl_user_info.gender='$search_for' AND tbl_user_roles.IsMatrimonial='1'  ORDER BY tbl_user.id DESC", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+		where tbl_user_info.gender='$search_for' AND tbl_user_roles.IsMatrimonial='1'  ORDER BY tbl_user.id DESC", Adapter::QUERY_MODE_EXECUTE);
         } else {
             $UserData = $adapter->query("select tbl_user_info.user_id as uid,tbl_user.email,tbl_user_roles.*,tbl_user.mobile_no,tbl_user_info.*,tbl_family_info.*,
 		 tbl_profession.profession,tbl_height.height,tbl_city.city_name as city,tbl_state.state_name as state,tbl_country.country_name as country,
@@ -104,7 +100,7 @@ class MatrimonialController extends AppController {
 		LEFT JOIN tbl_religion on tbl_user_info.religion=tbl_religion.id
 		LEFT JOIN tbl_gothra_gothram on tbl_user_info.gothra_gothram=tbl_gothra_gothram.id
 		inner join tbl_user_roles on tbl_user_info.user_id=tbl_user_roles.user_id 
-		where tbl_user_roles.IsMatrimonial='1' ORDER BY tbl_user.id DESC", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+		where tbl_user_roles.IsMatrimonial='1' ORDER BY tbl_user.id DESC", Adapter::QUERY_MODE_EXECUTE);
         }
         $filters_data = $this->sidebarFilters();
         // print_r($UserData);die;
@@ -114,6 +110,68 @@ class MatrimonialController extends AppController {
     public function profileViewAction() {
         $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
         $user_id = intval($this->params()->fromQuery('groom_id'));
+        $user_id = 39;
+        $userservice=new \Application\Mapper\UserDbSqlMapper($adapter);
+        $familyInfo = $userservice->getFamilyInfoById($user_id);
+        $data = $adapter->query("select * from tbl_user_gallery where user_id='$user_id' ORDER BY id DESC limit 6", Adapter::QUERY_MODE_EXECUTE)->toArray();
+        //\Zend\Debug\Debug::dump($data);
+         //exit;
+//        $metadata = new Metadata($adapter);
+//        $table = $metadata->getTable("tbl_family_info");
+//        $table->getColumns();
+//
+//        foreach ($table->getColumns() as $column) {
+//            if (strpos($column->getName(), "photo")) {
+//                $columns[] = $column->getName();
+//            }
+//        }
+        // foreach ($columns as $key => $value) {
+        //$Fdata = $adapter->query("select * from tbl_family_info where user_id='$user_id' ORDER BY id DESC", Adapter::QUERY_MODE_EXECUTE);
+        // }
+//        foreach ($Fdata as $F_data) {
+//            foreach ($columns as $key => $value) {
+//                if (empty($F_data->$value))
+//                    continue;
+//                else
+//                    $Fphotos[] = $F_data->$value;
+//            }
+//        }
+
+        foreach ($data as $P_data) {
+            foreach ($P_data as $key => $value) {
+
+                if ($key == "image_path")
+                    $Pphotos[] = $value;
+            }
+        }
+//        Family data 
+        foreach ($familyInfo->brotherData as $brothres) {
+
+            $ids[] = $brothres['user_id'];
+        }
+
+        foreach ($familyInfo->sisterData as $sisters) {
+
+            $ids[] = $sisters['user_id'];
+        }
+
+        $ids[] = $familyInfo->familyInfoArray['father_id'];
+        $ids[] = $familyInfo->familyInfoArray['mother_id'];
+        //print_r($ids);
+        $Fdata = $adapter->query("select * from tbl_user_gallery where user_id IN (" . implode(',', $ids) . ") ORDER BY id DESC", Adapter::QUERY_MODE_EXECUTE);
+        foreach ($Fdata as $F_data) {
+            $Fphotos[] = $F_data['image_path'];
+            //echo '<pre>';
+            //print_r($F_data['image_path']);
+        }
+
+        //echo '<pre>';
+        //print_r($Fphotos);
+        shuffle($Fphotos);
+        shuffle($Pphotos);
+        $data_gallery = $adapter->query("select * from tbl_user_gallery where user_id='$user_id' ORDER BY id DESC", Adapter::QUERY_MODE_EXECUTE);     
+
+//old coding
         $commanData = array();
         $commanData["officecountry"] = '';
         $commanData["officestate"] = '';
@@ -137,7 +195,7 @@ class MatrimonialController extends AppController {
 		LEFT JOIN tbl_gothra_gothram on tbl_user_info.gothra_gothram=tbl_gothra_gothram.id
 		LEFT JOIN tbl_designation on tbl_user_info.designation=tbl_designation.id
 		LEFT JOIN tbl_annual_income on tbl_user_info.annual_income=tbl_annual_income.id
-		WHERE tbl_user.id='$user_id' AND tbl_user_info.user_id='$user_id'", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+		WHERE tbl_user.id='$user_id' AND tbl_user_info.user_id='$user_id'", Adapter::QUERY_MODE_EXECUTE);
             $records = array();
             foreach ($UserData as $result) {
                 $records[] = $result;
@@ -206,7 +264,15 @@ class MatrimonialController extends AppController {
 
         $filters_data = $this->sidebarFilters();
 
-        return new ViewModel(array("userinfo" => $records, "officeData" => $commanData, "filters_data" => $filters_data, "galleries" => $galleries));
+        return new ViewModel(array("userinfo" => $records,
+            "officeData" => $commanData,
+            "filters_data" => $filters_data, 
+            "Pphotos" => $Pphotos,
+            "F_photos" => $Fphotos,
+            "gallery_data" => $data_gallery,
+            'userSummary' => $userservice->userSummaryById($user_id),
+            'familyInfo'=>$familyInfo,
+            "galleries" => $galleries));
     }
 
     public function sidebarFilters() {
@@ -215,7 +281,7 @@ class MatrimonialController extends AppController {
             , "state" => "tbl_state", "education_level" => "tbl_education_field", "designation" => "tbl_designation"
             , "height" => "tbl_height");
         foreach ($filters_array as $key => $table) {
-            $filters_data[$key] = $adapter->query("select * from " . $table . "", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+            $filters_data[$key] = $adapter->query("select * from " . $table . "", Adapter::QUERY_MODE_EXECUTE);
         }
         return $filters_data;
     }
@@ -316,26 +382,55 @@ class MatrimonialController extends AppController {
         $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
 
         if ($_POST['Female'] == 'Female' && $_POST['Male'] == 'Male') {
-            $BridesData = $adapter->query($sql, \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
-            $GroomData = $adapter->query($sql1, \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+            $BridesData = $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
+            $GroomData = $adapter->query($sql1, Adapter::QUERY_MODE_EXECUTE);
             $view = new ViewModel(array('BridesData' => $BridesData, 'GroomData' => $GroomData, "type" => 'both'));
             $view->setTerminal(true);
             return $view;
         } else {
             if ($_POST['Female'] == 'Female') {
-                $BridesData = $adapter->query($sql, \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+                $BridesData = $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
                 $view = new ViewModel(array('BridesData' => $BridesData, "type" => 'female'));
                 $view->setTerminal(true);
                 return $view;
             }
             if ($_POST['Male'] == 'Male') {
-                $GroomData = $adapter->query($sql1, \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+                $GroomData = $adapter->query($sql1, Adapter::QUERY_MODE_EXECUTE);
                 $request = $this->getRequest();
                 $view = new ViewModel(array('GroomData' => $GroomData, "type" => 'male'));
                 $view->setTerminal(true);
                 return $view;
             }
         }
+    }
+    
+    public function interestAction(){
+        $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
+        $userSession = $this->getUser()->session();
+        $user_id = $userSession->offsetGet('id');
+        $ref_no = $userSession->offsetGet('ref_no');
+        $request=$this->getRequest();
+        $post=$request->getPost();
+        $sent=$post['uid'];
+        $type=$post['type'];
+        if($type=="yes"){ $typeNo=1;}
+        if($type=="maybe"){ $typeNo=2;}
+        if($type=="no"){ $typeNo=3;}
+        if($type=='yes'){
+        $sql="INSERT INTO tbl_member_invitation (user_id, sent, type) values ($user_id , $sent, $typeNo)";
+        $result = $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
+        }
+         if($type=='maybe'){
+        $sql="INSERT INTO tbl_member_invitation (user_id, sent, type) values ($user_id , $sent, $typeNo)";
+        $result = $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
+        }
+         if($type=='no'){
+        $sql="INSERT INTO tbl_member_invitation (user_id, sent, type) values ($user_id , $sent, $typeNo)";
+        $result = $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
+        }
+        //$result=array('djdhjdj','hhdhdhd');
+        return new JsonModel(array('result'=>''));
+
     }
 
 }

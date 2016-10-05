@@ -89,13 +89,24 @@ class ProfileController extends AppController {
         $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
 
         $data = $adapter->query("select * from tbl_post ORDER BY id DESC limit 6", Adapter::QUERY_MODE_EXECUTE)->toArray();
-        
-        
+        $invitation = $adapter->query("select count('id') as invitation from tbl_member_invitation WHERE user_id=$user_id AND received IS NOT NULL", Adapter::QUERY_MODE_EXECUTE)->current();
+        $sent = $adapter->query("select count('id') as sent from tbl_member_invitation WHERE user_id=$user_id AND sent IS NOT NULL", Adapter::QUERY_MODE_EXECUTE)->current();
+        $accepted = $adapter->query("select count('id') as accepted from tbl_member_invitation WHERE user_id=$user_id AND accepted IS NOT NULL", Adapter::QUERY_MODE_EXECUTE)->current();
+        $acceptedMembers = $adapter->query("select * from tbl_member_invitation WHERE user_id=$user_id AND accepted IS NOT NULL", Adapter::QUERY_MODE_EXECUTE)->toArray();
+        foreach($acceptedMembers as $key=>$value){
+            $acceptedMember[] = $adapter->query("select tui.*, tug.image_path from tbl_user_info as tui LEFT JOIN tbl_user_gallery as tug ON tui.user_id=tug.user_id WHERE tui.user_id='".$value['accepted']."'", Adapter::QUERY_MODE_EXECUTE)->current();
+            //echo '<pre>';
+            //print_r($acceptedMember);
+        }
         
          return new ViewModel(array("form" => $MemberbasicForm,
             'userSummary' => $this->userService->userSummaryById($user_id),
             'url'=>'personal-profile',
             'post'=>$data,
+             'invitation'=>$invitation,
+             'sent'=>$sent,
+             'accepted'=>$accepted,
+             'acceptedMember'=>$acceptedMember,
             "percent" => $pro_per));
         
     }
@@ -1489,6 +1500,45 @@ class ProfileController extends AppController {
         //Debug::dump($message);
         //exit;
         return $message;
+    }
+    
+    public function sentAction(){
+         $userSession = $this->getUser()->session();
+        $user_id = $userSession->offsetGet('id');
+        $ref_no = $userSession->offsetGet('ref_no');
+        
+        $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
+
+       
+        $invitation = $adapter->query("select count('id') as invitation from tbl_member_invitation WHERE user_id=$user_id AND received IS NOT NULL", Adapter::QUERY_MODE_EXECUTE)->current();
+        $sent = $adapter->query("select * from tbl_member_invitation WHERE user_id=$user_id AND sent IS NOT NULL", Adapter::QUERY_MODE_EXECUTE);
+        $accepted = $adapter->query("select count('id') as accepted from tbl_member_invitation WHERE user_id=$user_id AND accepted IS NOT NULL", Adapter::QUERY_MODE_EXECUTE)->current();
+        //$acceptedMembers = $adapter->query("select * from tbl_member_invitation WHERE user_id=$user_id AND accepted IS NOT NULL", Adapter::QUERY_MODE_EXECUTE)->toArray();
+        //echo '<pre>';
+            //print_r($sent);
+        foreach($sent as $key=>$value){
+            $sentMember[] = $adapter->query("select tui.*, tug.image_path from tbl_user_info as tui LEFT JOIN tbl_user_gallery as tug ON tui.user_id=tug.user_id WHERE tui.user_id='".$value['sent']."'", Adapter::QUERY_MODE_EXECUTE)->current();
+            //echo '<pre>';
+            //print_r($sentMember);
+        }
+        //echo '<pre>';
+            //print_r($sentMember);
+//        foreach($invitation as $key=>$value){
+//            $invitationMember[] = $adapter->query("select tui.*, tug.image_path from tbl_user_info as tui LEFT JOIN tbl_user_gallery as tug ON tui.user_id=tug.user_id WHERE tui.user_id='".$value['accepted']."'", Adapter::QUERY_MODE_EXECUTE)->current();
+//            //echo '<pre>';
+//            //print_r($acceptedMember);
+//        }
+//        foreach($accepted as $key=>$value){
+//            $acceptedMember[] = $adapter->query("select tui.*, tug.image_path from tbl_user_info as tui LEFT JOIN tbl_user_gallery as tug ON tui.user_id=tug.user_id WHERE tui.user_id='".$value['accepted']."'", Adapter::QUERY_MODE_EXECUTE)->current();
+//            //echo '<pre>';
+//            //print_r($acceptedMember);
+//        }
+        
+         return new ViewModel(array(
+             //'invitation'=>$invitationMember,
+             'sentMember'=>$sentMember,
+             //'accepted'=>$acceptedMember,
+            ));
     }
 
 }

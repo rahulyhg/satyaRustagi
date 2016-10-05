@@ -76,7 +76,30 @@ class IndexController extends AppController {
     }
 
     public function communitiesAction() {
-        return new ViewModel();
+        $sql = "select * from tbl_rustagi_institutions";
+
+        $adapter=$this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
+        /******Fetch all Members Data from db*********/             
+         $InstData=$adapter->query($sql, \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+
+          $CommunityData = array();  
+
+         foreach($InstData as $idata){
+
+            $result[] = $idata;
+                $MemberData=$adapter->query("select * from tbl_rustagi_institutions_members where institute_id='".$idata->id."'", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+                if(count($MemberData)>0){
+                    $CommunityData[$idata->id] = $MemberData;
+                }
+                 
+         }
+
+          
+         $filters_data = $this->sidebarFilters();
+          
+        return new ViewModel(array('InstData'=>$result,'CommunityData'=>$CommunityData,"filters_data"=>$filters_data));
+        
+        
     }
 
     public function visionAction() {
@@ -160,8 +183,12 @@ class IndexController extends AppController {
         return new ViewModel(array('InstData' => $result, 'CommunityData' => $CommunityData, "filters_data" => $filters_data, "form" => $contactform, "message" => $msg));
     }
 
-    public function galleryAction() {
-        return new ViewModel();
+    public function photoGalleryAction() {
+        $adapter=$this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
+
+        $Events_photos=$adapter->query("select * from tbl_upcoming_events ORDER BY id DESC", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+        // print_r($Events_photos);die;
+        return new ViewModel(array("Events_photos"=>$Events_photos));
     }
     
      public function sidebarFilters()
@@ -232,6 +259,22 @@ $status = $transport->send($mail);
             $this->_contactTable = $sm->get('Application\Model\ContactTable');
         }
         return $this->_contactTable;
+    }
+    
+    public function feeAction() {
+        return new ViewModel();
+    }
+    
+     public function membershipfeeAction() {
+        return new ViewModel();
+    }
+    
+     public function matrimonialfeeAction() {
+        return new ViewModel();
+    }
+    
+     public function advertisewithusAction() {
+        return new ViewModel();
     }
 
 }

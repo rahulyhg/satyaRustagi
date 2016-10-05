@@ -235,13 +235,53 @@ return array(
                     ),
                 ),
             ),
-             'gallery' => array(
+             'photo-gallery' => array(
                 'type' => 'Literal',
                 'options' => array(
-                    'route' => '/gallery',                 
+                    'route' => '/photo-gallery',                 
                     'defaults' => array(
                         'controller' => 'Application\Controller\Index',
-                        'action' => 'gallery',
+                        'action' => 'photoGallery',
+                    ),
+                ),
+            ),
+            'fee' => array(
+                'type' => 'Literal',
+                'options' => array(
+                    'route' => '/fee',                 
+                    'defaults' => array(
+                        'controller' => 'Application\Controller\Index',
+                        'action' => 'fee',
+                    ),
+                ),
+            ),
+            'membershipfee' => array(
+                'type' => 'Literal',
+                'options' => array(
+                    'route' => '/membershipfee',                 
+                    'defaults' => array(
+                        'controller' => 'Application\Controller\Index',
+                        'action' => 'membershipfee',
+                    ),
+                ),
+            ),
+            'matrimonialfee' => array(
+                'type' => 'Literal',
+                'options' => array(
+                    'route' => '/matrimonialfee',                 
+                    'defaults' => array(
+                        'controller' => 'Application\Controller\Index',
+                        'action' => 'matrimonialfee',
+                    ),
+                ),
+            ),
+            'advertisewithus' => array(
+                'type' => 'Literal',
+                'options' => array(
+                    'route' => '/advertisewithus',                 
+                    'defaults' => array(
+                        'controller' => 'Application\Controller\Index',
+                        'action' => 'advertisewithus',
                     ),
                 ),
             ),
