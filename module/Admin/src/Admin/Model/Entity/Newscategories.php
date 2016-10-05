@@ -5,30 +5,79 @@ namespace Admin\Model\Entity;
 class Newscategories {
 
     public $id;
-    public $category_name;
-    public $IsActive;
-    public $created_date;
-    public $modified_date;
-    public $modified_by;
+    public $categoryName;
+    public $isActive;
+    public $createdDate;
+    public $modifiedDate;
+    public $modifiedBy;
 
-    public function exchangeArray($data) {
-
-        $this->id = (!empty($data['id'])) ? $data['id'] : null;
-
-        $this->category_name = (!empty($data['category_name'])) ? $data['category_name'] : null;
-
-        $this->IsActive = (!empty($data['IsActive'])) ? $data['IsActive'] : null;
-
-        $this->created_date = (!empty($data['created_date'])) ? $data['created_date'] : null;
-        
-        $this->modified_date = (!empty($data['modified_date'])) ? $data['modified_date'] : null;
-
-        $this->modified_by = (!empty($data['modified_by'])) ? $data['modified_by'] : null;
+//    public function exchangeArray($data) {
+//
+//        $this->id = (!empty($data['id'])) ? $data['id'] : null;
+//
+//        $this->category_name = (!empty($data['category_name'])) ? $data['category_name'] : null;
+//
+//        $this->IsActive = (!empty($data['IsActive'])) ? $data['IsActive'] : null;
+//
+//        $this->created_date = (!empty($data['created_date'])) ? $data['created_date'] : null;
+//        
+//        $this->modified_date = (!empty($data['modified_date'])) ? $data['modified_date'] : null;
+//
+//        $this->modified_by = (!empty($data['modified_by'])) ? $data['modified_by'] : null;
+//    }
+//
+//    public function getArrayCopy() {
+//        return get_object_vars($this);
+//    }
+    function getId() {
+        return $this->id;
     }
 
-    public function getArrayCopy() {
-        return get_object_vars($this);
+    function getCategoryName() {
+        return $this->categoryName;
     }
+
+    function getIsActive() {
+        return $this->isActive;
+    }
+
+    function getCreatedDate() {
+        return $this->createdDate;
+    }
+
+    function getModifiedDate() {
+        return $this->modifiedDate;
+    }
+
+    function getModifiedBy() {
+        return $this->modifiedBy;
+    }
+
+    function setId($id) {
+        $this->id = $id;
+    }
+
+    function setCategoryName($categoryName) {
+        $this->categoryName = $categoryName;
+    }
+
+    function setIsActive($isActive) {
+        $this->isActive = $isActive;
+    }
+
+    function setCreatedDate($createdDate) {
+        $this->createdDate = $createdDate;
+    }
+
+    function setModifiedDate($modifiedDate) {
+        $this->modifiedDate = $modifiedDate;
+    }
+
+    function setModifiedBy($modifiedBy) {
+        $this->modifiedBy = $modifiedBy;
+    }
+
+
 
 }
    

@@ -1,9 +1,10 @@
  <div >
             <p>
-              <a href="<?= $this->url('admin',array('controller'=>'events','action'=>'eventsindex'));?>"><button class="btn btn-warning btn-xlg">Go Back</button></a>
+              <a href="<?= $this->url('admin/events',array('action'=>'eventsindex'));?>"><button class="btn btn-warning btn-xlg">Go Back</button></a>
             </p>
           </div>
           
+          <div class="panel-body">
 
       <?php 
 
@@ -11,7 +12,8 @@
                 $form->prepare();
 
 
-        $form->setAttribute('action',$this->url('admin',array('controller'=>'events','action'=>'eventsadd')));
+//        $form->setAttribute('action',$this->url('admin',array('controller'=>'events','action'=>'eventsadd')));
+        $form->setAttribute('action', $this->url('admin/events', array('action' => 'eventsadd')));
         $form->setAttribute('onsubmit','return SubmitEventsForm();');
         $form->setAttribute('method','post');
         $form->setAttribute('enctype','multipart/form-data');
@@ -51,11 +53,11 @@
                        <div class="row">
                                                 <div class="form-group clearfix margintopbottom20">
                            <label id="flight_nos" class="col-sm-2 control-label labelalign ">
-                            <?= $this->translate($form->get('organiser_name')->getLabel()) ?>
+                            <?= $this->translate($form->get('event_organiser')->getLabel()) ?>
                            </label>
                                                   <div class="col-sm-3">
                                                      <?php 
-                                                     echo $this->formElement($form->get('organiser_name'));
+                                                     echo $this->formElement($form->get('event_organiser'));
                                                      ?>                                    
                                                   </div>
                                                  
@@ -109,11 +111,11 @@
                                                   </div>
 
                                                   <label id="flight_nos" class="col-sm-2 control-label labelalign ">
-                            <?= $this->translate($form->get('IsActive')->getLabel()) ?>
+                            <?= $this->translate($form->get('is_active')->getLabel()) ?>
                            </label>
                                                   <div class="col-sm-3">
                                                      <?php 
-                                                     echo $this->formElement($form->get('IsActive'));
+                                                     echo $this->formElement($form->get('is_active'));
                                                      ?>                                    
                                                   </div>
                            
@@ -145,8 +147,8 @@
                            </label>
                 <div class="wysiwyg-editor" id="editor1"></div>
                   
-              </div><!-- /.col -->
-            </div><!-- /.row --> 
+              </div>
+            </div>
                                              <div class="row">
                                                 <div class="form-group clearfix margintopbottom20">
                            <label id="flight_nos" class="col-sm-2 control-label labelalign ">
@@ -225,12 +227,12 @@
                     <div class="row">
                                                 <div class="form-group clearfix margintopbottom20">
                            <label id="flight_nos" class="col-sm-2 control-label labelalign ">
-                            <?= $this->translate($form->get('start_date')->getLabel()) ?>
+                            <?php echo $this->translate($form->get('event_date')->getLabel()) ?>
                            </label>
                                                   <div class="col-sm-3">
                                                      <div class="input-group">
 																	 <?php 
-                                                     echo $this->formElement($form->get('start_date'));
+                                                     echo $this->formElement($form->get('event_date'));
                                                      ?><span class="input-group-addon">
 																		<i class="fa fa-calendar bigger-110"></i>
 																	</span>
@@ -329,3 +331,5 @@
 echo $this->form()->closeTag();
 
         ?>
+
+              </div>

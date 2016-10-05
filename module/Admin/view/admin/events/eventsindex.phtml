@@ -7,7 +7,7 @@
 // die; 
 ?>
 
-<div class="col-lg-2">
+<!--<div class="col-lg-2">
                     <div class="delete">
                       <a class="btn btn-red defaultbtnsearch searchBooking" data-toggle="modal"
 
@@ -20,9 +20,9 @@
 </div>
 <div id="ViewmyModal" class="modal fade" role="dialog">
    
-</div>
+</div>-->
 
-<div id="myModal" class="modal fade" role="dialog">
+<div id="myModal2" class="modal fade" role="dialog">
   <div class="modal-dialog">
     <div class="modal-content">
            <?php 
@@ -137,11 +137,11 @@
                                                   </div>
 
                                                   <label id="flight_nos" class="col-sm-2 control-label labelalign ">
-                            <?= $this->translate($form->get('IsActive')->getLabel()) ?>
+                            <?= $this->translate($form->get('is_active')->getLabel()) ?>
                            </label>
                                                   <div class="col-sm-3">
                                                      <?php 
-                                                     echo $this->formElement($form->get('IsActive'));
+                                                     echo $this->formElement($form->get('is_active'));
                                                      ?> 
                                                      <span class="showerror"></span>                                   
                                                   </div>
@@ -367,6 +367,9 @@ echo $this->form()->closeTag();
 </div>
 </div>
 
+<div id="editForm" class="tab-content dontshow">
+                </div>
+
 
 
 
@@ -403,38 +406,58 @@ echo $this->form()->closeTag();
                     <tbody>
                       <?php 
                       $i=1;
+                      
                       foreach ($events as $event) {
                       
                       ?>
                       <tr>
                          
                         <td><?= $i?></td>
-                        <td><?= $event->event_name?></td>
-                        <td><?= empty($event->event_organiser)?'Not Given':$event->event_organiser;?></td>
-                        <td><?= date("l d-m-y",strtotime($event->event_date));?></td>
-                        <td class="shorttext"><div class="showshort"><?= $event->event_desc?></div></td>
-                        <td><?php $imagePath = (empty($event->image))? '/images/new-big.jpg' : $event->image_path;?>
+                        <td><?= $event->eventName?></td>
+                        <td><?= empty($event->eventOrganiser)?'Not Given':$event->eventOrganiser;?></td>
+                        <td><?= date("l d-m-y",strtotime($event->eventDate));?></td>
+                        <td class="shorttext"><div class="showshort"><?= $event->eventDesc?></div></td>
+                        <td><?php $imagePath = (empty($event->image))? '/images/new-big.jpg' : $event->imagePath;?>
                         <img src="<?= $this->basepath().$imagePath;?>" width="43" height="37" alt="">
                       </td>                       
-                        <td class="hidden-480"><?= $event->country_name?></td>
-                        <td class="hidden-480"><?= $event->city_name?></td>
+                        <td class="hidden-480"><?= $event->countryName?></td>
+                        <td class="hidden-480"><?= $event->cityName?></td>
                         <td class="hidden-480"><?= $event->venue?></td>
-                        <td class="hidden-480"><?= date('h:i A',strtotime($event->start_time))?></td>
-                        <td class="hidden-480"><?= date('h:i A',strtotime($event->end_time))?></td>
-                        <td class="hidden-480"><?= date('l d-m-y',strtotime($event->created_date))?></td>
-                        <td class="hidden-480"><?= date('l d-m-y',strtotime($event->modified_date))?></td>
-                        <td class="hidden-480"><?php $status = ($event->IsActive==1)? 'Active': 'In-Active';
-                        $statuscolor = ($event->IsActive==1)? 'lightgreen': 'red';
+                        <td class="hidden-480"><?= date('h:i A',strtotime($event->startTime))?></td>
+                        <td class="hidden-480"><?= date('h:i A',strtotime($event->endTime))?></td>
+                        <td class="hidden-480"><?= date('l d-m-y',strtotime($event->createdDate))?></td>
+                        <td class="hidden-480"><?= date('l d-m-y',strtotime($event->modifiedDate))?></td>
+                        <td class="hidden-480"><?php $status = ($event->isActive==1)? 'Active': 'In-Active';
+                        $statuscolor = ($event->isActive==1)? 'lightgreen': 'red';
                          ?>
-                          <button name="ChangeStatus" id="changestatus<?=$i;?>" onclick="changestatusquick(<?=$event->id?>,<?= ($event->IsActive==0)?0:1; ?>,'<?= $this->serverUrl().$this->url().'/events/changestatus';?>',changstatusresult);"  style="background:<?=$statuscolor?>;color:white;font-weight:bold;"><?= $status?>
+                          <button name="ChangeStatus" id="changestatus<?=$i;?>" onclick="changestatusquick
+                              (<?=$event->id?>,<?= ($event->isActive==0)?0:1; ?>,'<?= $this->
+                                                                url('admin/events', array('action'=>
+                                                                    'changestatus'));?>',changstatusresult);"  
+                                      style="background:<?=$statuscolor?>;color:white;font-weight:bold;">
+                                              <?= $status?>
                         </button></td>
-                        <td class="hidden-480"><?php echo ($event->modified_by==1)? 'Admin': 'NotByAdmin'; ?></td>
+                        <td class="hidden-480"><?php echo ($event->modifiedBy==1)? 'Admin': 'NotByAdmin'; ?></td>
                         <td><div class="hidden-sm hidden-xs action-buttons"> 
-                          <a class="blue" data-toggle="modal" href="#ViewmyModal" onclick="editbox(<?=$event->id?>,'<?=$this->serverurl().$this->url()."/events/eventsview";?>',showeventsview)"> <i class="ace-icon fa fa-search-plus bigger-130"></i> </a>
+                          <!--<a class="blue" data-toggle="modal" href="#ViewmyModal" onclick="editbox
+                              (<?php //echo $event->id?>,'<?php //echo $this->serverurl().$this->url()."/events/eventsview";?>'
+                              ,showeventsview)"> <i class="ace-icon fa fa-search-plus bigger-130"></i> </a>-->
+                          
+                          <a class="blue" style="cursor:pointer;" data-toggle="modal" data-target="#myModal"  
+                                                   tar="indview<?= $i ?>"> <i onclick="findRowDataByEventsId('<?php echo $this->url
+                                                           ('admin/events', array('action'=>'eventsview','id'=>$event->id)); ?>', 
+                                                                       viewRowDataById);" class="ace-icon fa fa-search-plus bigger-130">
+                                                    </i> </a>
 
-                           <a class="green"  data-toggle="modal" href="#EditmyModal" onclick="editbox(<?=$event->id?>,'<?=$this->serverurl().$this->url()."/events/eventsedit";?>',showeventsedit)"> <i class="ace-icon fa fa-pencil bigger-130"></i> </a> 
+                           <!--<a class="green"  data-toggle="modal" href="#EditmyModal" onclick=
+                               "editbox(<?php //echo $event->id?>,'<?php //echo $this->serverurl().$this->url().
+                                                                   //"/events/eventsedit";?>',
+                                                                       showeventsedit)"> 
+                       <i class="ace-icon fa fa-pencil bigger-130"></i> </a> -->
+                       <a class="green" href="<?php echo $this->url('admin/events',array('action'=>'eventsedit','id'=>$event->id)); ?>" > 
+                           <i class="ace-icon fa fa-pencil bigger-130"></i> </a>
 
-                           <a class="red" href="<?php echo $this->url('admin',array('controller'=>'events','action'=>'eventsdelete','id'=>$event->id)); ?>" onclick="return confirm('are you sure you want to delete');"> <i class="ace-icon fa fa-trash-o bigger-130"></i> </a> </div>
+                           <a class="red" href="<?php echo $this->url('admin/events',array('action'=>'eventsdelete','id'=>$event->id)); ?>" onclick="return confirm('are you sure you want to delete');"> <i class="ace-icon fa fa-trash-o bigger-130"></i> </a> </div>
                           </td>
                       </tr>
                       <?php 
@@ -498,3 +521,5 @@ echo $this->form()->closeTag();
 <!-- basic scripts --> 
 
 <!--[if !IE]> -->
+<div id="viewEventsModel"></div>
+<?php echo $this->inlineScript()->prependFile($this->basePath('/assets/js/event.js')); ?>

@@ -1,6 +1,6 @@
- <div >
+ <div>
             <p>
-              <a href="<?= $this->url('admin',array('controller'=>'news','action'=>'indexnewscategory'));?>"><button class="btn btn-warning btn-xlg">Go Back</button></a>
+              <a href="<?= $this->url('admin/news',array('action'=>'indexnewscategory'));?>"><button class="btn btn-warning btn-xlg">Go Back</button></a>
             </p>
           </div>
 <div class="panel-body">
@@ -15,7 +15,7 @@
                                                   <div class="col-sm-3">
                                                      <?php 
                                                      
-                                                     echo $Info->category_name;
+                                                     echo $Info->categoryName;
                                                      ?>                                    
                                                   </div>
                                                   <label id="flight_nos" class="col-sm-2 control-label labelalign ">
@@ -23,7 +23,7 @@
                            </label>
                                                   <div class="col-sm-3">
                                                      <?php 
-                                                     echo date('l d-m-Y',strtotime($Info->created_date));
+                                                     echo date('l d-m-Y',strtotime($Info->createdDate));
                                                      ?>                                    
                                                   </div>
                            
@@ -36,7 +36,7 @@
                            </label>
                                                   <div class="col-sm-3">
                                                      <?php 
-                                                     echo ($Info->modified_by==1)?'Admin':'Not Available Now';
+                                                     echo ($Info->modifiedBy==1)?'Admin':'Not Available Now';
                                                      ?>                                    
                                                   </div>
                                                  
@@ -45,7 +45,7 @@
                            </label>
                                                   <div class="col-sm-3">
                                                      <?php 
-                                                     echo ($Info->IsActive==1)? 'Active':'In-Active';
+                                                     echo ($Info->isActive==1)? 'Active':'In-Active';
                                                      ?>                                    
                                                   </div>
                                                  </div>
@@ -60,7 +60,7 @@
                            </label>
                                                   <div class="col-sm-3">
                                                      <?php 
-                                                     echo date('l d-m-Y',strtotime($Info->modified_date));
+                                                     echo date('l d-m-Y',strtotime($Info->modifiedDate));
                                                      ?>                                    
                                                   </div>
                                                  </div>

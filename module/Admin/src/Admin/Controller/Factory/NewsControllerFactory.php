@@ -12,8 +12,9 @@ class NewsControllerFactory implements FactoryInterface {
         $realServiceLocator = $serviceLocator->getServiceLocator();
         $commonService = $realServiceLocator->get('Common\Service\CommonServiceInterface');
         $adminService = $realServiceLocator->get('Admin\Service\AdminServiceInterface');
+        $newsService = $realServiceLocator->get('Admin\Service\NewsServiceInterface');
 
-        return new NewsController($commonService, $adminService);
+        return new NewsController($commonService, $adminService, $newsService);
     }
 
 }

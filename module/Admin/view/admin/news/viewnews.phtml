@@ -4,7 +4,7 @@
  ?>
  <div >
             <p>
-              <a href="<?= $this->url('admin',array('controller'=>'news','action'=>'indexnews'));?>"><button class="btn btn-warning btn-xlg">Go Back</button></a>
+              <a href="<?= $this->url('admin/news',array('action'=>'indexnews'));?>"><button class="btn btn-warning btn-xlg">Go Back</button></a>
             </p>
           </div>
 <div class="alert alert-block alert-success">
@@ -25,9 +25,9 @@
   
   <div class="timeline-body alert-success2">
                      Posted By : <?= $Info->username ;?> |
-                   Posted Date : <?= date("l d-m-y",strtotime($Info->created_date)); ?> | 
+                   Posted Date : <?= date("l d-m-y",strtotime($Info->createdDate)); ?> | 
 
-                   Category Name : <?= ($Info->category_name); ?> 
+                   Category Name : <?= ($Info->categoryName); ?> 
 
                       
                     </div>

@@ -47,7 +47,7 @@ class EventsFilter extends InputFilter {
         ));
 
         $this->add(array(
-            'name' => 'event_date',
+            'name' => 'start_date',
             'required'=> true,
         ));
 
@@ -87,7 +87,7 @@ class EventsFilter extends InputFilter {
         ));
 
         $this->add(array(
-            'name' => 'IsActive',
+            'name' => 'is_active',
             'required'=> true,
         ));
 

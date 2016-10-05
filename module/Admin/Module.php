@@ -154,6 +154,11 @@ class Module {
             'factories' => array(
                 'Admin\Mapper\AdminMapperInterface' => 'Admin\Mapper\Factory\AdminDbSqlMapperFactory',
                 'Admin\Service\AdminServiceInterface' => 'Admin\Service\Factory\AdminServiceFactory',
+                'Admin\Mapper\NewsMapperInterface' => 'Admin\Mapper\Factory\NewsDbSqlMapperFactory',
+                'Admin\Service\NewsServiceInterface' => 'Admin\Service\Factory\NewsServiceFactory',
+                'Admin\Mapper\EventsMapperInterface' => 'Admin\Mapper\Factory\EventsDbSqlMapperFactory',
+                'Admin\Service\EventsServiceInterface' => 'Admin\Service\Factory\EventsServiceFactory',
+                
                 'Admin\Model\CountryTable' => function($sm) {
 
                     $tableGateway = $sm->get('CountryTableGateway');
