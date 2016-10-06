@@ -104,7 +104,7 @@
                 <li class="inner_list">
                     <div class="inner_folders">
 
-                        <a href="#">
+                        <a href="<?php echo $this->url('profile', array('action'=>'received','slug'=>'interests'));?>">
                             <span class="span_bold"><?php echo $this->invitation['invitation']; ?></span>                <span>Invitations</span>
                             <span class="arrow_wrap"><span class="myshaadi_left_arrow"></span></span>            </a>
                     </div>
@@ -117,7 +117,7 @@
                 </li>
                 <li class="inner_list">
                     <div class="inner_folders">
-                        <a href="#">
+                        <a href="<?php echo $this->url('profile', array('action'=>'accepted','slug'=>'interests'));?>">
                             <span>Members</span>
                             <span class=" num"><?php echo $this->accepted['accepted']; ?></span>
                         </a>

@@ -3,19 +3,21 @@
 namespace Application\Controller;
 
 use Zend\Db\Adapter\Adapter;
+use Zend\Session\Container;
 use Zend\View\Model\JsonModel;
 use Zend\View\Model\ViewModel;
 
 class MatrimonialController extends AppController {
     
     protected $metrimonialService;
+    public $userService;
 
     public function __construct(\Application\Service\MatrimonialServiceInterface $metrimonialService) {
         $this->metrimonialService = $metrimonialService;
     }
 
     public function indexAction() {
-            \Zend\Debug\Debug::dump($this->metrimonialService->findAllPosts());
+            //\Zend\Debug\Debug::dump($this->metrimonialService->findAllPosts());
             
             
         $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
@@ -66,12 +68,12 @@ class MatrimonialController extends AppController {
         }
         /*         * ****Fetch User Data******** */
         if ($search_for != '') {
-            $UserData = $adapter->query("select tbl_user_info.user_id as uid,tbl_user_roles.*,tbl_user.email,tbl_user.mobile_no,tbl_user_info.*,tbl_family_info.*,
+            $UserData = $adapter->query("select tbl_user_info.user_id as uid,tbl_user_roles.*,tbl_user.email,tbl_user.mobile_no,tbl_user_info.*,
 		 tbl_profession.profession,tbl_height.height,tbl_city.city_name as city,tbl_state.state_name as state,tbl_country.country_name as country,
 		 tbl_education_field.education_field,tbl_education_level.education_level,tbl_religion.religion_name as religion,tbl_gothra_gothram.gothra_name as caste
 		 FROM tbl_user
 		INNER JOIN tbl_user_info on tbl_user.id=tbl_user_info.user_id
-		INNER JOIN tbl_family_info on tbl_user.id=tbl_family_info.user_id
+		
 		LEFT JOIN tbl_profession on tbl_user_info.profession=tbl_profession.id
 		LEFT JOIN tbl_height on tbl_user_info.height=tbl_height.id
 		LEFT JOIN tbl_city on tbl_user_info.city=tbl_city.id
@@ -84,12 +86,12 @@ class MatrimonialController extends AppController {
 		inner join tbl_user_roles on tbl_user_info.user_id=tbl_user_roles.user_id 
 		where tbl_user_info.gender='$search_for' AND tbl_user_roles.IsMatrimonial='1'  ORDER BY tbl_user.id DESC", Adapter::QUERY_MODE_EXECUTE);
         } else {
-            $UserData = $adapter->query("select tbl_user_info.user_id as uid,tbl_user.email,tbl_user_roles.*,tbl_user.mobile_no,tbl_user_info.*,tbl_family_info.*,
+            $UserData = $adapter->query("select tbl_user_info.user_id as uid,tbl_user.email,tbl_user_roles.*,tbl_user.mobile_no,tbl_user_info.*,
 		 tbl_profession.profession,tbl_height.height,tbl_city.city_name as city,tbl_state.state_name as state,tbl_country.country_name as country,
 		 tbl_education_field.education_field,tbl_education_level.education_level,tbl_religion.religion_name as religion,tbl_gothra_gothram.gothra_name as caste
 		 FROM tbl_user
 		INNER JOIN tbl_user_info on tbl_user.id=tbl_user_info.user_id
-		INNER JOIN tbl_family_info on tbl_user.id=tbl_family_info.user_id
+		
 		LEFT JOIN tbl_profession on tbl_user_info.profession=tbl_profession.id
 		LEFT JOIN tbl_height on tbl_user_info.height=tbl_height.id
 		LEFT JOIN tbl_city on tbl_user_info.city=tbl_city.id
@@ -109,67 +111,18 @@ class MatrimonialController extends AppController {
 
     public function profileViewAction() {
         $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
-        $user_id = intval($this->params()->fromQuery('groom_id'));
-        $user_id = 39;
+       
+        if(intval($this->params()->fromQuery('groom_id'))){
+            $user_id = intval($this->params()->fromQuery('groom_id'));
+        }
+        if(intval($this->params()->fromQuery('bride_id'))){
+            $user_id = intval($this->params()->fromQuery('bride_id'));
+        }
+       
+        //$user_id = 39;
         $userservice=new \Application\Mapper\UserDbSqlMapper($adapter);
         $familyInfo = $userservice->getFamilyInfoById($user_id);
-        $data = $adapter->query("select * from tbl_user_gallery where user_id='$user_id' ORDER BY id DESC limit 6", Adapter::QUERY_MODE_EXECUTE)->toArray();
-        //\Zend\Debug\Debug::dump($data);
-         //exit;
-//        $metadata = new Metadata($adapter);
-//        $table = $metadata->getTable("tbl_family_info");
-//        $table->getColumns();
-//
-//        foreach ($table->getColumns() as $column) {
-//            if (strpos($column->getName(), "photo")) {
-//                $columns[] = $column->getName();
-//            }
-//        }
-        // foreach ($columns as $key => $value) {
-        //$Fdata = $adapter->query("select * from tbl_family_info where user_id='$user_id' ORDER BY id DESC", Adapter::QUERY_MODE_EXECUTE);
-        // }
-//        foreach ($Fdata as $F_data) {
-//            foreach ($columns as $key => $value) {
-//                if (empty($F_data->$value))
-//                    continue;
-//                else
-//                    $Fphotos[] = $F_data->$value;
-//            }
-//        }
-
-        foreach ($data as $P_data) {
-            foreach ($P_data as $key => $value) {
-
-                if ($key == "image_path")
-                    $Pphotos[] = $value;
-            }
-        }
-//        Family data 
-        foreach ($familyInfo->brotherData as $brothres) {
-
-            $ids[] = $brothres['user_id'];
-        }
-
-        foreach ($familyInfo->sisterData as $sisters) {
-
-            $ids[] = $sisters['user_id'];
-        }
-
-        $ids[] = $familyInfo->familyInfoArray['father_id'];
-        $ids[] = $familyInfo->familyInfoArray['mother_id'];
-        //print_r($ids);
-        $Fdata = $adapter->query("select * from tbl_user_gallery where user_id IN (" . implode(',', $ids) . ") ORDER BY id DESC", Adapter::QUERY_MODE_EXECUTE);
-        foreach ($Fdata as $F_data) {
-            $Fphotos[] = $F_data['image_path'];
-            //echo '<pre>';
-            //print_r($F_data['image_path']);
-        }
-
-        //echo '<pre>';
-        //print_r($Fphotos);
-        shuffle($Fphotos);
-        shuffle($Pphotos);
-        $data_gallery = $adapter->query("select * from tbl_user_gallery where user_id='$user_id' ORDER BY id DESC", Adapter::QUERY_MODE_EXECUTE);     
+      
 
 //old coding
         $commanData = array();
@@ -179,11 +132,11 @@ class MatrimonialController extends AppController {
         if ($user_id != '') {
 
             /*             * ****Fetch User Data******** */
-            $UserData = $adapter->query("select tbl_user.email,tbl_user.mobile_no,tbl_user_info.*,tbl_family_info.*,tbl_height.*,
+            $UserData = $adapter->query("select tbl_user.email,tbl_user.mobile_no,tbl_user_info.*,tbl_height.*,
 		 tbl_profession.profession,tbl_city.city_name as city,tbl_state.state_name as state,tbl_country.country_name as country,
 		 tbl_education_field.education_field,tbl_education_level.education_level,tbl_religion.religion_name as religion,tbl_gothra_gothram.gothra_name as caste,tbl_designation.designation,tbl_annual_income.annual_income FROM tbl_user
 		INNER JOIN tbl_user_info on tbl_user.id=tbl_user_info.user_id
-		INNER JOIN tbl_family_info on tbl_user.id=tbl_family_info.user_id
+		
 		INNER JOIN tbl_profession on tbl_user_info.profession=tbl_profession.id
 		LEFT JOIN tbl_city on tbl_user_info.city=tbl_city.id
 		LEFT JOIN tbl_state on tbl_user_info.state=tbl_state.id
@@ -238,8 +191,6 @@ class MatrimonialController extends AppController {
 
             $records[0]['brother_info'] = $brother_info;
 
-
-
             $sister_title = unserialize($records[0]['name_title_sister']);
             $sister_name = unserialize($records[0]['sister_name']);
             $sister_status = unserialize($records[0]['sister_status']);
@@ -252,17 +203,40 @@ class MatrimonialController extends AppController {
             $UserData = array();
         }
         // echo "<pre>";
-        $galleries = $this->galleries($user_id);
-
-        // foreach ($galleries[1] as $key => $value) {
-        // 	echo $value[0][0]."<br>";
-        // }
-        // print_r($galleries[1]);
-        // die;
-        // print_r($galleries[0]);
-        // die;
+//        $galleries = $this->galleries($user_id);
 
         $filters_data = $this->sidebarFilters();
+        
+        
+// new coding
+       $data = $adapter->query("select * from tbl_user_gallery where user_id='$user_id' ORDER BY id DESC limit 6", Adapter::QUERY_MODE_EXECUTE)->toArray();
+      
+        foreach ($data as $P_data) {
+            foreach ($P_data as $key => $value) {
+
+                if ($key == "image_path")
+                    $Pphotos[] = $value;
+            }
+        }
+//Family data 
+        foreach ($familyInfo->brotherData as $brothres) {
+
+            $ids[] = $brothres['user_id'];
+        }
+        foreach ($familyInfo->sisterData as $sisters) {
+
+            $ids[] = $sisters['user_id'];
+        }
+        $ids[] = $familyInfo->familyInfoArray['father_id'];
+        $ids[] = $familyInfo->familyInfoArray['mother_id'];
+        $Fdata = $adapter->query("select * from tbl_user_gallery where user_id IN (" . implode(',', $ids) . ") ORDER BY id DESC", Adapter::QUERY_MODE_EXECUTE);
+        foreach ($Fdata as $F_data) {
+            $Fphotos[] = $F_data['image_path'];
+
+        }
+        shuffle($Fphotos);
+        shuffle($Pphotos);
+        $data_gallery = $adapter->query("select * from tbl_user_gallery where user_id='$user_id' ORDER BY id DESC", Adapter::QUERY_MODE_EXECUTE);     
 
         return new ViewModel(array("userinfo" => $records,
             "officeData" => $commanData,
@@ -431,6 +405,137 @@ class MatrimonialController extends AppController {
         //$result=array('djdhjdj','hhdhdhd');
         return new JsonModel(array('result'=>''));
 
+    }
+    
+    public function showallimagesAction() {
+
+        $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
+        $session = new Container('user');
+        $user_id = $session->offsetGet('id');
+        $ref_no = $session->offsetGet('ref_no');
+        $this->userService=new \Application\Mapper\UserDbSqlMapper($adapter);
+        $familyInfo = $this->userService->getFamilyInfoById($user_id);
+
+        //print_r($familyInfo);
+        //exit;
+
+
+
+
+        //print_r($ids);
+        //$ids['sister'] = $brothres['user_id'];
+//        foreach ($familyInfo->brotherData as $brothres) {
+//            print_r($brothres);
+//            $ids['father'] = $brothres['user_id'];
+//        }
+        //exit;
+        if ($_POST['type'] == "Personal") {
+            $data = $adapter->query("select * from tbl_user_gallery where user_id='$user_id' OR ref_no='$ref_no' ORDER BY id DESC", Adapter::QUERY_MODE_EXECUTE)->toArray();
+            foreach ($data as $P_data) {
+                foreach ($P_data as $key => $value) {
+
+                    if ($key == "image_path")
+                        $photos[] = array($value, $P_data['id']);
+                }
+            }
+
+//for testing purpose
+//    		$action = $server_url = $this->getRequest()->getUri()->getScheme() . '://' . $this->getRequest()->getUri()->getHost()."/rustagi/account/delselected";
+//for live purpose
+            //$action = $server_url = $this->getRequest()->getUri()->getScheme() . '://' . $this->getRequest()->getUri()->getHost() . "/account/delselected";
+            //$action = $this->url()->fromRoute('profile', array('action' => 'delselected'));
+            //$output[] = "<input class='btn btn-default' type='button' style='float:right;' onclick='delselected(&quot;showallimages&quot;,&quot;$action&quot;,delselectedresults)' value='delete selected'><br><br>";
+
+            foreach ($photos as $key => $value) {
+                $title = (!(int) $value[1]) ? ucwords(str_replace("_", " ", $value[1])) : "";
+                //echo '<pre>';
+                //print_r($value);
+
+                $output[] = '<div class="col-sm-3"><img src="/uploads/' . $value[0] . '" onmouseover="showchck(this)" onmouseout="hidechck(this)" onclick="selectchk(this)" class="moreimgthambdeleat imghover"/>
+
+   
+    <div class="familytitles">' . $title . '</div>
+    </div>';
+            }
+            $output[] = "<input type='hidden' name='type' value='" . $_POST['type'] . "'><input type='hidden' name='uid' value='" . $user_id . "'>";
+            // echo join("",$output);
+        } else {
+
+//print_r(implode(',', $ids));
+            //exit;
+            //$action = $server_url = $this->getRequest()->getUri()->getScheme() . '://' . $this->getRequest()->getUri()->getHost() . "/account/delselected";
+            //$action = $this->url()->fromRoute('profile', array('action' => 'delselected'));
+            //echo $action;
+            //$action='dcvdvfdb';
+            //$output[] = "<input class='btn btn-default' type='button' style='float:right;' onclick='delselected(&quot;showallimages&quot;,&quot;$action&quot;,delselectedresults)' value='delete selected'><br><br>";
+            foreach ($familyInfo->brotherData as $brothres) {
+
+                $idsBrothers[] = $brothres['user_id'];
+            }
+            $Fdata = $adapter->query("select * from tbl_user_gallery where user_id IN (" . implode(',', $idsBrothers) . ") ORDER BY id DESC", Adapter::QUERY_MODE_EXECUTE);
+            foreach ($Fdata as $F_data) {
+                //print_r($F_data);
+                $title = 'Brother photo';
+                $Name = '';
+
+                $output[] = '<div class="col-sm-3"><img src="/uploads/' . $F_data['image_path'] . '" onmouseover="showchck(this)" onmouseout="hidechck(this)" onclick="selectchk(this)" class="moreimgthambdeleat imghover"/>
+                               
+                                <div class="familytitles">' . $title . '</div>
+                                <div class="familytitles">' . $Name . '</div>
+                            </div>';
+            }
+            foreach ($familyInfo->sisterData as $sisters) {
+
+                $idsSisters[] = $sisters['user_id'];
+            }
+            $Fdata = $adapter->query("select * from tbl_user_gallery where user_id IN (" . implode(',', $idsSisters) . ") ORDER BY id DESC", Adapter::QUERY_MODE_EXECUTE);
+            foreach ($Fdata as $F_data) {
+                //print_r($F_data);
+                $title = 'Sister photo';
+                $Name = '';
+
+                $output[] = '<div class="col-sm-3"><img src="/uploads/' . $F_data['image_path'] . '" onmouseover="showchck(this)" onmouseout="hidechck(this)" onclick="selectchk(this)" class="moreimgthambdeleat imghover"/>
+                               
+                                <div class="familytitles">' . $title . '</div>
+                                <div class="familytitles">' . $Name . '</div>
+                            </div>';
+            }
+            $father_id = $familyInfo->familyInfoArray['father_id'];
+            $Fdata = $adapter->query("select * from tbl_user_gallery where user_id='$father_id' ORDER BY id DESC", Adapter::QUERY_MODE_EXECUTE);
+            foreach ($Fdata as $F_data) {
+                //print_r($F_data);
+                $title = 'Father photo';
+                $Name = '';
+
+                $output[] = '<div class="col-sm-3"><img src="/uploads/' . $F_data['image_path'] . '" onmouseover="showchck(this)" onmouseout="hidechck(this)" onclick="selectchk(this)" class="moreimgthambdeleat imghover"/>
+                             
+                                <div class="familytitles">' . $title . '</div>
+                                <div class="familytitles">' . $Name . '</div>
+                            </div>';
+            }
+            $mother_id = $familyInfo->familyInfoArray['mother_id'];
+            $Fdata = $adapter->query("select * from tbl_user_gallery where user_id='$mother_id' ORDER BY id DESC", Adapter::QUERY_MODE_EXECUTE);
+            foreach ($Fdata as $F_data) {
+                //print_r($F_data);
+                $title = 'Mother photo';
+                $Name = '';
+
+                $output[] = '<div class="col-sm-3"><img src="/uploads/' . $F_data['image_path'] . '" onmouseover="showchck(this)" onmouseout="hidechck(this)" onclick="selectchk(this)" class="moreimgthambdeleat imghover"/>
+                               
+                                <div class="familytitles">' . $title . '</div>
+                                <div class="familytitles">' . $Name . '</div>
+                            </div>';
+            }
+
+
+
+            $output[] = "<input type='hidden' name='type' value='" . $_POST['type'] . "'><input type='hidden' name='uid' value='" . $user_id . "'>";
+        }
+
+        echo join("", $output);
+        // echo "<pre>";
+        // print_r($photos);
+        die;
     }
 
 }

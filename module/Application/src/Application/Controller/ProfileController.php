@@ -19,7 +19,8 @@ use Application\Service\UserServiceInterface;
 use Common\Service\CommonServiceInterface;
 use Zend\Authentication\AuthenticationService;
 use Zend\Db\Adapter\Adapter;
-use Zend\Debug\Debug;
+use Zend\Json\Json;
+use Zend\Mvc\Controller\AbstractController;
 use Zend\Mvc\MvcEvent;
 use Zend\Session\Container;
 use Zend\View\Model\JsonModel;
@@ -36,7 +37,7 @@ class ProfileController extends AppController {
 
     /**
      * Attache les évènements
-     * @see \Zend\Mvc\Controller\AbstractController::attachDefaultListeners()
+     * @see AbstractController::attachDefaultListeners()
      */
     protected function attachDefaultListeners() {
         parent::attachDefaultListeners();
@@ -437,9 +438,9 @@ class ProfileController extends AppController {
         //Debug::dump($pro_per);
 
 
-        $broDataJson = \Zend\Json\Json::encode($familyInfo->brotherData);
-        $sisDataJson = \Zend\Json\Json::encode($familyInfo->sisterData);
-        $kidsDataJson = \Zend\Json\Json::encode($familyInfo->kidsData);
+        $broDataJson = Json::encode($familyInfo->brotherData);
+        $sisDataJson = Json::encode($familyInfo->sisterData);
+        $kidsDataJson = Json::encode($familyInfo->kidsData);
 
 
         return new ViewModel(array("form" => $FamilyInfoForm,
@@ -1513,32 +1514,88 @@ class ProfileController extends AppController {
         $invitation = $adapter->query("select count('id') as invitation from tbl_member_invitation WHERE user_id=$user_id AND received IS NOT NULL", Adapter::QUERY_MODE_EXECUTE)->current();
         $sent = $adapter->query("select * from tbl_member_invitation WHERE user_id=$user_id AND sent IS NOT NULL", Adapter::QUERY_MODE_EXECUTE);
         $accepted = $adapter->query("select count('id') as accepted from tbl_member_invitation WHERE user_id=$user_id AND accepted IS NOT NULL", Adapter::QUERY_MODE_EXECUTE)->current();
-        //$acceptedMembers = $adapter->query("select * from tbl_member_invitation WHERE user_id=$user_id AND accepted IS NOT NULL", Adapter::QUERY_MODE_EXECUTE)->toArray();
-        //echo '<pre>';
-            //print_r($sent);
+    
         foreach($sent as $key=>$value){
             $sentMember[] = $adapter->query("select tui.*, tug.image_path from tbl_user_info as tui LEFT JOIN tbl_user_gallery as tug ON tui.user_id=tug.user_id WHERE tui.user_id='".$value['sent']."'", Adapter::QUERY_MODE_EXECUTE)->current();
             //echo '<pre>';
             //print_r($sentMember);
         }
-        //echo '<pre>';
-            //print_r($sentMember);
-//        foreach($invitation as $key=>$value){
-//            $invitationMember[] = $adapter->query("select tui.*, tug.image_path from tbl_user_info as tui LEFT JOIN tbl_user_gallery as tug ON tui.user_id=tug.user_id WHERE tui.user_id='".$value['accepted']."'", Adapter::QUERY_MODE_EXECUTE)->current();
-//            //echo '<pre>';
-//            //print_r($acceptedMember);
-//        }
-//        foreach($accepted as $key=>$value){
-//            $acceptedMember[] = $adapter->query("select tui.*, tug.image_path from tbl_user_info as tui LEFT JOIN tbl_user_gallery as tug ON tui.user_id=tug.user_id WHERE tui.user_id='".$value['accepted']."'", Adapter::QUERY_MODE_EXECUTE)->current();
-//            //echo '<pre>';
-//            //print_r($acceptedMember);
-//        }
+    
         
          return new ViewModel(array(
              //'invitation'=>$invitationMember,
              'sentMember'=>$sentMember,
              //'accepted'=>$acceptedMember,
             ));
+    }
+    
+    public function acceptedAction(){
+         $userSession = $this->getUser()->session();
+        $user_id = $userSession->offsetGet('id');
+        $ref_no = $userSession->offsetGet('ref_no');
+        
+        $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
+       
+        $accepted = $adapter->query("select * from tbl_member_invitation WHERE user_id=$user_id AND accepted IS NOT NULL", Adapter::QUERY_MODE_EXECUTE);
+       
+        foreach($accepted as $key=>$value){
+            $acceptedMember[] = $adapter->query("select tui.*, tug.image_path from tbl_user_info as tui LEFT JOIN tbl_user_gallery as tug ON tui.user_id=tug.user_id WHERE tui.user_id='".$value['accepted']."'", Adapter::QUERY_MODE_EXECUTE)->current();
+            //echo '<pre>';
+            //print_r($sentMember);
+        }
+   
+         return new ViewModel(array(
+             //'invitation'=>$invitationMember,
+             'acceptedMember'=>$acceptedMember,
+             //'accepted'=>$acceptedMember,
+            ));
+    }
+    public function receivedAction(){
+         $userSession = $this->getUser()->session();
+        $user_id = $userSession->offsetGet('id');
+        $ref_no = $userSession->offsetGet('ref_no');
+        
+        $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
+
+       
+        $received = $adapter->query("select * from tbl_member_invitation WHERE user_id=$user_id AND received IS NOT NULL", Adapter::QUERY_MODE_EXECUTE);
+//        echo '<pre>';
+//   print_r($invitation);
+        foreach($received as $key=>$value){
+            $receivedMember[] = $adapter->query("select tui.*, tug.image_path from tbl_user_info as tui LEFT JOIN tbl_user_gallery as tug ON tui.user_id=tug.user_id WHERE tui.user_id='".$value['received']."'", Adapter::QUERY_MODE_EXECUTE)->current();
+            $memInfo[]=$value;
+            
+            //echo '<pre>';
+            //print_r($sentMember);
+        }
+        //echo '<pre>';
+   //print_r($received);
+        
+         return new ViewModel(array(
+             //'invitation'=>$invitationMember,
+             'receivedMember'=>$receivedMember,
+             'memInfo'=>$memInfo,
+            ));
+    }
+    
+    public function interestacceptedAction(){
+        $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
+//        $userSession = $this->getUser()->session();
+//        $user_id = $userSession->offsetGet('id');
+//        $ref_no = $userSession->offsetGet('ref_no');
+        $request=$this->getRequest();
+        $post=$request->getPost();
+        $id=$post['id'];
+        $accepted=$post['uid'];
+        $type=$post['type'];
+       
+        $sql="UPDATE tbl_member_invitation SET received=NULL, accepted=$accepted WHERE id=$id";
+        //echo $sql;
+        //exit;
+        $result = $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
+       
+        return new JsonModel(array('result'=>''));
+
     }
 
 }

@@ -44,19 +44,13 @@ $session = new Zend\Session\Container('user');
 
         <div class="col-sm-3 profile-img col-xs-4">
 
-            <a class="thumbnail" href="#thumb" style="margin-bottom:0;"><img src="<?php
-                if ($user_Record->profile_photo != '') {
-                    echo $this->basePath() . $user_Record->profile_photo;
-                } else {
-                    echo $this->basePath() . '/img/default_user.png';
-                }
-                ?>" width="116"/><span><img src="<?php
-                                                                                 if ($user_Record->profile_photo != '') {
-                                                                                     echo $this->basePath() . $user_Record->profile_photo;
-                                                                                 } else {
-                                                                                     echo $this->basePath() . '/img/default_user.png';
-                                                                                 }
-                ?>" /></span></a>
+          <a class="thumbnail" href="#thumb" style="margin-bottom:0;">
+                <?php if (!empty($this->userSummary->profilePic['image_path'])) { ?>
+                    <img   id="profile_photo" src="<?php echo $this->basePath('uploads/') . $this->userSummary->profilePic['image_path']; ?>" width="146" height="146"/>
+                <?php } else { ?>
+                    <img src="<?php echo $this->basePath('img/default_user.png') ?>" width="146" height="146"/>
+                <?php } ?>
+            </a>
             <p>Membership ID <?= $user_Record->ref_no ?></p>
 
         </div>
@@ -65,8 +59,8 @@ $session = new Zend\Session\Container('user');
                 <div class="col-xs-5">Name</div>
                 <div class="col-xs-7"><?= $user_Record->name_title_user . " " . $user_Record->full_name ?></div>
 
-                <div class="col-xs-5">Father’s. Name</div>
-                <div class="col-xs-7"><?= $user_Record->name_title_father . " " . $user_Record->father_name ?></div>
+               <div class="col-xs-5">Father’s. Name</div>
+                <div class="col-xs-7"><?= $familyInfo->familyInfoArray['name_title_father'] . " " . $familyInfo->familyInfoArray['father_name'] ?></div>
 
                 <div class="col-xs-5">Address</div>
                 <div class="col-xs-7"><?= $user_Record->address ?></div>
@@ -115,13 +109,25 @@ $session = new Zend\Session\Container('user');
 
         <div class="clearfix"></div>
         <ul class="nav nav-pills" id="disableme">
-            <li class="active"><a data-toggle="pill" href="#about">About</a></li>
-            <li><a data-toggle="pill" href="#personal-info">Personal Info</a></li>
-            <li><a data-toggle="pill" href="#education">Education</a></li>
-            <li><a data-toggle="pill" href="#profession">Profession</a></li>
-            <li><a data-toggle="pill" href="#family-details">Family Details</a></li>
-            <li><a data-toggle="pill" href="#marital-detail">Marital Detail</a></li> 
-            <li><a data-toggle="pill" href="#photo-gallery">Gallery</a></li> 
+            <?php if ($this->authUser()->isLogin() === true) { ?>
+                <li class="active"><a data-toggle="pill" href="#about">About</a></li>
+                <li><a data-toggle="pill" href="#personal-info">Personal Info</a></li>
+                <li><a data-toggle="pill" href="#education">Education</a></li>
+                <li><a data-toggle="pill" href="#profession">Profession</a></li>
+                <li><a data-toggle="pill" href="#family-details">Family Details</a></li>
+                <li><a data-toggle="pill" href="#marital-detail">Marital Detail</a></li>
+                <li><a data-toggle="pill" href="#photo-gallery">Gallery</a></li>
+            <?php } else { ?>
+                <li class="active"><a data-toggle="pill" href="#about">About</a></li>
+                <li><a  href="#personal-info" data-target="#loginPopUpModal" data-toggle="modal">Personal Info</a></li>
+                <li><a  href="#education" data-target="#loginPopUpModal" data-toggle="modal">Education</a></li>
+                <li><a  href="#profession" data-target="#loginPopUpModal" data-toggle="modal">Profession</a></li>
+                <li><a  href="#family-details" data-target="#loginPopUpModal" data-toggle="modal">Family Details</a></li>
+                <li><a  href="#marital-detail" data-target="#loginPopUpModal" data-toggle="modal">Marital Detail</a></li>
+                <li><a  href="#photo-gallery" data-target="#loginPopUpModal" data-toggle="modal">Gallery</a></li>
+
+            <?php } ?>
+
         </ul>
 
 
@@ -478,244 +484,303 @@ $session = new Zend\Session\Container('user');
                 </div>
             </div>
             <div id="family-details" class="tab-pane fade">
-                <div class="row divrow">
-<?php if (!empty($user_Record->father_name)) { ?>
-                        <div class="divmatrimon">
-                            <span class="col-sm-2n"><?= $this->translate('Father Name'); ?></span>
-                            <div class="col-sm-3 nwclas"><?= $user_Record->name_title_father . " " . $user_Record->father_name ?></div>
-                        </div>
+                    <div class="row divrow">
+                        <?php if (!empty($familyInfo->familyInfoArray['father_name'])) { ?>
+                            <div class="divmatrimon">
+                                <span class="col-sm-2n"><?= $this->translate('Father Name'); ?></span>
+                                <div class="col-sm-3 nwclas"><?= $familyInfo->familyInfoArray['name_title_father'] . " " . $familyInfo->familyInfoArray['father_name'] ?></div>
+                            </div>
 
-<?php } ?>
+                        <?php } ?>
 
-                    <?php if (!empty($user_Record->father_status)) { ?>
-                        <div class="divmatrimon">
-                            <span class="col-sm-2n"><?= $this->translate('Father Status') ?></span>
-                            <div class="col-sm-3 nwclas"><?= $user_Record->father_status ?></div>
-                        </div>
+                        <?php if (!empty($familyInfo->familyInfoArray['father_status'])) { ?>
+                            <div class="divmatrimon">
+                                <span class="col-sm-2n"><?= $this->translate('Father Status') ?></span>
+                                <div class="col-sm-3 nwclas"><?= $familyInfo->familyInfoArray['father_status'] ?></div>
+                            </div>
 
-                    <?php } ?>
+                        <?php } ?>
 
-                </div>
-                <div class="row divrow1">
-<?php if (!empty($user_Record->father_dob)) { ?>
-                        <div class="divmatrimon">
-                            <span class="col-sm-2n"><?= $this->translate('Father DOB'); ?></span>
-                            <div class="col-sm-3 nwclas"><?= date('d-m-Y', strtotime($user_Record->father_dob)); ?></div>
-                        </div>
+                    </div>
+                    <div class="row divrow1">
+                        <?php if (!empty($familyInfo->familyInfoArray['father_dob'])) { ?>
+                            <div class="divmatrimon">
+                                <span class="col-sm-2n"><?= $this->translate('Father DOB'); ?></span>
+                                <div class="col-sm-3 nwclas"><?= date('d-m-Y', strtotime($familyInfo->familyInfoArray['father_dob'])); ?></div>
+                            </div>
 
-<?php } ?>
+                        <?php } ?>
 
 
-<?php if (!empty($user_Record->father_dob)) { ?>
+                        <?php if (!empty($familyInfo->familyInfoArray['father_dod'])) { ?>
+                            <div class="divmatrimon">
+                                <span class="col-sm-2n"><?= $this->translate('Father DOD'); ?></span>
+                                <div class="col-sm-3 nwclas"><?= date('d-m-Y', strtotime($familyInfo->familyInfoArray['father_dod'])); ?></div>
+                            </div>
+
+                        <?php } ?>
                         <!-- <div class="divmatrimon">
-                                                  <span class="col-sm-2n"><?= $this->translate('Father DOB'); ?></span>
-                                                  <div class="col-sm-3 nwclas"><?= date('d-m-Y', strtotime($user_Record->father_dob)); ?></div>
-                                  </div> -->
+                                        <span class="col-sm-2n"><?= $this->translate('Father Photo') ?></span>
+                                        <div class="col-sm-3 nwclas"><?= $user_Record->father_photo ?></div>
+                        </div> -->
+                    </div>
+                    <div class="row divrow1">
+                        <?php if (!empty($familyInfo->familyInfoArray['mother_name'])) { ?>
+                            <div class="divmatrimon">
+                                <span class="col-sm-2n"><?= $this->translate('Mother Name'); ?></span>
+                                <div class="col-sm-3 nwclas"><?= $familyInfo->familyInfoArray['mother_name'] ?></div>
+                            </div>
 
-<?php } ?>
-                    <!-- <div class="divmatrimon">
-                                    <span class="col-sm-2n"><?= $this->translate('Father Photo') ?></span>
-                                    <div class="col-sm-3 nwclas"><?= $user_Record->father_photo ?></div>
-                    </div> -->
-                </div>
-                <div class="row divrow1">
-<?php if (!empty($user_Record->mother_name)) { ?>
-                        <div class="divmatrimon">
-                            <span class="col-sm-2n"><?= $this->translate('Mother Name'); ?></span>
-                            <div class="col-sm-3 nwclas"><?= $user_Record->mother_name ?></div>
-                        </div>
+                        <?php } ?>
 
-<?php } ?>
+                        <?php if (!empty($familyInfo->familyInfoArray['mother_status'])) { ?>
+                            <div class="divmatrimon">
+                                <span class="col-sm-2n"><?= $this->translate('Mother Status') ?></span>
+                                <div class="col-sm-3 nwclas"><?= $familyInfo->familyInfoArray['mother_status'] ?></div>
+                            </div>
 
-                    <?php if (!empty($user_Record->mother_status)) { ?>
-                        <div class="divmatrimon">
-                            <span class="col-sm-2n"><?= $this->translate('Mother Status') ?></span>
-                            <div class="col-sm-3 nwclas"><?= $user_Record->mother_status ?></div>
-                        </div>
+                        <?php } ?>
 
-                    <?php } ?>
+                    </div>
 
-                </div>
-                <div class="row divrow1">
-<?php if (!empty($user_Record->mother_dob)) { ?>
-                        <div class="divmatrimon">
-                            <span class="col-sm-2n"><?= $this->translate('Mother DOB'); ?></span>
-                            <div class="col-sm-3 nwclas"><?= date('d-m-Y', strtotime($user_Record->mother_dob)); ?></div>
-                        </div>
+                    <div class="row divrow1">
+                        <?php if (!empty($familyInfo->familyInfoArray['mother_dob'])) { ?>
+                            <div class="divmatrimon">
+                                <span class="col-sm-2n"><?= $this->translate('Mother DOB'); ?></span>
+                                <div class="col-sm-3 nwclas"><?= date('d-m-Y', strtotime($familyInfo->familyInfoArray['mother_dob'])); ?></div>
+                            </div>
 
-<?php } ?>
+                        <?php } ?>
+                        <?php if (!empty($familyInfo->familyInfoArray['mother_dod'])) { ?>
+                            <div class="divmatrimon">
+                                <span class="col-sm-2n"><?= $this->translate('Mother DOD'); ?></span>
+                                <div class="col-sm-3 nwclas"><?= date('d-m-Y', strtotime($familyInfo->familyInfoArray['mother_dod'])); ?></div>
+                            </div>
 
-                    <!-- <div class="divmatrimon">
-                                   <span class="col-sm-2n"><?= $this->translate('Mother Photo') ?></span>
-                                   <div class="col-sm-3 nwclas"><?= $user_Record->mother_photo ?></div>
-                   </div> -->
-                </div>
-                <div class="row divrow1">
-<?php if (!empty($user_Record->grand_father_name)) { ?>
-                        <div class="divmatrimon">
-                            <span class="col-sm-2n"><?= $this->translate('Grand Father Name'); ?></span>
-                            <div class="col-sm-3 nwclas"><?= $user_Record->grand_father_name ?></div>
-                        </div>
+                        <?php } ?>
 
-<?php } ?>
-                    <?php if (!empty($user_Record->grand_father_status)) { ?>
-                        <div class="divmatrimon">
-                            <span class="col-sm-2n"><?= $this->translate('Grand Father Status') ?></span>
-                            <div class="col-sm-3 nwclas"><?= $user_Record->grand_father_status ?></div>
-                        </div>
+                        <!-- <div class="divmatrimon">
+                                       <span class="col-sm-2n"><?= $this->translate('Mother Photo') ?></span>
+                                       <div class="col-sm-3 nwclas"><?= $user_Record->mother_photo ?></div>
+                       </div> -->
+                    </div>
+                    <div class="row divrow1">
+                        <?php if (!empty($familyInfo->familyInfoArray['grand_father_name'])) { ?>
+                            <div class="divmatrimon">
+                                <span class="col-sm-2n"><?= $this->translate('Grand Father Name'); ?></span>
+                                <div class="col-sm-3 nwclas"><?= $familyInfo->familyInfoArray['grand_father_name'] ?></div>
+                            </div>
 
-                    <?php } ?>
+                        <?php } ?>
+                        <?php if (!empty($familyInfo->familyInfoArray['grand_father_status'])) { ?>
+                            <div class="divmatrimon">
+                                <span class="col-sm-2n"><?= $this->translate('Grand Father Status') ?></span>
+                                <div class="col-sm-3 nwclas"><?= $familyInfo->familyInfoArray['grand_father_status'] ?></div>
+                            </div>
 
-
-                </div>
-                <div class="row divrow1">
-<?php if (!empty($user_Record->grand_mother_name)) { ?>
-                        <div class="divmatrimon">
-                            <span class="col-sm-2n"><?= $this->translate('Grand Mother Name'); ?></span>
-                            <div class="col-sm-3 nwclas"><?= $user_Record->grand_mother_name ?></div>
-                        </div>
-
-<?php } ?>
-
-                    <?php if (!empty($user_Record->grand_mother_status)) { ?>
-                        <div class="divmatrimon">
-                            <span class="col-sm-2n"><?= $this->translate('Grand Mother Status') ?></span>
-                            <div class="col-sm-3 nwclas"><?= $user_Record->grand_mother_status ?></div>
-                        </div>
-
-                    <?php } ?>
+                        <?php } ?>
 
 
-                </div>
-                <div class="row divrow1">
-<?php if (!empty($user_Record->spouse_name)) { ?>
-                        <div class="divmatrimon">
-                            <span class="col-sm-2n"><?= $this->translate('Name of Spouse'); ?></span>
-                            <div class="col-sm-3 nwclas"><?= $user_Record->spouse_name ?></div>
-                        </div>
+                    </div>
+                    <div class="row divrow1">
+                        <?php if (!empty($familyInfo->familyInfoArray['grand_mother_name'])) { ?>
+                            <div class="divmatrimon">
+                                <span class="col-sm-2n"><?= $this->translate('Grand Mother Name'); ?></span>
+                                <div class="col-sm-3 nwclas"><?= $familyInfo->familyInfoArray['grand_mother_name'] ?></div>
+                            </div>
 
-                <?php } ?>
-                <?php if (!empty($user_Record->spouse_status)) { ?>
-                        <div class="divmatrimon">
-                            <span class="col-sm-2n"><?= $this->translate('Spouse Status'); ?></span>
-                            <div class="col-sm-3 nwclas"><?= $user_Record->spouse_status ?></div>
-                        </div>
+                        <?php } ?>
 
-                <?php } ?>
+                        <?php if (!empty($familyInfo->familyInfoArray['grand_mother_status'])) { ?>
+                            <div class="divmatrimon">
+                                <span class="col-sm-2n"><?= $this->translate('Grand Mother Status') ?></span>
+                                <div class="col-sm-3 nwclas"><?= $familyInfo->familyInfoArray['grand_mother_status'] ?></div>
+                            </div>
 
-                </div>
+                        <?php } ?>
+
+
+                    </div>
+                    <div class="row divrow1">
+                        <?php if (!empty($familyInfo->familyInfoArray['spouse_name'])) { ?>
+                            <div class="divmatrimon">
+                                <span class="col-sm-2n"><?= $this->translate('Name of Spouse'); ?></span>
+                                <div class="col-sm-3 nwclas"><?= $familyInfo->familyInfoArray['spouse_name'] ?></div>
+                            </div>
+
+                        <?php } ?>
+                        <?php if (!empty($familyInfo->familyInfoArray['spouse_status'])) { ?>
+                            <div class="divmatrimon">
+                                <span class="col-sm-2n"><?= $this->translate('Spouse Status'); ?></span>
+                                <div class="col-sm-3 nwclas"><?= $familyInfo->familyInfoArray['spouse_status'] ?></div>
+                            </div>
+
+                        <?php } ?>
+
+                    </div>
                     <?php
-                    // foreach ($userinfo[0]['kids_info'] as $key => $value) {
-                    // echo count($userinfo[0]['kids_info'][0]);
+// foreach ($userinfo[0]['kids_info'] as $key => $value) {
+// echo count($userinfo[0]['kids_info'][0]);
 
                     for ($i = 0; $i < count($userinfo[0]['kids_info'][0]); $i++) {
                         ?>
 
-                    <div class="row">
-    <?php if (!empty($userinfo[0]['kids_info'][1][$i])) { ?>
-                            <div class="divmatrimon">
-                                <span class="col-sm-2n"><?= $this->translate('Name of Kid'); ?></span>
-                                <div class="col-sm-3 nwclas"> <?= $userinfo[0]['kids_info'][0][$i] ?> <?= $userinfo[0]['kids_info'][1][$i] ?></div>
-                            </div>
-    <?php } ?>
-    <?php if (!empty($userinfo[0]['kids_info'][2][$i])) { ?>
+                        <div class="row">
+                            <?php if (!empty($userinfo[0]['kids_info'][1][$i])) { ?>
+                                <div class="divmatrimon">
+                                    <span class="col-sm-2n"><?= $this->translate('Name of Kid'); ?></span>
+                                    <div class="col-sm-3 nwclas"> <?= $userinfo[0]['kids_info'][0][$i] ?> <?= $userinfo[0]['kids_info'][1][$i] ?></div>
+                                </div>
+                            <?php } ?>
+                            <?php if (!empty($userinfo[0]['kids_info'][2][$i])) { ?>
 
-                            <div class="divmatrimon">
-                                <span class="col-sm-2n"><?= $this->translate('Kid Status'); ?></span>
-                                <div class="col-sm-3 nwclas"> <?= $userinfo[0]['kids_info'][2][$i] ?></div>
-                            </div>
-    <?php } ?>
-                    </div>
+                                <div class="divmatrimon">
+                                    <span class="col-sm-2n"><?= $this->translate('Kid Status'); ?></span>
+                                    <div class="col-sm-3 nwclas"> <?= $userinfo[0]['kids_info'][2][$i] ?></div>
+                                </div>
+                            <?php } ?>
+                        </div>
 
 
-                    <div class="row">
-    <?php if (!empty($userinfo[0]['kids_info'][3][$i])) { ?>
+                        <div class="row">
+                            <?php if (!empty($userinfo[0]['kids_info'][3][$i])) { ?>
 
-                            <div class="divmatrimon">
-                                <span class="col-sm-2n"><?= $this->translate('Kid DOB'); ?></span>
-                                <div class="col-sm-3 nwclas"> <?= $userinfo[0]['kids_info'][3][$i] ?></div>
-                            </div>
-                    <?php } ?>
+                                <div class="divmatrimon">
+                                    <span class="col-sm-2n"><?= $this->translate('Kid DOB'); ?></span>
+                                    <div class="col-sm-3 nwclas"> <?= $userinfo[0]['kids_info'][3][$i] ?></div>
+                                </div>
+                            <?php } ?>
 
-                    </div>
+                        </div>
 
+                        <?php
+                    }
+                    // }
+                    ?>
                     <?php
-                }
-                // }
-                ?>
-<?php
-// foreach ($userinfo[0]['kids_info'] as $key => $value) {
-// echo count($userinfo[0]['kids_info'][0]);
+                    // foreach ($userinfo[0]['kids_info'] as $key => $value) {
+                    // echo count($userinfo[0]['kids_info'][0]);
+                    //Zend\Debug\Debug::dump($familyInfo);
 
-for ($i = 0; $i < count($userinfo[0]['brother_info'][0]); $i++) {
-    ?>
+                    for ($i = 0; $i < count($familyInfo->kidsData); $i++) {
+                        ?>
 
-                    <div class="row">
-                        <?php if (!empty($userinfo[0]['brother_info'][1][$i])) { ?>
+                        <div class="row">
+                            <?php if (!empty($familyInfo->kidsData[$i]['kids_name'])) { ?>
 
-                            <div class="divmatrimon">
-                                <span class="col-sm-2n"><?= $this->translate('Name of Brother'); ?></span>
-                                <div class="col-sm-3 nwclas"> <?= $userinfo[0]['brother_info'][0][$i] ?> <?= $userinfo[0]['brother_info'][1][$i] ?></div>
-                            </div>
-                        <?php } ?>
-                        <?php if (!empty($userinfo[0]['brother_info'][2][$i])) { ?>
+                                <div class="divmatrimon">
+                                    <span class="col-sm-2n"><?= $this->translate('Name of Kids'); ?></span>
+                                    <div class="col-sm-3 nwclas"> <?= $familyInfo->kidsData[$i]['name_title_user'] ?> <?= $familyInfo->kidsData[$i]['kids_name'] ?></div>
+                                </div>
+                            <?php } ?>
 
-                            <div class="divmatrimon">
-                                <span class="col-sm-2n"><?= $this->translate('Brother Status'); ?></span>
-                                <div class="col-sm-3 nwclas"> <?= $userinfo[0]['brother_info'][2][$i] ?></div>
-                            </div>
-    <?php } ?>
-                    </div>
+                        </div>
 
 
-                    <div class="row">
-                        <?php if (!empty($userinfo[0]['brother_info'][3][$i])) { ?>
+                        <div class="row">
+                            <?php if (!empty($familyInfo->kidsData[$i]['dob'])) { ?>
+                                <div class="divmatrimon">
+                                    <span class="col-sm-2n"><?= $this->translate('Kids DOB'); ?></span>
+                                    <div class="col-sm-3 nwclas"><?= date('d-m-Y', strtotime($familyInfo->kidsData[$i]['dob'])); ?></div>
+                                </div>
 
-                            <div class="divmatrimon">
-                                <span class="col-sm-2n"><?= $this->translate('Brother DOB'); ?></span>
-                                <div class="col-sm-3 nwclas"> <?= $userinfo[0]['brother_info'][3][$i] ?></div>
-                            </div>
-                    <?php } ?>
-                    </div>
+                            <?php } ?>
+                        </div>
 
-    <?php
-}
+                        <?php
+                    }
 
-for ($i = 0; $i < count($userinfo[0]['sister_info'][0]); $i++) {
-    ?>
+                    for ($i = 0; $i < count($familyInfo->brotherData); $i++) {
+                        ?>
 
-                    <div class="row">
-                        <?php if (!empty($userinfo[0]['sister_info'][1][$i])) { ?>
+                        <div class="row">
+                            <?php if (!empty($familyInfo->brotherData[$i]['brother_name'])) { ?>
 
-                            <div class="divmatrimon">
-                                <span class="col-sm-2n"><?= $this->translate('Name of Sister'); ?></span>
-                                <div class="col-sm-3 nwclas"> <?= $userinfo[0]['sister_info'][0][$i] ?> <?= $userinfo[0]['sister_info'][1][$i] ?></div>
-                            </div><?php } ?>
-                        <?php if (!empty($userinfo[0]['sister_info'][2][$i])) { ?>
+                                <div class="divmatrimon">
+                                    <span class="col-sm-2n"><?= $this->translate('Name of Brother'); ?></span>
+                                    <div class="col-sm-3 nwclas"> <?= $familyInfo->brotherData[$i]['name_title_user'] ?> <?= $familyInfo->brotherData[$i]['brother_name'] ?></div>
+                                </div>
+                            <?php } ?>
 
-                            <div class="divmatrimon">
-                                <span class="col-sm-2n"><?= $this->translate('Sister Status'); ?></span>
-                                <div class="col-sm-3 nwclas"> <?= $userinfo[0]['sister_info'][2][$i] ?></div>
-                            </div>
-                        <?php } ?>
-                    </div>
+                        </div>
 
 
-                    <div class="row">
-                        <?php if (!empty($userinfo[0]['sister_info'][3][$i])) { ?>
+                        <div class="row">
+                            <?php if (!empty($familyInfo->brotherData[$i]['dob'])) { ?>
+                                <div class="divmatrimon">
+                                    <span class="col-sm-2n"><?= $this->translate('Brother DOB'); ?></span>
+                                    <div class="col-sm-3 nwclas"><?= date('d-m-Y', strtotime($familyInfo->brotherData[$i]['dob'])); ?></div>
+                                </div>
 
-                            <div class="divmatrimon">
-                                <span class="col-sm-2n"><?= $this->translate('Sister DOB'); ?></span>
-                                <div class="col-sm-3 nwclas"> <?= $userinfo[0]['sister_info'][3][$i] ?></div>
-                            </div>
-                    <?php } ?>
-                    </div>
+                            <?php } ?>
+                        </div>
 
-    <?php
-}
-// }
-?>
-            </div>
+                        <?php
+                    }
+
+                    for ($i = 0; $i < count($familyInfo->sisterData); $i++) {
+                        ?>
+
+                        <div class="row">
+                            <?php if (!empty($familyInfo->sisterData[$i]['sister_name'])) { ?>
+
+                                <div class="divmatrimon">
+                                    <span class="col-sm-2n"><?= $this->translate('Name of Sister'); ?></span>
+                                    <div class="col-sm-3 nwclas"> <?= $familyInfo->sisterData[$i]['name_title_user'] ?> <?= $familyInfo->sisterData[$i]['sister_name'] ?></div>
+                                </div>
+                            <?php } ?>
+
+                        </div>
+
+
+                        <div class="row">
+                            <?php if (!empty($familyInfo->sisterData[$i]['dob'])) { ?>
+                                <div class="divmatrimon">
+                                    <span class="col-sm-2n"><?= $this->translate('Sister DOB'); ?></span>
+                                    <div class="col-sm-3 nwclas"><?= date('d-m-Y', strtotime($familyInfo->sisterData[$i]['dob'])); ?></div>
+                                </div>
+
+                            <?php } ?>
+                        </div>
+
+                        <?php
+                    }
+
+                    for ($i = 0; $i < count($userinfo[0]['sister_info'][0]); $i++) {
+                        ?>
+
+                        <div class="row">
+                            <?php if (!empty($userinfo[0]['sister_info'][1][$i])) { ?>
+
+                                <div class="divmatrimon">
+                                    <span class="col-sm-2n"><?= $this->translate('Name of Sister'); ?></span>
+                                    <div class="col-sm-3 nwclas"> <?= $userinfo[0]['sister_info'][0][$i] ?> <?= $userinfo[0]['sister_info'][1][$i] ?></div>
+                                </div><?php } ?>
+                            <?php if (!empty($userinfo[0]['sister_info'][2][$i])) { ?>
+
+                                <div class="divmatrimon">
+                                    <span class="col-sm-2n"><?= $this->translate('Sister Status'); ?></span>
+                                    <div class="col-sm-3 nwclas"> <?= $userinfo[0]['sister_info'][2][$i] ?></div>
+                                </div>
+                            <?php } ?>
+                        </div>
+
+
+                        <div class="row">
+                            <?php if (!empty($userinfo[0]['sister_info'][3][$i])) { ?>
+
+                                <div class="divmatrimon">
+                                    <span class="col-sm-2n"><?= $this->translate('Sister DOB'); ?></span>
+                                    <div class="col-sm-3 nwclas"> <?= $userinfo[0]['sister_info'][3][$i] ?></div>
+                                </div>
+                            <?php } ?>
+                        </div>
+
+                        <?php
+                    }
+                    // }
+                    ?>
+                </div>
             <div id="marital-detail" class="tab-pane fade">
                 <div class="row divrow">
                     <?php if (!empty($user_Record->marital_status)) { ?>
@@ -768,158 +833,69 @@ for ($i = 0; $i < count($userinfo[0]['sister_info'][0]); $i++) {
 
 
             <div id="photo-gallery" class="tab-pane fade">
-                <div class="gallery">
+                    <div class="gallery" id="gallery_images"> 
 
-                    <div class="col-sm-6 highslide-gallery">
-                        <div class="col-sm-12" style="padding:0;"><h3>Personal Photos</h3></div>
+                        <!--<div class="col-xs-4">
+                        <div class="col-xs-12"><a href="<?php //echo $this->basePath('gallery/large/gallery.jpg')    ?>" title="" data-gallery=""><img src="<?php //echo $this->basePath('gallery/thumb/gallery.jpg')    ?>" class="img-responsive" /><div class="img-title">Category 1</div></a></div>
+                        </div>--> 
 
-                        <?php
-                        if (count($galleries[0]) > 0) {
-                            foreach ($galleries[0] as $key => $value) {
-
-                                if ($key == 0) {
-                                    $cl1 = "8";
-                                    $cl2 = "1";
-                                }
-                                if ($key == 1) {
-                                    $cl1 = "4";
-                                    $cl2 = "1";
-                                }
-                                if ($key > 1) {
-                                    $cl1 = "3";
-                                    $cl2 = "2";
-                                }
-
-
-                                if ($key == 5) {
-                                    $cl1 = "3";
-                                    $cl2 = "2";
-                                    ?>
-                                    <div class="col-sm-<?= $cl1 ?>"><a class='highslide' id="thumb1" href='<?= $this->basePath() . $value ?>' title="Personal Photo"
-                                                                     onclick="return hs.expand(this, miniGalleryOptions1)">
-                                            <img src="<?= $this->basePath() . $value ?>" class="moreimgthamb<?= $cl2 ?>"/></a>
-                                        <div class="moreimage" style="cursor:pointer; background: transparent none repeat scroll 0 0; height:10px; width:10px; margin-left:31px;"> + </div>
-                                    </div>
-            <?php
-            break;
-        } else {
-            ?>
-                                    <div class="col-sm-<?= $cl1 ?>" style="padding:0 !important;">
-                                        <a class='highslide' id="thumb1" href='<?= $this->basePath() . $value ?>' title="Personal Photo"
-                                           onclick="return hs.expand(this, miniGalleryOptions1)">
-                                            <img src="<?= $this->basePath() . $value ?>"  class=" recposhiv moreimgthamb<?= $cl2 ?>"/>
-                                        </a>
-                                    </div>
-                                    <?php
-                                }
-                            }
-                            ?>
-
-                            <div class="hidden-container" style="width:100%; background:#333;">
-                                <?php
-                                foreach ($galleries[0] as $key => $value) {
-
-                                    if ($key > 5) {
-                                        ?>
-                                        <a class='highslide' id="thumb1" href='<?= $this->basePath() . $value ?>' title="Personal Photo"
-                                           onclick="return hs.expand(this, miniGalleryOptions1)">
-                                            <img src='<?= $this->basePath() . $value ?>' alt=''/></a>
-                                        <?php
-                                    }
-                                }
-                                ?>
+                        <div class="col-sm-6">
+                            <div class="col-sm-12" style="padding:0 !important;">  <h3>Personal Photos</h3></div>
+                            <div class="col-sm-8" style="padding:0 !important;"><a href="#" title="" ><img src="<?= $this->basePath('uploads/') . $Pphotos[0] ?>" style="width:100%;height:140px;display:block;" class="moreimgthamb" /></a></div>
+                            <div class="col-sm-4" style="padding:0 !important;"><a href="#" title="" ><img src="<?= $this->basePath('uploads/') . $Pphotos[1] ?>" class="moreimgthamb" style="width:100%;height:140px;display:block;" /></a></div>
+                            <div class="col-sm-3"><a href="#" title="" ><img src="<?= $this->basePath('uploads/') . $Pphotos[2] ?>" class="moreimgthamb" style="width:100%;height:80px;display:block;" /></a></div>
+                            <div class="col-sm-3"><a href="#" title="" ><img src="<?= $this->basePath('uploads/') . $Pphotos[3] ?>" class="moreimgthamb" style="width:100%;height:80px;display:block;" /></a></div>
+                            <div class="col-sm-3"><a href="#" title="" ><img src="<?= $this->basePath('uploads/') . $Pphotos[4] ?>" class="moreimgthamb" style="width:100%;height:80px;display:block;" /></a></div>
+                            <div class="col-sm-3" id="more" onclick="showallimages('Personal', '<?= $this->url('matrimonial', array('action' => 'showallimages')) ?>', showallimagesresults)"><a href="#" title=""><img src="<?= $this->basePath('uploads/') . $Pphotos[5] ?>" class="moreimgthamb" style="width:100%;height:80px;display:block;" /></a>
+                                <div class="moreimage" style="cursor:pointer;"> + </div>
                             </div>
-                            <?php
-                        } else
-                            echo "<h4>No Photos Uploaded Yet</h4>";
-                        ?>
+                        </div>
+
+
+                        <div class="col-sm-6">
+                            <div class="col-sm-12" style="padding:0 !important;">  <h3>Family Photos</h3></div>
+                            <div class="col-sm-8" style="padding:0 !important;"><a href="#" title="" data-gallery=""><img src="<?= $this->basePath('uploads/') . $F_photos[0] ?>" class="moreimgthamb" style="width:100%;height:140px;display:block;" /></a></div>
+                            <div class="col-sm-4" style="padding:0 !important;"><a href="#" title="" data-gallery=""><img src="<?= $this->basePath('uploads/') . $F_photos[1] ?>" class="moreimgthamb" style="width:100%;height:140px;display:block;" /></a></div>
+                            <div class="col-sm-3"><a href="#" title="" data-gallery=""><img src="<?= $this->basePath('uploads/') . $F_photos[2] ?>" class="moreimgthamb" style="width:100%;height:80px;display:block;" /></a></div>
+                            <div class="col-sm-3"><a href="#" title="" data-gallery=""><img src="<?= $this->basePath('uploads/') . $F_photos[3] ?>" class="moreimgthamb" style="width:100%;height:80px;display:block;" /></a></div>
+                            <div class="col-sm-3"><a href="#" title="" data-gallery=""><img src="<?= $this->basePath('uploads/') . $F_photos[4] ?>" class="moreimgthamb" style="width:100%;height:80px;display:block;" /></a></div>
+                            <div class="col-sm-3 " id="fmore" onclick="showallimages('Family', '<?= $this->url('matrimonial', array('action' => 'showallimages')) ?>', showallimagesresults)"><a href="#" title="" data-gallery=""><img src="<?= $this->basePath('uploads/') . $F_photos[5] ?>" class="moreimgthamb" style="width:100%;height:80px;display:block;" /></a>
+                                <div class="moreimage" style="cursor:pointer;"> + </div>
+                            </div>
+
+                        </div>
+
+                        <div class="col-sm-12 userimg" id="showallimages" style="border:1px solid #ccc; margin-top:20px; padding:5px !important; display:none;">
+                        <!-- <div class="col-sm-3"><img src="<?= $this->basePath() ?>/gallery/thumb/img4.jpg" class="moreimgthambdeleat imghover"/>
+                    <div class="deleteimg"> 
+                        <input type="checkbox" />
                     </div>
+                    </div>
+                    
+                    <div class="col-sm-3"><img src="<?= $this->basePath() ?>/gallery/thumb/img5.jpg" class="moreimgthambdeleat"/></div>
+                    
+                    <div class="col-sm-3"><img src="<?= $this->basePath() ?>/gallery/thumb/slide1.jpg" class="moreimgthambdeleat"/></div>
+                    
+                    <div class="col-sm-3"><img src="<?= $this->basePath() ?>/gallery/thumb/matrimonial-deepika.jpg" class="moreimgthambdeleat"/></div> -->
 
+                        </div>  
 
-                    <div class="col-sm-6">
-                        <div class="col-sm-12" style="padding:0;"><h3>Family Photos</h3></div>
-
-
-
-                        <?php
-                        if (count($galleries[1]) > 0) {
-                            foreach ($galleries[1] as $key => $value) {
-
-                                if ($key == 0) {
-                                    $cl1 = "8";
-                                    $cl2 = "1";
-                                }
-                                if ($key == 1) {
-                                    $cl1 = "4";
-                                    $cl2 = "1";
-                                }
-                                if ($key > 1) {
-                                    $cl1 = "3";
-                                    $cl2 = "2";
-                                }
-                                ?>
-
-                                <?php
-                                if ($key == 5) {
-                                    $cl1 = "3";
-                                    $cl2 = "2";
-                                    ?>
-                                    <div class="col-sm-<?= $cl1 ?>">
-                                        <a class='highslide' id="thumb1" href='<?= $this->basePath() . $value[0][0] ?>' title="<?= $value[0][1] ?> (<?= $value[1][0] ?>)"
-                                           onclick="return hs.expand(this, miniGalleryOptions1)">
-                                            <img src="<?= $this->basePath() . $value[0][0] ?>" class="moreimgthamb<?= $cl2 ?>"/>
-                                        </a>
-                                        <div class="moreimage" style="cursor:pointer; background: transparent none repeat scroll 0 0; height:10px; width:10px; margin-left:31px;"> + </div>
-                                    </div>
-                                    <?php
-                                    break;
-                                } else {
-                                    ?>
-                                    <div class="col-sm-<?= $cl1 ?>" style="padding:0 !important;">
-                                        <a class='highslide' id="thumb1" href='<?= $this->basePath() . $value[0][0] ?>' title="<?= $value[0][1] ?> (<?= $value[1][0] ?>)"
-                                           onclick="return hs.expand(this, miniGalleryOptions1)">
-                                            <img src="<?= $this->basePath() . $value[0][0] ?>"  class=" recposhiv moreimgthamb<?= $cl2 ?>"/>
-                                            <!-- <div class="img-title">
-                                                <span style="float:left;"><?= $value[0][1] ?> (<?= $value[1][0] ?>)</span>
-                                                 
-                                                        </div> -->
-                                        </a>
-                                    </div>
-
-                                    <?php
-                                }
-                            }
-                            ?>
-
-                            <div class="hidden-container" style="width:100%; background:#333;">
-                                <?php
-                                foreach ($galleries[1] as $key => $value) {
-
-                                    if ($key > 5) {
-                                        ?>
-                                        <a class='highslide' href='<?= $this->basePath() . $value[0][0] ?>' title="<?= $value[0][1] ?> (<?= $value[1][0] ?>)"
-                                           onclick="return hs.expand(this, miniGalleryOptions1)">
-                                            <img src='<?= $this->basePath() . $value[0][0] ?>' alt=''/>
-                                            <!-- <div class="img-title">
-                                            <span style="float:left;"><?= $value[0][1] ?> (<?= $value[1][0] ?>)</span>
-                                             
-                                                    </div> --></a>
-                                        <?php
-                                    }
-                                }
-                                ?>
-                            </div>
-                            <?php
-                        } else
-                            echo "<h4>No Photos Uploaded Yet</h4>";
-                        ?>
+                        <!--  <div class="col-sm-12 familyimg" style="border:1px solid #ccc; margin-top:20px; padding:5px !important; display:none;">
+                         <div class="col-sm-3"><img src="<?= $this->basePath() ?>/gallery/thumb/img4.jpg" class="moreimgthambdeleat"/></div>
+                     
+                     <div class="col-sm-3"><img src="<?= $this->basePath() ?>/gallery/thumb/img5.jpg" class="moreimgthambdeleat"/></div>
+                     
+                     <div class="col-sm-3"><img src="<?= $this->basePath() ?>/gallery/thumb/slide1.jpg" class="moreimgthambdeleat"/></div>
+                     
+                     <div class="col-sm-3"><img src="<?= $this->basePath() ?>/gallery/thumb/matrimonial-deepika.jpg" class="moreimgthambdeleat"/></div>
+                   
+                   </div> -->
 
 
                     </div> 
 
                     <div class="clearfix"></div>
-                </div>			
-            </div>
+                </div>
         </div>
     </div>
 </div>
@@ -965,10 +941,10 @@ for ($i = 0; $i < count($userinfo[0]['sister_info'][0]); $i++) {
     </nav>-->
 </div>
 
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+<div class="modal fade" id="loginPopUpModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document" style="width:222px !important;">
         <div class="modal-content gnt-pad15 modal-contentnew">
-            <form role="form" action="<?php echo $this->basePath() ?>/matrimonial/profile-view?groom_id=<?php echo $BrdData->id ?>">
+            <form id="loginForm" method="POST" action="/user/loginUser" name="loginForm">
                 <div class="form-group">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>

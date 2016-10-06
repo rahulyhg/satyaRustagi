@@ -2,17 +2,17 @@
 
 namespace Application\Controller;
 
-use Zend\Mvc\Controller\AbstractActionController;
+use Zend\Db\Adapter\Adapter;
 use Zend\View\Model\ViewModel;
-use Zend\View\Renderer\PhpRenderer;
 
 class MembershipController extends AppController {
 
-     protected $postService;
+    protected $postService;
 
     public function __construct(\Application\Service\MembershipServiceInterface $postService) {
         $this->postService = $postService;
     }
+
     public function indexAction() {
         $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
         $GroomData = $adapter->query("select 
@@ -28,18 +28,17 @@ class MembershipController extends AppController {
             tbl_user_info.city,
             tbl_user_info.address,
             tbl_user_info.about_yourself_partner_family,
-            tbl_family_info.name_title_father,
-            tbl_family_info.father_name,
+           
             tbl_profession.profession 
             FROM tbl_user 
 		 INNER JOIN tbl_user_info on tbl_user_info.user_id=tbl_user.id
-		 INNER JOIN tbl_family_info on tbl_user.id=tbl_family_info.user_id
+		
                  INNER JOIN tbl_profession on tbl_user_info.profession=tbl_profession.id
 	         inner join tbl_user_roles on tbl_user_info.user_id=tbl_user_roles.user_id 
 		 inner join tbl_rustagi_branches on tbl_user_info.branch_ids=tbl_rustagi_branches.branch_id 
 		 inner join tbl_city on tbl_user_info.city=tbl_city.id 
-		 where tbl_user_roles.IsMember='1'  ORDER BY tbl_user.id DESC", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
-        
+		 where tbl_user_roles.IsMember='1'  ORDER BY tbl_user.id DESC", Adapter::QUERY_MODE_EXECUTE);
+
         $filters_data = $this->sidebarFilters();
 
         return new ViewModel(array("GroomData" => $GroomData, "filters_data" => $filters_data));
@@ -47,17 +46,19 @@ class MembershipController extends AppController {
 
     public function profileViewAction() {
         $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
-        $user_id = intval($this->params()->fromQuery('groom_id'));
+        $user_id = intval($this->params()->fromQuery('member_id'));
+        $userservice = new \Application\Mapper\UserDbSqlMapper($adapter);
+        $familyInfo = $userservice->getFamilyInfoById($user_id);
         $commanData = array();
         $commanData["officecountry"] = '';
         $commanData["officestate"] = '';
         $commanData["officecity"] = '';
         if ($user_id != '') {
-            $UserData = $adapter->query("select tbl_user.email,tbl_user.mobile_no,tbl_user_info.*,tbl_family_info.*,tbl_height.*,
+            $UserData = $adapter->query("select tbl_user.email,tbl_user.mobile_no,tbl_user_info.*,tbl_height.*,
 		 tbl_profession.profession,tbl_city.city_name as city,tbl_state.state_name as state,tbl_country.country_name as country,
 		 tbl_education_field.education_field,tbl_education_level.education_level,tbl_religion.religion_name as religion,tbl_gothra_gothram.gothra_name as caste,tbl_designation.designation,tbl_annual_income.annual_income FROM tbl_user
 		INNER JOIN tbl_user_info on tbl_user.id=tbl_user_info.user_id
-		INNER JOIN tbl_family_info on tbl_user.id=tbl_family_info.user_id
+		
 		INNER JOIN tbl_profession on tbl_user_info.profession=tbl_profession.id
 		LEFT JOIN tbl_city on tbl_user_info.city=tbl_city.id
 		left join tbl_height on tbl_user_info.height=tbl_height.id
@@ -69,7 +70,7 @@ class MembershipController extends AppController {
 		LEFT JOIN tbl_gothra_gothram on tbl_user_info.gothra_gothram=tbl_gothra_gothram.id
 		LEFT JOIN tbl_designation on tbl_user_info.designation=tbl_designation.id
 		LEFT JOIN tbl_annual_income on tbl_user_info.annual_income=tbl_annual_income.id
-		WHERE tbl_user.id='$user_id' AND tbl_user_info.user_id='$user_id'", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+		WHERE tbl_user.id='$user_id' AND tbl_user_info.user_id='$user_id'", Adapter::QUERY_MODE_EXECUTE);
             $records = array();
             foreach ($UserData as $result) {
                 $records[] = $result;
@@ -92,31 +93,50 @@ class MembershipController extends AppController {
                 }
             }
 
-            $kids_title = unserialize($records[0]['name_title_kids']);
-            $kids_name = unserialize($records[0]['kids_name']);
-            $kids_status = unserialize($records[0]['kids_status']);
-            $kids_dob = unserialize($records[0]['kids_dob']);
-            $kids_info = array($kids_title, $kids_name, $kids_status, $kids_dob);
-            $records[0]['kids_info'] = $kids_info;
-            $brother_title = unserialize($records[0]['name_title_brother']);
-            $brother_name = unserialize($records[0]['brother_name']);
-            $brother_status = unserialize($records[0]['brother_status']);
-            $brother_dob = unserialize($records[0]['brother_dob']);
-            $brother_info = array($brother_title, $brother_name, $brother_status, $brother_dob);
-            $records[0]['brother_info'] = $brother_info;
-            $sister_title = unserialize($records[0]['name_title_sister']);
-            $sister_name = unserialize($records[0]['sister_name']);
-            $sister_status = unserialize($records[0]['sister_status']);
-            $sister_dob = unserialize($records[0]['sister_dob']);
-            $sister_info = array($sister_title, $sister_name, $sister_status, $sister_dob);
-            $records[0]['sister_info'] = $sister_info;
+        
         } else {
             $UserData = array();
         }
 
-        $galleries = $this->galleries($user_id);
         $filters_data = $this->sidebarFilters();
-        return new ViewModel(array("userinfo" => $records, "officeData" => $commanData, "filters_data" => $filters_data, "galleries" => $galleries));
+// new coding
+        $data = $adapter->query("select * from tbl_user_gallery where user_id='$user_id' ORDER BY id DESC limit 6", Adapter::QUERY_MODE_EXECUTE)->toArray();
+
+        foreach ($data as $P_data) {
+            foreach ($P_data as $key => $value) {
+
+                if ($key == "image_path")
+                    $Pphotos[] = $value;
+            }
+        }
+//Family data 
+        foreach ($familyInfo->brotherData as $brothres) {
+
+            $ids[] = $brothres['user_id'];
+        }
+        foreach ($familyInfo->sisterData as $sisters) {
+
+            $ids[] = $sisters['user_id'];
+        }
+        $ids[] = $familyInfo->familyInfoArray['father_id'];
+        $ids[] = $familyInfo->familyInfoArray['mother_id'];
+        $Fdata = $adapter->query("select * from tbl_user_gallery where user_id IN (" . implode(',', $ids) . ") ORDER BY id DESC", Adapter::QUERY_MODE_EXECUTE);
+        foreach ($Fdata as $F_data) {
+            $Fphotos[] = $F_data['image_path'];
+        }
+        shuffle($Fphotos);
+        shuffle($Pphotos);
+        $data_gallery = $adapter->query("select * from tbl_user_gallery where user_id='$user_id' ORDER BY id DESC", Adapter::QUERY_MODE_EXECUTE);
+
+        return new ViewModel(array("userinfo" => $records,
+            "officeData" => $commanData,
+            "filters_data" => $filters_data,
+            "Pphotos" => $Pphotos,
+            "F_photos" => $Fphotos,
+            "gallery_data" => $data_gallery,
+            'userSummary' => $userservice->userSummaryById($user_id),
+            'familyInfo' => $familyInfo
+            ));
     }
 
     public function communityMembersAction() {
@@ -154,7 +174,7 @@ class MembershipController extends AppController {
             echo "<div id='CSCresults' ftyle='city' style='display:none;'>" . join("", $output) . "</div>";
         }
 
-        $sql = "select tui.*,tui.user_id as uid,tbl_rustagi_branches.branch_name,tbl_family_info.father_name,tbl_user_roles.*,tbl_religion.religion_name,tbl_profession.profession,tbl_education_field.education_field,tbl_city.city_name,tbl_height.height,tbl_state.state_name,tbl_country.country_name,tbl_education_level.education_level from tbl_user_info as tui 
+        $sql = "select tui.*,tui.user_id as uid,tbl_rustagi_branches.branch_name,tbl_user_roles.*,tbl_religion.religion_name,tbl_profession.profession,tbl_education_field.education_field,tbl_city.city_name,tbl_height.height,tbl_state.state_name,tbl_country.country_name,tbl_education_level.education_level from tbl_user_info as tui 
 			inner join tbl_profession on tui.profession=tbl_profession.id 
 			left join tbl_religion on tui.religion=tbl_religion.id 
 			left join tbl_education_field on tui.education_field=tbl_education_field.id 
@@ -165,11 +185,11 @@ class MembershipController extends AppController {
 			left JOIN tbl_education_level on tui.education_level=tbl_education_level.id
 			inner join tbl_user_roles on tui.user_id=tbl_user_roles.user_id 
 			inner join tbl_rustagi_branches on tui.branch_ids=tbl_rustagi_branches.branch_id 
-			inner join tbl_family_info on tui.user_id=tbl_family_info.user_id 
+			 
 			" . $where;
 
         $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
-        $GroomData = $adapter->query($sql, \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+        $GroomData = $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
         $view = new ViewModel(array('GroomData' => $GroomData));
         $view->setTerminal(true);
         return $view;
@@ -183,16 +203,15 @@ class MembershipController extends AppController {
             "designation" => "tbl_designation", "height" => "tbl_height");
 
         foreach ($filters_array as $key => $table) {
-            $filters_data[$key] = $adapter->query("select * from " . $table . "", \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+            $filters_data[$key] = $adapter->query("select * from " . $table . "", Adapter::QUERY_MODE_EXECUTE);
         }
         return $filters_data;
     }
 
     public function membershipfiltersAction() {
-        
+
         //$type = $_POST['Type'];
         //$where = "WHERE 1 ";
-         
 //        if ($type == "Latest") {
 //            $where = "AND tbl_user_roles.IsMember='1' order by tui.created_date DESC limit 20";
 //        } else if ($type == "IsExecutive") {
@@ -200,8 +219,8 @@ class MembershipController extends AppController {
 //        } else {
 //            $where = "AND (tbl_user_roles.IsMember='1' and tui." . $_POST['Type'] . ">60)";
 //        }
-        
-         $where = "";
+
+        $where = "";
 
         if (isset($_POST['Country_name'])) {
 
@@ -257,13 +276,13 @@ class MembershipController extends AppController {
         if (isset($_POST['Manglik_dossam'])) {
             $where.=" AND tui.manglik_dossam='" . $_POST['Manglik_dossam'] . "'";
         }
-        
+
         $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
-        
+
         $sql = "SELECT tui.*,tui.user_id as uid,
                        tbl_user_roles.*,
                        tbl_rustagi_branches.branch_name,
-                       tbl_family_info.father_name,
+                      
                        tbl_religion.religion_name,
                        tbl_profession.profession,
                        tbl_education_field.education_field,
@@ -283,38 +302,34 @@ class MembershipController extends AppController {
 			LEFT JOIN tbl_education_level on tui.education_level=tbl_education_level.id
 			INNER JOIN tbl_user_roles on tui.user_id=tbl_user_roles.user_id 
 			INNER JOIN tbl_rustagi_branches on tui.branch_ids=tbl_rustagi_branches.branch_id 
-			INNER JOIN tbl_family_info on tui.user_id=tbl_family_info.user_id 
+			 
                         INNER JOIN tbl_user on tui.user_id=tbl_user.id
-                        WHERE tbl_user_roles.IsMember='1' " . $where." ORDER BY tbl_user.id DESC";
+                        WHERE tbl_user_roles.IsMember='1' " . $where . " ORDER BY tbl_user.id DESC";
 
         $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
-        $Members = $adapter->query($sql, \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
+        $Members = $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
         $view = new ViewModel(array('memberData' => $Members));
-       // $view->setTemplate('application/membership/filters');
+        // $view->setTemplate('application/membership/filters');
         $view->setTerminal(true);
         return $view;
     }
-    
-    public function sortmembersAction ()
-	{	
-		$adapter=$this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
-       // $select=$this->getServiceLocator()->get('Zend\Db\sql\Expression');
-		$type = $_POST['Type'];
 
-		if($type == "Latest"){
+    public function sortmembersAction() {
+        $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
+        // $select=$this->getServiceLocator()->get('Zend\Db\sql\Expression');
+        $type = $_POST['Type'];
 
-			$where = "where tbl_user_roles.IsMember='1' order by tui.created_date DESC limit 20"; 
-		}
-		else if($type == "IsExecutive"){
+        if ($type == "Latest") {
 
-			$where = "where tbl_user_roles.".$_POST['Type']."='1' order by tui.id DESC "; 
+            $where = "where tbl_user_roles.IsMember='1' order by tui.created_date DESC limit 20";
+        } else if ($type == "IsExecutive") {
 
-		}
-		else { 
-				$where = "where (tbl_user_roles.IsMember='1' and tui.".$_POST['Type'].">60)";
-			 }
+            $where = "where tbl_user_roles." . $_POST['Type'] . "='1' order by tui.id DESC ";
+        } else {
+            $where = "where (tbl_user_roles.IsMember='1' and tui." . $_POST['Type'] . ">60)";
+        }
 
-			 $sql = "select tui.*,tui.user_id as uid,tbl_user_roles.*,tbl_rustagi_branches.branch_name,tbl_family_info.father_name,tbl_religion.religion_name,tbl_profession.profession,tbl_education_field.education_field,tbl_city.city_name,tbl_height.height,tbl_state.state_name,tbl_country.country_name,tbl_education_level.education_level from tbl_user_info as tui 
+        $sql = "select tui.*,tui.user_id as uid,tbl_user_roles.*,tbl_rustagi_branches.branch_name,tbl_religion.religion_name,tbl_profession.profession,tbl_education_field.education_field,tbl_city.city_name,tbl_height.height,tbl_state.state_name,tbl_country.country_name,tbl_education_level.education_level from tbl_user_info as tui 
 			inner join tbl_profession on tui.profession=tbl_profession.id 
 			left join tbl_religion on tui.religion=tbl_religion.id 
 			left join tbl_education_field on tui.education_field=tbl_education_field.id 
@@ -324,21 +339,20 @@ class MembershipController extends AppController {
 			left join tbl_height on tui.height=tbl_height.id 
 			left JOIN tbl_education_level on tui.education_level=tbl_education_level.id
 			inner join tbl_user_roles on tui.user_id=tbl_user_roles.user_id 
-			inner join tbl_rustagi_branches on tui.branch_ids=tbl_rustagi_branches.branch_id 
-			inner join tbl_family_info on tui.user_id=tbl_family_info.user_id ".$where;
+			inner join tbl_rustagi_branches on tui.branch_ids=tbl_rustagi_branches.branch_id  " . $where;
+			
 
-		// echo $sql;	 
-		$adapter=$this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
-		$Members=$adapter->query($sql, \Zend\Db\Adapter\Adapter::QUERY_MODE_EXECUTE);
-      /******Return to View Model*********/
-      	$view = new ViewModel(array('memberData'=>$Members));
-      	$view->setTemplate('application/membership/membershipfilters');
-		$view->setTerminal(true);
-		return $view;
-		
-		exit();	
- 
-	}
+        // echo $sql;	 
+        $adapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
+        $Members = $adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
+        /*         * ****Return to View Model******** */
+        $view = new ViewModel(array('memberData' => $Members));
+        $view->setTemplate('application/membership/membershipfilters');
+        $view->setTerminal(true);
+        return $view;
+
+        exit();
+    }
 
 }
 
